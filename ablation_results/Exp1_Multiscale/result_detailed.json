@@ -1,0 +1,61 @@
+{
+  "experiment_info": {
+    "experiment_id": 1,
+    "experiment_name": "Exp1_Multiscale",
+    "description": "+ 多尺度特征融合",
+    "full_description": "在Exp0基础上增加多尺度特征融合模块，融合ViT不同层的特征表示以提升检测精度。",
+    "added_module": "多尺度特征融合 (Multi-scale Feature Fusion)",
+    "module_detail": "提取ViT编码器中多个中间层（第3、6、9层）的特征，通过加权融合策略整合不同尺度的语义信息。浅层特征捕获纹理和局部细节，深层特征捕获全局语义结构，融合后提供更全面的异常表征能力。检测时使用多尺度特征计算马氏距离。",
+    "purpose": "通过逐步添加模块，量化各组件对最终性能的贡献"
+  },
+  "configuration": {
+    "use_multiscale": true,
+    "use_cutpaste": false,
+    "use_hypersphere": false,
+    "use_feature_generator": false,
+    "use_memory_bank": false,
+    "hypersphere_weight": 0,
+    "discriminator_weight": 0,
+    "generator_weight": 0
+  },
+  "training_hyperparameters": {
+    "img_size": 224,
+    "embed_dim": 384,
+    "queue_size": 1024,
+    "momentum": 0.999,
+    "temperature": 0.07,
+    "epochs": 200,
+    "batch_size": 32,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "optimizer": "AdamW",
+    "scheduler": "CosineAnnealingLR",
+    "grad_clip_norm": 1.0,
+    "seed": 42,
+    "num_workers": 4,
+    "cutpaste_prob": 0.3,
+    "val_ratio": 0.2,
+    "anomaly_detector": {
+      "n_components": null,
+      "min_pca_components": 32,
+      "pca_variance": 0.995
+    }
+  },
+  "dataset_info": {
+    "dataset": "wafer",
+    "data_dir": "./data/数据集/数据集",
+    "val_ratio": 0.2,
+    "split": "80% train / 20% val",
+    "note": "仅使用正常样本训练，异常样本仅用于评估"
+  },
+  "model_architecture": {
+    "encoder": "ViT-S/16 (ViTEncoder)",
+    "contrastive_framework": "MoCo v2 (ImprovedMoCo)",
+    "projector_dim": 384,
+    "queue_size": 1024,
+    "momentum": 0.999,
+    "temperature": 0.07
+  },
+  "result": null,
+  "status": "pending"
+}

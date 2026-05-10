@@ -1,0 +1,61 @@
+{
+  "experiment_info": {
+    "experiment_id": 3,
+    "experiment_name": "Exp3_Hypersphere",
+    "description": "+ 超球面约束(CFA)",
+    "full_description": "在Exp2基础上增加超球面约束损失(CFA)，将正常样本特征约束在紧凑的超球面内。",
+    "added_module": "超球面约束损失 (CFA)",
+    "module_detail": "借鉴CFA方法，在对比学习损失之外增加超球面约束损失(Hypersphere Loss)。该损失将正常样本的特征表示约束在一个紧凑的超球面内，使异常样本特征因偏离超球面中心而更容易被检测。超球面损失权重设为0.1。",
+    "purpose": "通过逐步添加模块，量化各组件对最终性能的贡献"
+  },
+  "configuration": {
+    "use_multiscale": true,
+    "use_cutpaste": true,
+    "use_hypersphere": true,
+    "use_feature_generator": false,
+    "use_memory_bank": false,
+    "hypersphere_weight": 0.1,
+    "discriminator_weight": 0,
+    "generator_weight": 0
+  },
+  "training_hyperparameters": {
+    "img_size": 224,
+    "embed_dim": 384,
+    "queue_size": 1024,
+    "momentum": 0.999,
+    "temperature": 0.07,
+    "epochs": 200,
+    "batch_size": 32,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "optimizer": "AdamW",
+    "scheduler": "CosineAnnealingLR",
+    "grad_clip_norm": 1.0,
+    "seed": 42,
+    "num_workers": 4,
+    "cutpaste_prob": 0.3,
+    "val_ratio": 0.2,
+    "anomaly_detector": {
+      "n_components": null,
+      "min_pca_components": 32,
+      "pca_variance": 0.995
+    }
+  },
+  "dataset_info": {
+    "dataset": "wafer",
+    "data_dir": "./data/数据集/数据集",
+    "val_ratio": 0.2,
+    "split": "80% train / 20% val",
+    "note": "仅使用正常样本训练，异常样本仅用于评估"
+  },
+  "model_architecture": {
+    "encoder": "ViT-S/16 (ViTEncoder)",
+    "contrastive_framework": "MoCo v2 (ImprovedMoCo)",
+    "projector_dim": 384,
+    "queue_size": 1024,
+    "momentum": 0.999,
+    "temperature": 0.07
+  },
+  "result": null,
+  "status": "pending"
+}

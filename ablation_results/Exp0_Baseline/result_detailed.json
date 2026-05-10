@@ -1,0 +1,92 @@
+{
+  "experiment_info": {
+    "experiment_id": 0,
+    "experiment_name": "Exp0_Baseline",
+    "description": "ViT+MoCo (纯baseline)",
+    "full_description": "纯基线模型，仅使用ViT编码器+MoCo v2对比学习框架，不包含任何增强模块。作为消融实验的起点，衡量各模块带来的性能提升。",
+    "added_module": "无 (基线)",
+    "module_detail": "仅使用Vision Transformer (ViT-S/16)作为特征编码器，配合MoCo v2动量对比学习框架。特征提取后直接通过马氏距离(Mahalanobis Distance)进行异常检测。",
+    "purpose": "通过逐步添加模块，量化各组件对最终性能的贡献"
+  },
+  "configuration": {
+    "use_multiscale": false,
+    "use_cutpaste": false,
+    "use_hypersphere": false,
+    "use_feature_generator": false,
+    "use_memory_bank": false,
+    "hypersphere_weight": 0,
+    "discriminator_weight": 0,
+    "generator_weight": 0
+  },
+  "training_hyperparameters": {
+    "img_size": 224,
+    "embed_dim": 384,
+    "queue_size": 1024,
+    "momentum": 0.999,
+    "temperature": 0.07,
+    "epochs": 200,
+    "batch_size": 32,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "optimizer": "AdamW",
+    "scheduler": "CosineAnnealingLR",
+    "grad_clip_norm": 1.0,
+    "seed": 42,
+    "num_workers": 4,
+    "cutpaste_prob": 0.3,
+    "val_ratio": 0.2,
+    "anomaly_detector": {
+      "n_components": null,
+      "min_pca_components": 32,
+      "pca_variance": 0.995
+    }
+  },
+  "dataset_info": {
+    "dataset": "wafer",
+    "data_dir": "./data/数据集/数据集",
+    "val_ratio": 0.2,
+    "split": "80% train / 20% val",
+    "note": "仅使用正常样本训练，异常样本仅用于评估"
+  },
+  "model_architecture": {
+    "encoder": "ViT-S/16 (ViTEncoder)",
+    "contrastive_framework": "MoCo v2 (ImprovedMoCo)",
+    "projector_dim": 384,
+    "queue_size": 1024,
+    "momentum": 0.999,
+    "temperature": 0.07
+  },
+  "result": {
+    "auroc": 0.6749,
+    "f1": 0.0952,
+    "accuracy": 0.9183,
+    "fnr": 0.7857,
+    "fpr": 0.0711,
+    "threshold": 7.5363,
+    "tp": 3,
+    "fp": 66,
+    "fn": 11,
+    "tn": 862,
+    "train_time_sec": 5650.0,
+    "best_loss": 1.5863
+  },
+  "status": "completed",
+  "metrics_detail": {
+    "primary_metric": "AUROC (Area Under ROC Curve)",
+    "auroc": 0.6749,
+    "f1_score": 0.0952,
+    "accuracy": 0.9183,
+    "false_negative_rate": 0.7857,
+    "false_positive_rate": 0.0711,
+    "best_threshold_f1": 7.5363,
+    "confusion_matrix": {
+      "true_positive": 3,
+      "false_positive": 66,
+      "false_negative": 11,
+      "true_negative": 862
+    },
+    "train_time_seconds": 5650.0,
+    "train_time_minutes": 94.2,
+    "best_loss": 1.5863
+  }
+}
