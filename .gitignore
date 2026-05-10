@@ -39,3 +39,8 @@ __MACOSX/
 .idea/
 .vscode/
 *.swp
+
+# ============ 环境配置 ============
+.env
+venv/
+.venv/
