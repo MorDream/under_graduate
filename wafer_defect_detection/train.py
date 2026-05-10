@@ -9,7 +9,7 @@
 - 支持MVTec AD开源数据集验证
 
 主体架构保持不变：ViT Encoder + MoCo v2框架
-运行方式：python train_improved_v3.py (保持不变)
+运行方式：python -m wafer_defect_detection.train
 """
 
 import os
@@ -63,14 +63,11 @@ def train(args):
                                            use_cutpaste=args.use_cutpaste,
                                            cutpaste_prob=args.cutpaste_prob)
         
-        # 如果指定了验证集比例，创建训练集和验证集
         if args.val_ratio > 0:
-            # 训练集: 仅80%正常样本用于MoCo对比学习
             train_dataset = WaferTrainDataset(
                 data_root, transform=transform,
                 val_ratio=args.val_ratio, split='train'
             )
-            # 验证集: 20%正常 + 20%缺陷
             val_dataset = WaferEvalDataset(
                 data_root, transform=EvalTransform(img_size=args.img_size),
                 val_ratio=args.val_ratio, split='val'
@@ -80,7 +77,6 @@ def train(args):
             print(f"  - 验证集: {len(val_dataset)} 张")
             dataset = train_dataset
         else:
-            # 原始行为: 使用所有正常样本
             dataset = WaferTrainDataset(data_root, transform=transform)
             val_dataset = None
             
@@ -89,7 +85,6 @@ def train(args):
         transform = SemiconductorTransform(img_size=args.img_size,
                                            use_cutpaste=args.use_cutpaste,
                                            cutpaste_prob=args.cutpaste_prob)
-        # 使用新的MVTecTrainDataset，返回两个视图
         dataset = MVTecTrainDataset(data_root, args.mvtec_category, transform=transform)
         val_dataset = None
     else:
@@ -113,11 +108,22 @@ def train(args):
         use_hypersphere=args.use_hypersphere,
     ).to(device)
 
-    # 优化器
-    optimizer = torch.optim.SGD(
+    # 加载预训练权重（如果指定）
+    if args.pretrained:
+        if Path(args.pretrained).exists():
+            print(f"[INFO] 加载预训练权重: {args.pretrained}")
+            model.encoder_q.load_pretrained(args.pretrained)
+            # 同步到encoder_k
+            for param_q, param_k in zip(model.encoder_q.parameters(),
+                                       model.encoder_k.parameters()):
+                param_k.data.copy_(param_q.data)
+        else:
+            print(f"[WARNING] 预训练权重不存在: {args.pretrained}")
+
+    # 优化器 - 使用AdamW代替SGD（更稳定）
+    optimizer = torch.optim.AdamW(
         model.parameters(),
         lr=args.lr,
-        momentum=0.9,
         weight_decay=1e-4,
     )
     
@@ -155,6 +161,8 @@ def train(args):
 
             optimizer.zero_grad()
             loss.backward()
+            # 梯度裁剪（防止训练不稳定）
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
 
             total_loss += loss.item()
@@ -162,10 +170,9 @@ def train(args):
                 loss_components[k] += losses[k].item()
             num_batches += 1
 
-            # 更新进度条
             pbar.set_postfix({
                 'loss': f"{loss.item():.3f}",
-                'temp': f"{model.temperature:.3f}"
+                'temp': f"{model.temperature:.4f}"
             })
 
         avg_loss = total_loss / num_batches
@@ -220,21 +227,17 @@ def evaluate(args):
     if args.dataset == 'wafer':
         data_root = Path(args.data_dir) / "数据集" / "数据集"
         
-        # 如果指定了验证集比例，创建训练集和验证集
         if args.val_ratio > 0:
-            # 训练集：用来fit异常检测器 (1 - val_ratio 部分)
             train_dataset = WaferEvalDataset(
                 data_root, transform=eval_transform, 
                 val_ratio=args.val_ratio, split='train'
             )
-            # 验证集：用来评估模型 (val_ratio 部分)
             eval_dataset = WaferEvalDataset(
                 data_root, transform=eval_transform,
                 val_ratio=args.val_ratio, split='val'
             )
             print(f"[INFO] 使用验证集评估: val_ratio={args.val_ratio}")
         else:
-            # 兼容旧接口：全部数据（用 WaferEvalDataset 确保返回三元组）
             eval_dataset = WaferEvalDataset(data_root, transform=eval_transform)
             train_dataset = WaferEvalDataset(data_root, transform=eval_transform)
         
@@ -246,7 +249,6 @@ def evaluate(args):
         data_root = Path(args.mvtec_dir)
         eval_dataset = MVTecEvalDataset(data_root, args.mvtec_category, 
                                     transform=eval_transform, phase='test')
-        # MVTec需要从训练集的good样本fit
         train_dataset = MVTecEvalDataset(data_root, args.mvtec_category,
                                      transform=eval_transform, phase='train')
         train_loader = DataLoader(
@@ -270,6 +272,7 @@ def evaluate(args):
     
     use_multiscale = checkpoint.get('args', {}).get('use_multiscale', True)
     print(f"[INFO] 加载模型: {args.checkpoint}")
+    print(f"[INFO] 多尺度特征: {use_multiscale}")
 
     # 异常检测 - 使用训练集fit，测试集score
     detector = AnomalyDetector(
@@ -277,7 +280,7 @@ def evaluate(args):
         n_components=args.pca_components,
         use_hypersphere=args.use_hypersphere,
         use_memory_bank=True,
-        memory_ratio=0.05,
+        memory_ratio=0.1,  # 增大到10%
         min_pca_components=32,
         pca_variance=0.995,
         score_mode=getattr(args, 'score_mode', 'combined'),
@@ -291,18 +294,18 @@ def evaluate(args):
     # 计算指标
     auroc = roc_auc_score(labels, scores)
     
-    # === 策略1: F1最优阈值（传统） ===
+    # === 策略1: F1最优阈值 ===
     precision, recall, thresholds = precision_recall_curve(labels, scores)
     f1_scores = 2 * precision * recall / (precision + recall + 1e-8)
     best_thresh_idx = np.argmax(f1_scores)
     best_threshold_f1 = thresholds[best_thresh_idx] if best_thresh_idx < len(thresholds) else thresholds[-1]
     best_f1 = f1_scores[best_thresh_idx]
 
-    # === 策略2: FNR优先阈值（宁可误杀不漏杀） ===
+    # === 策略2: FNR优先阈值 ===
     best_threshold_fnr = detector.find_threshold_fnr_priority(scores, labels, target_fnr=0.0)
 
-    # 使用FNR优先阈值作为最终结果
-    best_threshold = best_threshold_fnr
+    # 使用F1最优阈值作为主要结果（FNR优先往往导致FPR过高）
+    best_threshold = best_threshold_f1
 
     # 计算准确率
     preds = (scores > best_threshold).astype(int)
@@ -320,15 +323,30 @@ def evaluate(args):
     print(f"AUROC: {auroc:.4f}")
     print(f"\n--- 阈值策略对比 ---")
     print(f"F1最优阈值: {best_threshold_f1:.4f} (F1={best_f1:.4f})")
-    print(f"FNR优先阈值: {best_threshold_fnr:.4f} (目标0漏检)")
-    print(f"\n当前使用: FNR优先阈值 = {best_threshold:.4f}")
+    print(f"FNR优先阈值: {best_threshold_fnr:.4f}")
+    print(f"\n当前使用: F1最优阈值 = {best_threshold:.4f}")
     print(f"Accuracy: {accuracy:.4f}")
+    print(f"F1 Score: {best_f1:.4f}")
     print(f"\n混淆矩阵:")
     print(f"  TP={tp} FP={fp}")
     print(f"  FN={fn} TN={tn}")
     print(f"  漏检率(FNR): {fn/(tp+fn+1e-8):.4f}")
     print(f"  误检率(FPR): {fp/(fp+tn+1e-8):.4f}")
     print(f"{'='*60}")
+
+    # 也算一下FNR优先阈值的准确率
+    preds_fnr = (scores > best_threshold_fnr).astype(int)
+    acc_fnr = accuracy_score(labels, preds_fnr)
+    tp_fnr = ((preds_fnr == 1) & (labels == 1)).sum()
+    fp_fnr = ((preds_fnr == 1) & (labels == 0)).sum()
+    fn_fnr = ((preds_fnr == 0) & (labels == 1)).sum()
+    tn_fnr = ((preds_fnr == 0) & (labels == 0)).sum()
+    print(f"\n--- FNR优先阈值结果 ---")
+    print(f"Accuracy: {acc_fnr:.4f}")
+    print(f"  TP={tp_fnr} FP={fp_fnr}")
+    print(f"  FN={fn_fnr} TN={tn_fnr}")
+    print(f"  漏检率(FNR): {fn_fnr/(tp_fnr+fn_fnr+1e-8):.4f}")
+    print(f"  误检率(FPR): {fp_fnr/(fp_fnr+tn_fnr+1e-8):.4f}")
 
     # 保存结果
     results = {
@@ -368,7 +386,6 @@ def evaluate_all_mvtec(args):
         args.mvtec_category = category
         args.checkpoint = str(Path(args.save_dir) / f"best_model_mvtec_{category}.pth")
         
-        # 检查模型是否存在
         if not Path(args.checkpoint).exists():
             print(f"[WARNING] 模型不存在，跳过: {args.checkpoint}")
             continue
@@ -380,7 +397,6 @@ def evaluate_all_mvtec(args):
             print(f"[ERROR] 评估失败: {e}")
             continue
     
-    # 汇总结果
     if results:
         avg_auroc = np.mean([r['auroc'] for r in results.values()])
         avg_f1 = np.mean([r['f1'] for r in results.values()])
@@ -394,7 +410,6 @@ def evaluate_all_mvtec(args):
         for cat, res in results.items():
             print(f"  {cat:15s}: AUROC={res['auroc']:.4f}, F1={res['f1']:.4f}")
         
-        # 保存汇总结果
         summary_file = Path(args.save_dir) / "mvtec_summary.json"
         with open(summary_file, 'w') as f:
             json.dump({'average': {'auroc': avg_auroc, 'f1': avg_f1}, 'per_category': results}, f, indent=2)
@@ -449,17 +464,21 @@ def parse_args():
     parser.add_argument('--cutpaste_prob', type=float, default=0.3,
                        help='CutPaste概率')
 
-    # 训练
-    parser.add_argument('--epochs', type=int, default=100,
+    # 训练 - 改进默认值
+    parser.add_argument('--epochs', type=int, default=200,
                        help='训练轮数')
     parser.add_argument('--batch_size', type=int, default=32,
                        help='批大小')
-    parser.add_argument('--lr', type=float, default=0.03,
-                       help='学习率')
+    parser.add_argument('--lr', type=float, default=1e-3,
+                       help='学习率（AdamW推荐1e-3）')
     parser.add_argument('--num_workers', type=int, default=4,
                        help='数据加载线程数')
     parser.add_argument('--seed', type=int, default=42,
                        help='随机种子')
+
+    # 预训练
+    parser.add_argument('--pretrained', type=str, default=None,
+                       help='预训练权重路径（可选）')
 
     # 保存/加载
     parser.add_argument('--save_dir', type=str, default='./checkpoints_v3',
@@ -470,10 +489,13 @@ def parse_args():
     # 评估
     parser.add_argument('--pca_components', type=int, default=None,
                        help='PCA维度')
+    parser.add_argument('--score_mode', type=str, default='combined',
+                       choices=['combined', 'mahal', 'memory', 'max'],
+                       help='异常评分融合模式')
     parser.add_argument('--eval_all', action='store_true',
                        help='评估MVTec所有类别')
-    parser.add_argument('--val_ratio', type=float, default=0.0,
-                       help='验证集比例 (0.0-1.0)，如0.2表示从正常和缺陷样本各取20%作为验证集')
+    parser.add_argument('--val_ratio', type=float, default=0.2,
+                       help='验证集比例 (0.0-1.0)，默认0.2')
 
     # 模式
     parser.add_argument('--mode', type=str, default='train',
@@ -505,6 +527,11 @@ def main():
         data_path = Path(args.data_dir) / "数据集" / "数据集"
         print(f"[INFO] 晶圆数据路径: {data_path} (绝对路径: {data_path.absolute()})")
         print(f"[INFO] 路径是否存在: {data_path.exists()}")
+        if data_path.exists():
+            # 快速统计样本数
+            from wafer_defect_detection.data.wafer_dataset import _collect_wafer_samples
+            normal, defect = _collect_wafer_samples(data_path)
+            print(f"[INFO] 正常样本: {len(normal)}, 缺陷样本: {len(defect)}")
     else:
         mvtec_path = Path(args.mvtec_dir)
         print(f"[INFO] MVTec路径: {mvtec_path} (绝对路径: {mvtec_path.absolute()})")
@@ -519,7 +546,6 @@ def main():
             args.checkpoint = str(Path(args.save_dir) / f"best_model_{args.dataset}.pth")
         evaluate(args)
     elif args.mode == 'train_eval_all':
-        # 训练并评估MVTec所有类别
         if args.dataset != 'mvtec':
             print("[ERROR] train_eval_all模式只支持mvtec数据集")
             return
@@ -533,14 +559,11 @@ def main():
             args.mvtec_category = category
             args.save_dir = f'./checkpoints_v3/mvtec_{category}'
             
-            # 训练
             train(args)
             
-            # 评估
             args.checkpoint = str(Path(args.save_dir) / f"best_model_mvtec.pth")
             evaluate(args)
         
-        # 汇总所有结果
         args.eval_all = True
         evaluate_all_mvtec(args)
 

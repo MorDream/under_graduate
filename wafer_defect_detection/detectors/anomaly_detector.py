@@ -1,11 +1,11 @@
-"""异常检测器 - 改进版
+"""异常检测器 - 优化版
 
-核心改进：
-1. PCA保留更多维度（不低于min_components），避免丢失缺陷信号
-2. 分数归一化后融合，避免量纲问题
-3. 支持FNR优先的阈值策略（宁可误杀不漏杀）
-4. 增大记忆库
-5. 多种评分策略可选
+关键改进：
+1. 分数不再截断（去掉max(0, ...)），保留原始分布
+2. 使用百分位数归一化代替均值标准差归一化
+3. 改进阈值策略：使用正常样本的百分位数而非缺陷样本最小值
+4. 增大记忆库比例
+5. 支持多种评分策略
 """
 import numpy as np
 import torch
@@ -14,20 +14,18 @@ from tqdm import tqdm
 
 class AnomalyDetector:
     """
-    改进版异常检测器
+    优化版异常检测器
     融合PCA、超球面距离和记忆库方法
     """
     def __init__(self, device='cpu', n_components=None, use_hypersphere=True, 
-                 use_memory_bank=True, memory_ratio=0.05,
+                 use_memory_bank=True, memory_ratio=0.1,
                  min_pca_components=32, pca_variance=0.995,
                  score_mode='combined'):
         """
         Args:
-            min_pca_components: PCA最少保留维度（之前9维太少）
-            pca_variance: PCA保留方差比例（从0.95提到0.995）
-            memory_ratio: 记忆库比例（从0.01提到0.05）
+            memory_ratio: 记忆库比例（从0.05提到0.1）
             score_mode: 评分模式
-                - 'combined': 归一化融合（默认，推荐）
+                - 'combined': 归一化融合（默认）
                 - 'mahal': 仅马氏距离
                 - 'memory': 仅记忆库距离
                 - 'max': 取各分数最大值
@@ -45,12 +43,12 @@ class AnomalyDetector:
         self.cov_inv = None
         self.pca_mean = None
         self.pca_components = None
-        self.pca_variances = None  # 各主成分方差（用于归一化马氏距离）
+        self.pca_variances = None
         self.hypersphere_center = None
         self.hypersphere_radius = None
         self.memory_bank = None
-        # 归一化统计量
-        self.score_stats = {}  # 各分数分量的mean/std，用于归一化融合
+        # 使用百分位数统计量
+        self.score_percentiles = {}
 
     def fit(self, encoder, dataloader, use_multiscale=True):
         """用正常样本拟合分布"""
@@ -73,7 +71,7 @@ class AnomalyDetector:
         features = np.concatenate(features, axis=0)
         print(f"[INFO] 正常样本特征: {features.shape}")
 
-        # PCA降维 - 保留更多维度
+        # PCA降维
         n_samples, n_features = features.shape
         
         if self.n_components is None:
@@ -86,20 +84,18 @@ class AnomalyDetector:
         var_explained = (S ** 2) / np.sum(S ** 2)
         cumulative_var = np.cumsum(var_explained)
         
-        # 按方差比例确定维度，但不少于min_pca_components
         n_var = np.searchsorted(cumulative_var, self.pca_variance) + 1
         n_components = max(n_var, self.min_pca_components)
         n_components = min(n_components, self.n_components, n_features)
         
         self.pca_components = Vt[:n_components, :]
-        self.pca_variances = S[:n_components] ** 2 / n_samples  # 各主成分方差
+        self.pca_variances = S[:n_components] ** 2 / n_samples
         features_pca = features_centered @ self.pca_components.T
         
         print(f"[INFO] PCA: {n_features}D -> {n_components}D "
-              f"(保留{cumulative_var[n_components-1]*100:.1f}%方差, "
-              f"方差阈值={self.pca_variance*100:.1f}%, 最低维度={self.min_pca_components})")
+              f"(保留{cumulative_var[n_components-1]*100:.1f}%方差)")
 
-        # 计算马氏距离参数
+        # 马氏距离参数
         self.mean = np.mean(features_pca, axis=0)
         cov, shrinkage = self._ledoit_wolf_shrinkage(features_pca)
         print(f"[INFO] Ledoit-Wolf收缩系数: {shrinkage:.4f}")
@@ -119,15 +115,14 @@ class AnomalyDetector:
             self.hypersphere_radius = np.percentile(distances, 95)
             print(f"[INFO] 超球面半径: {self.hypersphere_radius:.4f}")
 
-        # 记忆库（增大采样比例）
+        # 记忆库
         if self.use_memory_bank:
             n_memory = max(1, int(n_samples * self.memory_ratio))
-            # 用k-means++风格的核心集选择：覆盖更均匀
             self.memory_bank = self._select_coreset(features, n_memory)
             print(f"[INFO] 记忆库大小: {n_memory} (比例: {self.memory_ratio})")
 
-        # 计算正常样本自身分数分布（用于归一化）
-        self._compute_score_stats(features)
+        # 计算正常样本分数的百分位数分布
+        self._compute_score_percentiles(features)
 
         print("[INFO] 异常检测器拟合完成")
 
@@ -137,27 +132,23 @@ class AnomalyDetector:
         if n_memory >= n_samples:
             return features.copy()
         
-        # 随机选第一个点
         rng = np.random.RandomState(42)
         indices = [rng.randint(n_samples)]
         
-        # 贪心选最远点
         for _ in range(n_memory - 1):
             min_dists = np.full(n_samples, np.inf)
             for idx in indices:
                 dists = np.linalg.norm(features - features[idx], axis=1)
                 min_dists = np.minimum(min_dists, dists)
-            # 概率正比于距离，加入随机性
             probs = min_dists / (min_dists.sum() + 1e-8)
             new_idx = rng.choice(n_samples, p=probs)
             indices.append(new_idx)
         
         return features[indices]
 
-    def _compute_score_stats(self, features):
-        """计算正常样本各分数分量的统计量（用于归一化融合）"""
+    def _compute_score_percentiles(self, features):
+        """计算正常样本各分数分量的百分位数分布"""
         n = features.shape[0]
-        # 采样计算，避免太慢
         sample_size = min(500, n)
         rng = np.random.RandomState(42)
         sample_idx = rng.choice(n, sample_size, replace=False)
@@ -170,35 +161,37 @@ class AnomalyDetector:
         for i in range(sample_size):
             feat_pca = (sample_feats[i] - self.pca_mean) @ self.pca_components.T
             
-            # 马氏距离
             diff = feat_pca - self.mean
             mahal_dist = np.sqrt(diff @ self.cov_inv @ diff)
             mahal_scores.append(mahal_dist)
             
-            # 超球面
             if self.use_hypersphere:
                 raw_dist = np.linalg.norm(sample_feats[i] - self.hypersphere_center)
                 sphere_dist = max(0, raw_dist - self.hypersphere_radius)
                 sphere_scores.append(sphere_dist)
             
-            # 记忆库
             if self.use_memory_bank and self.memory_bank is not None:
                 dists = np.linalg.norm(self.memory_bank - sample_feats[i], axis=1)
                 memory_scores.append(np.min(dists))
         
-        self.score_stats['mahal'] = {
-            'mean': np.mean(mahal_scores),
-            'std': np.std(mahal_scores) + 1e-8
+        # 存储百分位数（用于归一化）
+        self.score_percentiles['mahal'] = {
+            'p50': np.percentile(mahal_scores, 50),
+            'p90': np.percentile(mahal_scores, 90),
+            'p95': np.percentile(mahal_scores, 95),
+            'p99': np.percentile(mahal_scores, 99),
         }
         if sphere_scores:
-            self.score_stats['sphere'] = {
-                'mean': np.mean(sphere_scores),
-                'std': np.std(sphere_scores) + 1e-8
+            self.score_percentiles['sphere'] = {
+                'p50': np.percentile(sphere_scores, 50),
+                'p90': np.percentile(sphere_scores, 90),
+                'p95': np.percentile(sphere_scores, 95),
             }
         if memory_scores:
-            self.score_stats['memory'] = {
-                'mean': np.mean(memory_scores),
-                'std': np.std(memory_scores) + 1e-8
+            self.score_percentiles['memory'] = {
+                'p50': np.percentile(memory_scores, 50),
+                'p90': np.percentile(memory_scores, 90),
+                'p95': np.percentile(memory_scores, 95),
             }
 
     def _ledoit_wolf_shrinkage(self, X):
@@ -225,17 +218,14 @@ class AnomalyDetector:
 
     def _compute_single_score(self, feat_raw, feat_pca):
         """计算单个样本的各分数分量"""
-        # 1. 马氏距离
         diff = feat_pca - self.mean
         mahal_dist = np.sqrt(diff @ self.cov_inv @ diff)
         
-        # 2. 超球面距离
         sphere_dist = 0
         if self.use_hypersphere:
             raw_dist = np.linalg.norm(feat_raw - self.hypersphere_center)
             sphere_dist = max(0, raw_dist - self.hypersphere_radius)
         
-        # 3. 记忆库距离
         memory_dist = 0
         if self.use_memory_bank and self.memory_bank is not None:
             dists = np.linalg.norm(self.memory_bank - feat_raw, axis=1)
@@ -244,7 +234,7 @@ class AnomalyDetector:
         return mahal_dist, sphere_dist, memory_dist
 
     def _combine_scores(self, mahal, sphere, memory):
-        """融合分数（归一化后加权）"""
+        """融合分数 - 使用百分位数归一化"""
         if self.score_mode == 'mahal':
             return mahal
         elif self.score_mode == 'memory':
@@ -257,26 +247,29 @@ class AnomalyDetector:
                 scores.append(memory)
             return max(scores)
         
-        # combined: 归一化后加权融合
+        # combined: 百分位数归一化后加权融合
         normalized = []
         weights = []
         
-        # 马氏距离（权重最高，最可靠）
-        if 'mahal' in self.score_stats:
-            norm_mahal = (mahal - self.score_stats['mahal']['mean']) / self.score_stats['mahal']['std']
-            normalized.append(max(0, norm_mahal))  # 低于均值的不算异常
+        # 马氏距离：用p90归一化（超过p90认为异常）
+        if 'mahal' in self.score_percentiles:
+            p90 = self.score_percentiles['mahal']['p90']
+            norm_mahal = mahal / (p90 + 1e-8)  # 不截断，保留原始分布
+            normalized.append(norm_mahal)
             weights.append(1.0)
         
         # 超球面
-        if sphere > 0 and 'sphere' in self.score_stats:
-            norm_sphere = (sphere - self.score_stats['sphere']['mean']) / self.score_stats['sphere']['std']
-            normalized.append(max(0, norm_sphere))
+        if sphere > 0 and 'sphere' in self.score_percentiles:
+            p90 = self.score_percentiles['sphere']['p90']
+            norm_sphere = sphere / (p90 + 1e-8)
+            normalized.append(norm_sphere)
             weights.append(0.3)
         
         # 记忆库
-        if memory > 0 and 'memory' in self.score_stats:
-            norm_memory = (memory - self.score_stats['memory']['mean']) / self.score_stats['memory']['std']
-            normalized.append(max(0, norm_memory))
+        if memory > 0 and 'memory' in self.score_percentiles:
+            p90 = self.score_percentiles['memory']['p90']
+            norm_memory = memory / (p90 + 1e-8)
+            normalized.append(norm_memory)
             weights.append(0.5)
         
         if not normalized:
@@ -303,7 +296,6 @@ class AnomalyDetector:
                 else:
                     feat = encoder.forward_features(imgs).cpu().numpy()
 
-                # PCA降维
                 feat_pca = (feat - self.pca_mean) @ self.pca_components.T
 
                 for i in range(feat_pca.shape[0]):
@@ -318,14 +310,9 @@ class AnomalyDetector:
 
     def find_threshold_fnr_priority(self, scores, labels, target_fnr=0.0):
         """
-        找到满足目标漏检率(FNR)的最低阈值
-        宁可FP高也要把FN压低
+        找到满足目标漏检率(FNR)的阈值
         
-        Args:
-            target_fnr: 目标漏检率（默认0.0，即不漏检任何一个缺陷）
-        
-        Returns:
-            threshold: 满足FNR约束的阈值
+        改进：使用正常样本的百分位数作为基准，而非缺陷样本最小值
         """
         defect_scores = scores[labels == 1]
         normal_scores = scores[labels == 0]
@@ -334,12 +321,25 @@ class AnomalyDetector:
             print("[WARNING] 没有缺陷样本，无法确定阈值")
             return np.median(scores)
         
-        # 阈值设为：所有缺陷样本分数的最小值（确保0漏检）
-        # 再适当下调一点留安全余量
+        if len(normal_scores) == 0:
+            print("[WARNING] 没有正常样本，使用缺陷分数中位数")
+            return np.median(defect_scores)
+        
+        # 策略：找到使FNR=target_fnr的最小阈值
+        # 同时尽量控制FPR
+        
         if target_fnr == 0.0:
-            # 0漏检：阈值 = min(缺陷分数) * 衰减系数
-            min_defect_score = np.min(defect_scores)
-            threshold = min_defect_score * 0.95  # 留5%余量
+            # 0漏检：阈值 = min(缺陷分数) - 安全余量
+            min_defect = np.min(defect_scores)
+            # 安全余量：正常样本p95和缺陷最小值之间的某个点
+            normal_p95 = np.percentile(normal_scores, 95)
+            
+            if min_defect > normal_p95:
+                # 正常和缺陷分离良好，取中间点
+                threshold = (normal_p95 + min_defect) / 2
+            else:
+                # 有重叠，阈值设在缺陷最小值附近
+                threshold = min_defect * 0.95
         else:
             # 允许一定漏检率
             sorted_defect = np.sort(defect_scores)
@@ -349,7 +349,7 @@ class AnomalyDetector:
             else:
                 threshold = np.min(normal_scores)
         
-        # 计算该阈值下的各项指标
+        # 计算该阈值下的指标
         preds = (scores > threshold).astype(int)
         tp = ((preds == 1) & (labels == 1)).sum()
         fp = ((preds == 1) & (labels == 0)).sum()

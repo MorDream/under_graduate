@@ -4,7 +4,7 @@ import torch.nn as nn
 
 
 class PatchEmbedding(nn.Module):
-    """图像分块嵌入 - 保持不变"""
+    """图像分块嵌入"""
     def __init__(self, img_size=224, patch_size=16, in_channels=3, embed_dim=384):
         super().__init__()
         self.img_size = img_size
@@ -20,7 +20,7 @@ class PatchEmbedding(nn.Module):
 
 
 class MultiHeadSelfAttention(nn.Module):
-    """多头自注意力 - 保持不变"""
+    """多头自注意力"""
     def __init__(self, embed_dim=384, num_heads=6, dropout=0.1):
         super().__init__()
         self.num_heads = num_heads
@@ -49,7 +49,7 @@ class MultiHeadSelfAttention(nn.Module):
 
 
 class TransformerBlock(nn.Module):
-    """Transformer块 - 保持不变"""
+    """Transformer块"""
     def __init__(self, embed_dim=384, num_heads=6, mlp_ratio=4.0, dropout=0.1):
         super().__init__()
         self.norm1 = nn.LayerNorm(embed_dim)
@@ -71,8 +71,8 @@ class TransformerBlock(nn.Module):
 
 class ViTEncoder(nn.Module):
     """
-    Vision Transformer编码器 - 保持原有架构
-    支持多尺度特征提取
+    Vision Transformer编码器
+    支持多尺度特征提取 + 预训练权重加载
     """
     def __init__(self, img_size=224, patch_size=16, in_channels=3,
                  embed_dim=384, depth=6, num_heads=6, mlp_ratio=4.0, dropout=0.1):
@@ -99,6 +99,30 @@ class ViTEncoder(nn.Module):
     def _init_weights(self):
         nn.init.trunc_normal_(self.pos_embed, std=0.02)
         nn.init.trunc_normal_(self.cls_token, std=0.02)
+
+    def load_pretrained(self, pretrained_path):
+        """加载预训练权重，自动匹配兼容的层"""
+        checkpoint = torch.load(pretrained_path, map_location='cpu', weights_only=False)
+        if 'state_dict' in checkpoint:
+            state_dict = checkpoint['state_dict']
+        elif 'model' in checkpoint:
+            state_dict = checkpoint['model']
+        else:
+            state_dict = checkpoint
+
+        model_dict = self.state_dict()
+        loaded, skipped = 0, 0
+        for k, v in state_dict.items():
+            # 去掉可能的模块前缀
+            k_clean = k.replace('module.', '').replace('encoder_q.', '').replace('encoder_k.', '')
+            if k_clean in model_dict and model_dict[k_clean].shape == v.shape:
+                model_dict[k_clean] = v
+                loaded += 1
+            else:
+                skipped += 1
+        self.load_state_dict(model_dict)
+        print(f"[INFO] 预训练权重加载: {loaded}层匹配, {skipped}层跳过")
+        return loaded
 
     def forward(self, x, return_all_layers=False):
         B = x.shape[0]
@@ -128,20 +152,26 @@ class ViTEncoder(nn.Module):
         return x[:, 0]
 
     def forward_multiscale(self, x):
-        """多尺度特征融合"""
+        """多尺度特征融合 - 加权融合，深层权重更高"""
         x, intermediate_features = self.forward(x, return_all_layers=True)
         
         cls_feat = x[:, 0]
-        multi_scale_feats = []
         
-        for feat in intermediate_features:
-            patch_feat = feat[:, 1:, :]
-            pooled_feat = patch_feat.mean(dim=1)
-            multi_scale_feats.append(pooled_feat)
-        
-        if len(multi_scale_feats) > 0:
-            fused_feat = torch.stack([cls_feat] + multi_scale_feats, dim=1)
-            fused_feat = fused_feat.mean(dim=1)
+        if len(intermediate_features) > 0:
+            # 深层权重更高：浅层0.1, 中层0.3, 深层0.6
+            n_layers = len(intermediate_features)
+            weights = [0.1 + 0.9 * (i / max(1, n_layers - 1)) for i in range(n_layers)]
+            total_w = sum(weights)
+            weights = [w / total_w for w in weights]
+            
+            pooled_feats = []
+            for feat in intermediate_features:
+                patch_feat = feat[:, 1:, :]
+                pooled_feats.append(patch_feat.mean(dim=1))
+            
+            fused_feat = cls_feat * 0.5  # CLS token 占一半权重
+            for w, pf in zip(weights, pooled_feats):
+                fused_feat = fused_feat + w * pf * 0.5
         else:
             fused_feat = cls_feat
             
