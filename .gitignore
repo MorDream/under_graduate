@@ -2,6 +2,7 @@
 data/
 mvtec_anomaly_detection/
 *.zip
+*.7z
 
 # ============ 模型文件 ============
 *.pth
