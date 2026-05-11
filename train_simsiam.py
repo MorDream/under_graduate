@@ -35,7 +35,10 @@ from tqdm import tqdm
 sys.path.insert(0, str(Path(__file__).parent))
 
 from wafer_defect_detection.utils import get_device, set_seed, SemiconductorTransform, EvalTransform
-from wafer_defect_detection.data import WaferTrainDataset, WaferEvalDataset
+from wafer_defect_detection.data import (
+    WaferTrainDataset, WaferEvalDataset,
+    MVTecTrainDataset, MVTecEvalDataset, get_mvtec_categories,
+)
 from wafer_defect_detection.models import ViTEncoder, DenseSimSiam
 from wafer_defect_detection.detectors import AnomalyDetector
 
@@ -44,7 +47,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description='DenseSimSiam 对比学习 - 晶圆缺陷检测')
 
     # --- 数据 ---
-    parser.add_argument('--data_dir', default='./data', help='数据集根目录')
+    parser.add_argument('--dataset', default='wafer', choices=['wafer', 'mvtec'],
+                        help='数据集: wafer | mvtec')
+    parser.add_argument('--data_dir', default='./data', help='晶圆数据集根目录')
+    parser.add_argument('--mvtec_dir', default='./mvtec_anomaly_detection',
+                        help='MVTec AD数据集路径')
+    parser.add_argument('--mvtec_category', default='bottle',
+                        help='MVTec类别 (--dataset mvtec时使用)')
     parser.add_argument('--img_size', type=int, default=224)
     parser.add_argument('--val_ratio', type=float, default=0.2,
                         help='验证集比例(正常和缺陷各取20%%)')
@@ -96,46 +105,51 @@ def parse_args():
 
     # --- 模式 ---
     parser.add_argument('--mode', default='train',
-                        choices=['train', 'eval', 'all'],
-                        help='运行模式: train | eval | all(训练+评估)')
+                        choices=['train', 'eval', 'all', 'train_eval_all'],
+                        help='运行模式: train | eval | all | train_eval_all(全类别)')
 
     return parser.parse_args()
 
 
 def get_dataloaders(args, device):
     """准备训练集和验证集的数据加载器"""
-    data_root = Path(args.data_dir) / "数据集" / "数据集"
-
-    # 训练用的两视图增强
     train_transform = SemiconductorTransform(
         img_size=args.img_size,
         use_cutpaste=args.use_cutpaste,
         cutpaste_prob=args.cutpaste_prob,
     )
-
-    # 评估用的单视图增强
     eval_transform = EvalTransform(img_size=args.img_size)
 
-    if args.val_ratio > 0:
-        # 训练集: 只用正常样本
-        train_dataset = WaferTrainDataset(
-            data_root, transform=train_transform,
-            val_ratio=args.val_ratio, split='train'
-        )
-        # 验证集: 正常+缺陷 (用于评估)
-        val_dataset = WaferEvalDataset(
-            data_root, transform=eval_transform,
-            val_ratio=args.val_ratio, split='val'
-        )
-        # fit集: 训练集内的正常样本 (detector.fit用)
-        fit_dataset = WaferEvalDataset(
-            data_root, transform=eval_transform,
-            val_ratio=args.val_ratio, split='train'
-        )
+    if args.dataset == 'wafer':
+        data_root = Path(args.data_dir) / "数据集" / "数据集"
+        if args.val_ratio > 0:
+            train_dataset = WaferTrainDataset(
+                data_root, transform=train_transform,
+                val_ratio=args.val_ratio, split='train'
+            )
+            val_dataset = WaferEvalDataset(
+                data_root, transform=eval_transform,
+                val_ratio=args.val_ratio, split='val'
+            )
+            fit_dataset = WaferEvalDataset(
+                data_root, transform=eval_transform,
+                val_ratio=args.val_ratio, split='train'
+            )
+        else:
+            train_dataset = WaferTrainDataset(data_root, transform=train_transform)
+            val_dataset = WaferEvalDataset(data_root, transform=eval_transform)
+            fit_dataset = WaferEvalDataset(data_root, transform=eval_transform)
+
+    elif args.dataset == 'mvtec':
+        data_root = Path(args.mvtec_dir)
+        train_dataset = MVTecTrainDataset(data_root, args.mvtec_category,
+                                          transform=train_transform)
+        val_dataset = MVTecEvalDataset(data_root, args.mvtec_category,
+                                       transform=eval_transform, phase='test')
+        fit_dataset = MVTecEvalDataset(data_root, args.mvtec_category,
+                                       transform=eval_transform, phase='train')
     else:
-        train_dataset = WaferTrainDataset(data_root, transform=train_transform)
-        val_dataset = WaferEvalDataset(data_root, transform=eval_transform)
-        fit_dataset = WaferEvalDataset(data_root, transform=eval_transform)
+        raise ValueError(f"未知数据集: {args.dataset}")
 
     train_loader = DataLoader(
         train_dataset, batch_size=args.batch_size, shuffle=True,
@@ -200,12 +214,19 @@ def train(args):
 
     print(f"\n{'='*60}")
     print(f"DenseSimSiam 训练开始")
-    print(f"设备: {device} | Epochs: {args.epochs} | Batch: {args.batch_size}")
+    ds_info = f"设备: {device} | 数据集: {args.dataset}"
+    if args.dataset == 'mvtec':
+        ds_info += f" ({args.mvtec_category})"
+    print(ds_info)
+    print(f"Epochs: {args.epochs} | Batch: {args.batch_size}")
     print(f"模块: Multiscale={args.use_multiscale} Dense={args.use_dense}")
     print(f"辅助: Hypersphere={args.use_hypersphere} FeatGen={args.use_feature_generator}")
     print(f"{'='*60}\n")
 
     best_loss = float('inf')
+    suffix = f"_{args.dataset}"
+    if args.dataset == 'mvtec':
+        suffix += f"_{args.mvtec_category}"
 
     for epoch in range(args.epochs):
         model.train()
@@ -260,7 +281,7 @@ def train(args):
         # 保存最佳模型
         if epoch_loss < best_loss:
             best_loss = epoch_loss
-            checkpoint_path = save_dir / f"best_model_wafer.pth"
+            checkpoint_path = save_dir / f"best_model{suffix}.pth"
             torch.save({
                 'epoch': epoch + 1,
                 'model_state_dict': model.state_dict(),
@@ -271,7 +292,7 @@ def train(args):
             print(f"  → 最佳模型已保存: {checkpoint_path}")
 
     # 保存最终模型
-    final_path = save_dir / f"final_model_wafer.pth"
+    final_path = save_dir / f"final_model{suffix}.pth"
     torch.save({
         'epoch': args.epochs,
         'model_state_dict': model.state_dict(),
@@ -292,9 +313,13 @@ def evaluate(args):
     _, fit_loader, val_loader = get_dataloaders(args, device)
 
     # --- 加载模型 ---
-    checkpoint_path = args.checkpoint or str(
-        Path(args.save_dir) / "best_model_wafer.pth"
-    )
+    if args.checkpoint:
+        checkpoint_path = args.checkpoint
+    else:
+        suffix = f"_{args.dataset}"
+        if args.dataset == 'mvtec':
+            suffix += f"_{args.mvtec_category}"
+        checkpoint_path = str(Path(args.save_dir) / f"best_model{suffix}.pth")
     if not Path(checkpoint_path).exists():
         raise FileNotFoundError(f"模型文件不存在: {checkpoint_path}")
 
@@ -368,7 +393,8 @@ def evaluate(args):
 
     # 打印结果
     print(f"\n{'='*60}")
-    print(f"DenseSimSiam 评估结果 - Wafer数据集")
+    ds_label = f"Wafer" if args.dataset == 'wafer' else f"MVTec-AD ({args.mvtec_category})"
+    print(f"DenseSimSiam 评估结果 - {ds_label}")
     print(f"{'='*60}")
     print(f"AUROC: {auroc:.4f}")
     print(f"F1 Score: {best_f1:.4f} @ threshold={best_thresh:.4f}")
@@ -392,7 +418,8 @@ def evaluate(args):
     # 保存结果
     results = {
         'method': 'DenseSimSiam',
-        'dataset': 'wafer',
+        'dataset': args.dataset,
+        'category': args.mvtec_category if args.dataset == 'mvtec' else None,
         'auroc': float(auroc),
         'f1': float(best_f1),
         'accuracy': float(accuracy),
@@ -402,12 +429,72 @@ def evaluate(args):
         'fpr': float(fpr),
         'tp': int(tp), 'fp': int(fp), 'fn': int(fn), 'tn': int(tn),
     }
-    result_file = Path(args.save_dir) / "results_wafer.json"
+    result_name = f"results_{args.dataset}"
+    if args.dataset == 'mvtec':
+        result_name += f"_{args.mvtec_category}"
+    result_file = Path(args.save_dir) / f"{result_name}.json"
     with open(result_file, 'w', encoding='utf-8') as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
     print(f"[INFO] 结果已保存: {result_file}")
 
     return auroc, best_f1
+
+
+def evaluate_all_mvtec(args):
+    """训练并评估MVTec AD所有15个类别"""
+    import copy
+    categories = get_mvtec_categories()
+    results = {}
+
+    print(f"\n{'='*60}")
+    print(f"DenseSimSiam 全类别评估 - MVTec AD ({len(categories)}个类别)")
+    print(f"{'='*60}\n")
+
+    for i, category in enumerate(categories):
+        print(f"\n{'─'*50}")
+        print(f"[{i+1}/{len(categories)}] 处理: {category}")
+        print(f"{'─'*50}")
+
+        cat_args = copy.deepcopy(args)
+        cat_args.dataset = 'mvtec'
+        cat_args.mvtec_category = category
+
+        # 训练
+        model = train(cat_args)
+
+        # 评估
+        try:
+            auroc, f1 = evaluate(cat_args)
+            results[category] = {'auroc': float(auroc), 'f1': float(f1)}
+            print(f"  → {category}: AUROC={auroc:.4f}, F1={f1:.4f}")
+        except Exception as e:
+            print(f"  [ERROR] {category} 评估失败: {e}")
+            results[category] = {'auroc': 0, 'f1': 0, 'error': str(e)}
+
+    # 汇总
+    valid = {k: v for k, v in results.items() if v.get('auroc', 0) > 0}
+    if valid:
+        avg_auroc = np.mean([v['auroc'] for v in valid.values()])
+        avg_f1 = np.mean([v['f1'] for v in valid.values()])
+
+        print(f"\n{'='*60}")
+        print(f"MVTec AD 汇总结果 (DenseSimSiam)")
+        print(f"{'='*60}")
+        print(f"平均AUROC: {avg_auroc:.4f}  |  平均F1: {avg_f1:.4f}")
+        print(f"\n各类别:")
+        for cat, res in results.items():
+            status = f"AUROC={res.get('auroc', 0):.4f}" if res.get('auroc', 0) > 0 else "FAILED"
+            print(f"  {cat:15s}: {status}")
+        print(f"{'='*60}")
+
+        summary_file = Path(args.save_dir) / "mvtec_summary_simsiam.json"
+        with open(summary_file, 'w', encoding='utf-8') as f:
+            json.dump({
+                'method': 'DenseSimSiam',
+                'average': {'auroc': float(avg_auroc), 'f1': float(avg_f1)},
+                'per_category': results
+            }, f, indent=2, ensure_ascii=False)
+        print(f"[INFO] 汇总保存: {summary_file}")
 
 
 def main():
@@ -435,6 +522,11 @@ def main():
     elif args.mode == 'all':
         train(args)
         evaluate(args)
+    elif args.mode == 'train_eval_all':
+        if args.dataset != 'mvtec':
+            print("[ERROR] train_eval_all 只支持 --dataset mvtec")
+            return
+        evaluate_all_mvtec(args)
 
 
 if __name__ == '__main__':
