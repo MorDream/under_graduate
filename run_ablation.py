@@ -195,6 +195,9 @@ def run_single_experiment(exp_config, args):
         avg_loss = total_loss / num_batches
         scheduler.step()
         
+        if (epoch + 1) % 10 == 0 or epoch == 0:
+            print(f"  Epoch [{epoch+1}/{args.epochs}] Loss: {avg_loss:.4f} (best: {best_loss:.4f})")
+        
         if avg_loss < best_loss:
             best_loss = avg_loss
             torch.save({
