@@ -249,3 +249,165 @@ class WaferEvalDataset(Dataset):
         if self.transform:
             img = self.transform(img)
         return img, label, img_path
+
+
+# ============================================================
+# 按品类+视图分离的数据集类（用于晶圆分类数据集）
+# ============================================================
+
+def _get_view(filename):
+    """根据文件名判断 UP/DOWN view"""
+    name_upper = filename.upper()
+    if '_UP' in name_upper:
+        return 'UP'
+    elif '_DOWN' in name_upper:
+        return 'DOWN'
+    return 'OTHER'
+
+
+def _collect_per_category_samples(data_root, category, view='ALL'):
+    """
+    收集晶圆分类数据集中指定品类的样本
+    data_root: data/晶圆分类数据集/
+    category: e.g. 'BGA S5E 16x7'
+    view: 'UP', 'DOWN', or 'ALL'
+
+    Returns:
+        train_good_paths: list of str
+        test_good_paths: list of str
+        test_defect_paths: list of str
+    """
+    cat_dir = Path(data_root) / category
+
+    # train/good
+    train_good_dir = cat_dir / 'train' / 'good'
+    train_good_paths = []
+    if train_good_dir.exists():
+        for ext in ['*.jpg', '*.JPG', '*.jpeg', '*.JPEG', '*.png', '*.PNG', '*.bmp', '*.BMP']:
+            for p in train_good_dir.glob(ext):
+                if view == 'ALL' or _get_view(p.name) == view:
+                    train_good_paths.append(str(p))
+        train_good_paths.sort()
+
+    # test/good
+    test_good_dir = cat_dir / 'test' / 'good'
+    test_good_paths = []
+    if test_good_dir.exists():
+        for ext in ['*.jpg', '*.JPG', '*.jpeg', '*.JPEG', '*.png', '*.PNG', '*.bmp', '*.BMP']:
+            for p in test_good_dir.glob(ext):
+                if view == 'ALL' or _get_view(p.name) == view:
+                    test_good_paths.append(str(p))
+        test_good_paths.sort()
+
+    # test/defect
+    test_defect_dir = cat_dir / 'test' / 'defect'
+    test_defect_paths = []
+    if test_defect_dir.exists():
+        for ext in ['*.jpg', '*.JPG', '*.jpeg', '*.JPEG', '*.png', '*.PNG', '*.bmp', '*.BMP']:
+            for p in test_defect_dir.glob(ext):
+                if view == 'ALL' or _get_view(p.name) == view:
+                    test_defect_paths.append(str(p))
+        test_defect_paths.sort()
+
+    return train_good_paths, test_good_paths, test_defect_paths
+
+
+class PerCategoryWaferTrainDataset(Dataset):
+    """
+    按品类+视图分离的晶圆训练数据集
+
+    目录结构: 晶圆分类数据集/{category}/train/good/
+    仅使用正常样本进行无监督对比学习
+
+    参数:
+        data_root: str — 晶圆分类数据集根目录
+        category: str — 品类名称
+        view: str — 'UP', 'DOWN', 或 'ALL'
+        transform: callable — 数据增强
+    """
+    def __init__(self, data_root, category, view='ALL', transform=None):
+        self.data_root = Path(data_root)
+        self.category = category
+        self.view = view
+        self.transform = transform
+        self.samples = []
+
+        train_good, _, _ = _collect_per_category_samples(data_root, category, view)
+
+        if len(train_good) == 0:
+            print(f"[WARNING] {category} {view} 没有训练样本！")
+        self.samples = train_good
+
+        print(f"[INFO] 品类[{category}] 视图[{view}] 训练集: {len(self.samples)} 张正常样本")
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, idx):
+        img_path = self.samples[idx]
+        img = Image.open(img_path).convert('RGB')
+        if self.transform:
+            return self.transform(img)  # SemiconductorTransform → (img_q, img_k)
+        return img
+
+
+class PerCategoryWaferEvalDataset(Dataset):
+    """
+    按品类+视图分离的晶圆评估数据集
+
+    目录结构: 晶圆分类数据集/{category}/test/
+
+    参数:
+        data_root: str — 晶圆分类数据集根目录
+        category: str — 品类名称
+        view: str — 'UP', 'DOWN', 或 'ALL'
+        transform: callable — 评估变换
+        include_defects: bool — 是否包含缺陷样本（评估通常需要）
+    """
+    def __init__(self, data_root, category, view='ALL', transform=None, include_defects=True):
+        self.data_root = Path(data_root)
+        self.category = category
+        self.view = view
+        self.transform = transform
+        self.samples = []
+        self.labels = []
+
+        train_good, test_good, test_defect = _collect_per_category_samples(data_root, category, view)
+
+        # 测试集正常样本
+        for p in test_good:
+            self.samples.append(p)
+            self.labels.append(0)
+
+        # 测试集缺陷样本
+        if include_defects:
+            for p in test_defect:
+                self.samples.append(p)
+                self.labels.append(1)
+
+        n_norm = sum(1 for l in self.labels if l == 0)
+        n_def = sum(1 for l in self.labels if l == 1)
+        print(f"[INFO] 品类[{category}] 视图[{view}] 评估集: {len(self.samples)} 张"
+              f" (正常: {n_norm}, 缺陷: {n_def})")
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, idx):
+        img_path = self.samples[idx]
+        img = Image.open(img_path).convert('RGB')
+        label = self.labels[idx]
+        if self.transform:
+            img = self.transform(img)
+        return img, label, img_path
+
+
+def get_wafer_categories(data_root):
+    """获取晶圆分类数据集中的所有品类名称"""
+    root = Path(data_root)
+    if not root.exists():
+        return []
+    return sorted([
+        d.name for d in root.iterdir()
+        if d.is_dir() and not d.name.startswith('.')
+    ])

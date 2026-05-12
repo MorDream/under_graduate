@@ -38,6 +38,8 @@ from wafer_defect_detection.utils import get_device, set_seed, SemiconductorTran
 from wafer_defect_detection.data import (
     WaferTrainDataset, WaferEvalDataset,
     MVTecTrainDataset, MVTecEvalDataset, get_mvtec_categories,
+    PerCategoryWaferTrainDataset, PerCategoryWaferEvalDataset,
+    get_wafer_categories,
 )
 from wafer_defect_detection.models import ViTEncoder, DenseSimSiam
 from wafer_defect_detection.detectors import AnomalyDetector
@@ -54,6 +56,10 @@ def parse_args():
                         help='MVTec AD数据集路径')
     parser.add_argument('--mvtec_category', default='bottle',
                         help='MVTec类别 (--dataset mvtec时使用)')
+    parser.add_argument('--wafer_category', default=None,
+                        help='晶圆品类名称（当dataset=wafer且分品类训练时），如"BGA S5E 16x7"')
+    parser.add_argument('--wafer_view', default='ALL', choices=['ALL', 'UP', 'DOWN'],
+                        help='晶圆视图：ALL/UP/DOWN（当dataset=wafer且分品类训练时）')
     parser.add_argument('--img_size', type=int, default=224)
     parser.add_argument('--val_ratio', type=float, default=0.2,
                         help='验证集比例(正常和缺陷各取20%%)')
@@ -105,8 +111,8 @@ def parse_args():
 
     # --- 模式 ---
     parser.add_argument('--mode', default='train',
-                        choices=['train', 'eval', 'all', 'train_eval_all'],
-                        help='运行模式: train | eval | all | train_eval_all(全类别)')
+                        choices=['train', 'eval', 'all', 'train_eval_all', 'train_all_wafer'],
+                        help='运行模式: train | eval | all | train_eval_all(MVTec) | train_all_wafer(全部晶圆)')
 
     return parser.parse_args()
 
@@ -121,24 +127,39 @@ def get_dataloaders(args, device):
     eval_transform = EvalTransform(img_size=args.img_size)
 
     if args.dataset == 'wafer':
-        data_root = Path(args.data_dir) / "数据集" / "数据集"
-        if args.val_ratio > 0:
-            train_dataset = WaferTrainDataset(
-                data_root, transform=train_transform,
-                val_ratio=args.val_ratio, split='train'
+        if args.wafer_category:
+            data_root = Path(args.data_dir) / "晶圆分类数据集"
+            train_dataset = PerCategoryWaferTrainDataset(
+                data_root, args.wafer_category, view=args.wafer_view,
+                transform=train_transform,
             )
-            val_dataset = WaferEvalDataset(
-                data_root, transform=eval_transform,
-                val_ratio=args.val_ratio, split='val'
+            val_dataset = PerCategoryWaferEvalDataset(
+                data_root, args.wafer_category, view=args.wafer_view,
+                transform=eval_transform,
             )
-            fit_dataset = WaferEvalDataset(
-                data_root, transform=eval_transform,
-                val_ratio=args.val_ratio, split='train'
+            fit_dataset = PerCategoryWaferEvalDataset(
+                data_root, args.wafer_category, view=args.wafer_view,
+                transform=eval_transform,
             )
         else:
-            train_dataset = WaferTrainDataset(data_root, transform=train_transform)
-            val_dataset = WaferEvalDataset(data_root, transform=eval_transform)
-            fit_dataset = WaferEvalDataset(data_root, transform=eval_transform)
+            data_root = Path(args.data_dir) / "数据集" / "数据集"
+            if args.val_ratio > 0:
+                train_dataset = WaferTrainDataset(
+                    data_root, transform=train_transform,
+                    val_ratio=args.val_ratio, split='train'
+                )
+                val_dataset = WaferEvalDataset(
+                    data_root, transform=eval_transform,
+                    val_ratio=args.val_ratio, split='val'
+                )
+                fit_dataset = WaferEvalDataset(
+                    data_root, transform=eval_transform,
+                    val_ratio=args.val_ratio, split='train'
+                )
+            else:
+                train_dataset = WaferTrainDataset(data_root, transform=train_transform)
+                val_dataset = WaferEvalDataset(data_root, transform=eval_transform)
+                fit_dataset = WaferEvalDataset(data_root, transform=eval_transform)
 
     elif args.dataset == 'mvtec':
         data_root = Path(args.mvtec_dir)
@@ -217,6 +238,8 @@ def train(args):
     ds_info = f"设备: {device} | 数据集: {args.dataset}"
     if args.dataset == 'mvtec':
         ds_info += f" ({args.mvtec_category})"
+    elif args.wafer_category:
+        ds_info += f" ({args.wafer_category}_{args.wafer_view})"
     print(ds_info)
     print(f"Epochs: {args.epochs} | Batch: {args.batch_size}")
     print(f"模块: Multiscale={args.use_multiscale} Dense={args.use_dense}")
@@ -227,6 +250,8 @@ def train(args):
     suffix = f"_{args.dataset}"
     if args.dataset == 'mvtec':
         suffix += f"_{args.mvtec_category}"
+    elif args.wafer_category:
+        suffix += f"_{args.wafer_category}_{args.wafer_view}"
 
     for epoch in range(args.epochs):
         model.train()
@@ -319,6 +344,8 @@ def evaluate(args):
         suffix = f"_{args.dataset}"
         if args.dataset == 'mvtec':
             suffix += f"_{args.mvtec_category}"
+        elif args.wafer_category:
+            suffix += f"_{args.wafer_category}_{args.wafer_view}"
         checkpoint_path = str(Path(args.save_dir) / f"best_model{suffix}.pth")
     if not Path(checkpoint_path).exists():
         raise FileNotFoundError(f"模型文件不存在: {checkpoint_path}")
@@ -432,6 +459,8 @@ def evaluate(args):
     result_name = f"results_{args.dataset}"
     if args.dataset == 'mvtec':
         result_name += f"_{args.mvtec_category}"
+    elif args.wafer_category:
+        result_name += f"_{args.wafer_category}_{args.wafer_view}"
     result_file = Path(args.save_dir) / f"{result_name}.json"
     with open(result_file, 'w', encoding='utf-8') as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
@@ -497,6 +526,57 @@ def evaluate_all_mvtec(args):
         print(f"[INFO] 汇总保存: {summary_file}")
 
 
+def train_all_wafer_modes(args):
+    """遍历所有晶圆品类的UP/DOWN视图，逐个训练 (DenseSimSiam)"""
+    import copy
+
+    data_root = Path(args.data_dir) / "晶圆分类数据集"
+    categories = get_wafer_categories(str(data_root))
+    views = ['UP', 'DOWN']
+
+    print(f"\n{'='*70}")
+    print(f"全品类晶圆训练 (DenseSimSiam): {len(categories)}个品类 × {len(views)}个视图")
+    print(f"{'='*70}\n")
+
+    results = {}
+    for i, cat in enumerate(categories):
+        for view in views:
+            cat_view = f"{cat}_{view}"
+            print(f"\n{'─'*60}")
+            print(f"[{i+1}/{len(categories)}] 训练: {cat_view}")
+            print(f"{'─'*60}")
+
+            cat_args = copy.deepcopy(args)
+            cat_args.dataset = 'wafer'
+            cat_args.wafer_category = cat
+            cat_args.wafer_view = view
+
+            try:
+                train(cat_args)
+                # 自动评估
+                try:
+                    cat_args.checkpoint = ''
+                    evaluate(cat_args)
+                except Exception as e:
+                    print(f"  ⚠️ {cat_view} 评估失败: {e}")
+                results[cat_view] = 'done'
+                print(f"  ✅ {cat_view} 完成")
+            except Exception as e:
+                print(f"  ❌ {cat_view} 训练失败: {e}")
+                results[cat_view] = f'failed: {e}'
+
+    success = sum(1 for v in results.values() if v == 'done')
+    failed = sum(1 for v in results.values() if 'failed' in str(v))
+    print(f"\n{'='*70}")
+    print(f"全品类训练完成! 成功: {success}, 失败: {failed}")
+    print(f"{'='*70}")
+
+    summary_file = Path(args.save_dir) / "wafer_all_results_simsiam.json"
+    with open(summary_file, 'w', encoding='utf-8') as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
+    print(f"[INFO] 汇总保存: {summary_file}")
+
+
 def main():
     args = parse_args()
 
@@ -527,6 +607,11 @@ def main():
             print("[ERROR] train_eval_all 只支持 --dataset mvtec")
             return
         evaluate_all_mvtec(args)
+    elif args.mode == 'train_all_wafer':
+        if args.dataset != 'wafer':
+            print("[ERROR] train_all_wafer 只支持 --dataset wafer")
+            return
+        train_all_wafer_modes(args)
 
 
 if __name__ == '__main__':

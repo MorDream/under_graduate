@@ -42,7 +42,9 @@ from wafer_defect_detection.utils import get_device, set_seed, SemiconductorTran
 from wafer_defect_detection.data import (
     WaferDataset, WaferTrainDataset, WaferEvalDataset,
     MVTecDataset, MVTecTrainDataset, MVTecEvalDataset,
-    get_mvtec_categories
+    get_mvtec_categories,
+    PerCategoryWaferTrainDataset, PerCategoryWaferEvalDataset,
+    get_wafer_categories,
 )
 from wafer_defect_detection.models import ViTEncoder, ImprovedMoCo
 from wafer_defect_detection.detectors import AnomalyDetector
@@ -58,27 +60,44 @@ def train(args):
 
     # 数据集
     if args.dataset == 'wafer':
-        data_root = Path(args.data_dir) / "数据集" / "数据集"
-        transform = SemiconductorTransform(img_size=args.img_size, 
-                                           use_cutpaste=args.use_cutpaste,
-                                           cutpaste_prob=args.cutpaste_prob)
-        
-        if args.val_ratio > 0:
-            train_dataset = WaferTrainDataset(
-                data_root, transform=transform,
-                val_ratio=args.val_ratio, split='train'
+        if args.wafer_category:
+            # 按品类+视图训练
+            data_root = Path(args.data_dir) / "晶圆分类数据集"
+            transform = SemiconductorTransform(img_size=args.img_size,
+                                               use_cutpaste=args.use_cutpaste,
+                                               cutpaste_prob=args.cutpaste_prob)
+            train_dataset = PerCategoryWaferTrainDataset(
+                data_root, args.wafer_category, view=args.wafer_view,
+                transform=transform,
             )
-            val_dataset = WaferEvalDataset(
-                data_root, transform=EvalTransform(img_size=args.img_size),
-                val_ratio=args.val_ratio, split='val'
+            val_dataset = PerCategoryWaferEvalDataset(
+                data_root, args.wafer_category, view=args.wafer_view,
+                transform=EvalTransform(img_size=args.img_size),
             )
-            print(f"[INFO] 使用验证集划分: val_ratio={args.val_ratio}")
-            print(f"  - 训练集: {len(train_dataset)} 张")
-            print(f"  - 验证集: {len(val_dataset)} 张")
+            print(f"[INFO] 品类[{args.wafer_category}] 视图[{args.wafer_view}]")
             dataset = train_dataset
         else:
-            dataset = WaferTrainDataset(data_root, transform=transform)
-            val_dataset = None
+            data_root = Path(args.data_dir) / "数据集" / "数据集"
+            transform = SemiconductorTransform(img_size=args.img_size, 
+                                               use_cutpaste=args.use_cutpaste,
+                                               cutpaste_prob=args.cutpaste_prob)
+            
+            if args.val_ratio > 0:
+                train_dataset = WaferTrainDataset(
+                    data_root, transform=transform,
+                    val_ratio=args.val_ratio, split='train'
+                )
+                val_dataset = WaferEvalDataset(
+                    data_root, transform=EvalTransform(img_size=args.img_size),
+                    val_ratio=args.val_ratio, split='val'
+                )
+                print(f"[INFO] 使用验证集划分: val_ratio={args.val_ratio}")
+                print(f"  - 训练集: {len(train_dataset)} 张")
+                print(f"  - 验证集: {len(val_dataset)} 张")
+                dataset = train_dataset
+            else:
+                dataset = WaferTrainDataset(data_root, transform=transform)
+                val_dataset = None
             
     elif args.dataset == 'mvtec':
         data_root = Path(args.mvtec_dir)
@@ -139,6 +158,12 @@ def train(args):
     best_loss = float('inf')
     save_dir = Path(args.save_dir)
     save_dir.mkdir(exist_ok=True, parents=True)
+    
+    # 模型保存后缀
+    if args.dataset == 'wafer' and args.wafer_category:
+        model_tag = f"{args.dataset}_{args.wafer_category}_{args.wafer_view}"
+    else:
+        model_tag = args.dataset
 
     for epoch in range(args.epochs):
         model.train()
@@ -197,7 +222,7 @@ def train(args):
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': best_loss,
                 'args': vars(args),
-            }, save_dir / f"best_model_{args.dataset}.pth")
+            }, save_dir / f"best_model_{model_tag}.pth")
             print(f"  -> 保存最佳模型")
 
     # 保存最终模型
@@ -207,7 +232,7 @@ def train(args):
         'projector_q_state_dict': model.projector_q.state_dict(),
         'loss': avg_loss,
         'args': vars(args),
-    }, save_dir / f"final_model_{args.dataset}.pth")
+    }, save_dir / f"final_model_{model_tag}.pth")
     
     print(f"\n训练完成! 最佳Loss: {best_loss:.4f}")
     print(f"模型保存在: {save_dir}")
@@ -222,24 +247,35 @@ def evaluate(args):
     """评估模型 - 支持验证集评估"""
     device = get_device()
 
-    # 加载训练数据（用于fit异常检测器）
+    # 评估
     eval_transform = EvalTransform(img_size=args.img_size)
     if args.dataset == 'wafer':
-        data_root = Path(args.data_dir) / "数据集" / "数据集"
-        
-        if args.val_ratio > 0:
-            train_dataset = WaferEvalDataset(
-                data_root, transform=eval_transform, 
-                val_ratio=args.val_ratio, split='train'
+        if args.wafer_category:
+            data_root = Path(args.data_dir) / "晶圆分类数据集"
+            train_dataset = PerCategoryWaferEvalDataset(
+                data_root, args.wafer_category, view=args.wafer_view,
+                transform=eval_transform,
             )
-            eval_dataset = WaferEvalDataset(
-                data_root, transform=eval_transform,
-                val_ratio=args.val_ratio, split='val'
+            eval_dataset = PerCategoryWaferEvalDataset(
+                data_root, args.wafer_category, view=args.wafer_view,
+                transform=eval_transform,
             )
-            print(f"[INFO] 使用验证集评估: val_ratio={args.val_ratio}")
         else:
-            eval_dataset = WaferEvalDataset(data_root, transform=eval_transform)
-            train_dataset = WaferEvalDataset(data_root, transform=eval_transform)
+            data_root = Path(args.data_dir) / "数据集" / "数据集"
+            
+            if args.val_ratio > 0:
+                train_dataset = WaferEvalDataset(
+                    data_root, transform=eval_transform, 
+                    val_ratio=args.val_ratio, split='train'
+                )
+                eval_dataset = WaferEvalDataset(
+                    data_root, transform=eval_transform,
+                    val_ratio=args.val_ratio, split='val'
+                )
+                print(f"[INFO] 使用验证集评估: val_ratio={args.val_ratio}")
+            else:
+                eval_dataset = WaferEvalDataset(data_root, transform=eval_transform)
+                train_dataset = WaferEvalDataset(data_root, transform=eval_transform)
         
         train_loader = DataLoader(
             train_dataset, batch_size=args.batch_size,
@@ -264,6 +300,15 @@ def evaluate(args):
     )
 
     # 加载模型
+    if args.dataset == 'wafer' and args.wafer_category:
+        model_tag = f"{args.dataset}_{args.wafer_category}_{args.wafer_view}"
+    else:
+        model_tag = args.dataset
+    
+    # 自动检测checkpoint路径（如果未指定）
+    if not args.checkpoint:
+        args.checkpoint = str(Path(args.save_dir) / f"best_model_{model_tag}.pth")
+    
     encoder = ViTEncoder(img_size=args.img_size, embed_dim=args.embed_dim)
     checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
     encoder.load_state_dict(checkpoint['encoder_q_state_dict'])
@@ -361,7 +406,7 @@ def evaluate(args):
         'fpr': float(fp/(fp+tn+1e-8)),
     }
     
-    result_file = Path(args.save_dir) / f"results_{args.dataset}_{args.mvtec_category if args.dataset == 'mvtec' else 'wafer'}.json"
+    result_file = Path(args.save_dir) / f"results_{model_tag}.json"
     with open(result_file, 'w') as f:
         json.dump(results, f, indent=2)
     print(f"[INFO] 结果已保存到: {result_file}")
@@ -431,6 +476,11 @@ def parse_args():
                        help='使用哪个数据集')
     parser.add_argument('--mvtec_category', type=str, default='bottle',
                        help='MVTec类别（当dataset=mvtec时）')
+    parser.add_argument('--wafer_category', type=str, default=None,
+                       help='晶圆品类名称（当dataset=wafer且分品类训练时），如"BGA S5E 16x7"')
+    parser.add_argument('--wafer_view', type=str, default='ALL',
+                       choices=['ALL', 'UP', 'DOWN'],
+                       help='晶圆视图：ALL/UP/DOWN（当dataset=wafer且分品类训练时）')
     parser.add_argument('--img_size', type=int, default=224,
                        help='输入图片大小')
 
@@ -499,10 +549,109 @@ def parse_args():
 
     # 模式
     parser.add_argument('--mode', type=str, default='train',
-                       choices=['train', 'eval', 'train_eval_all'],
-                       help='运行模式')
+                       choices=['train', 'eval', 'train_eval_all', 'train_all_wafer'],
+                       help='运行模式: train | eval | train_eval_all(MVTec) | train_all_wafer(全部晶圆品类)')
+
+
+def train_all_wafer_modes(args):
+    """遍历所有晶圆品类的UP/DOWN视图，逐个训练"""
+    import copy
+
+    data_root = Path(args.data_dir) / "晶圆分类数据集"
+    categories = get_wafer_categories(str(data_root))
+    views = ['UP', 'DOWN']
+
+    print(f"\\n{'='*70}")
+    print(f"全品类晶圆训练: {len(categories)}个品类 × 2个视图 = {len(categories)*2}个模型")
+    print(f"{'='*70}\\n")
+
+    results = {}
+    for cat in categories:
+        for view in views:
+            cat_view = f"{cat}_{view}"
+            print(f"\\n{'─'*60}")
+            print(f"[{list(categories).index(cat)+1}/{len(categories)}] 训练: {cat_view}")
+            print(f"{'─'*60}")
+
+            cat_args = copy.deepcopy(args)
+            cat_args.dataset = 'wafer'
+            cat_args.wafer_category = cat
+            cat_args.wafer_view = view
+            cat_args.mode = 'train'
+
+            try:
+                model = train(cat_args)
+                results[cat_view] = 'trained'
+                print(f"  ✅ {cat_view} 训练完成")
+            except Exception as e:
+                print(f"  ❌ {cat_view} 训练失败: {e}")
+                results[cat_view] = f'failed: {e}'
+
+    # 汇总
+    success = sum(1 for v in results.values() if v == 'trained')
+    failed = sum(1 for v in results.values() if 'failed' in str(v))
+    print(f"\n{'='*70}")
+    print(f"全品类训练完成! 成功: {success}, 失败: {failed}")
+    print(f"{'='*70}")
+
+    # 保存汇总
+    summary_file = Path(args.save_dir) / "wafer_all_results.json"
+    with open(summary_file, 'w', encoding='utf-8') as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
+    print(f"[INFO] 汇总保存: {summary_file}")
 
     return parser.parse_args()
+
+
+# ============================================================
+# 全品类晶圆训练模式
+# ============================================================
+def train_all_wafer_modes(args):
+    """遍历所有晶圆品类的UP/DOWN视图，逐个训练"""
+    import copy
+
+    data_root = Path(args.data_dir) / "晶圆分类数据集"
+    categories = get_wafer_categories(str(data_root))
+    views = ['UP', 'DOWN']
+
+    print(f"\n{'='*70}")
+    print(f"全品类晶圆训练: {len(categories)}个品类 × 2个视图 = {len(categories)*2}个模型")
+    print(f"{'='*70}\n")
+
+    results = {}
+    for i, cat in enumerate(categories):
+        for view in views:
+            cat_view = f"{cat}_{view}"
+            print(f"\n{'─'*60}")
+            print(f"[{i+1}/{len(categories)}] 训练: {cat_view}")
+            print(f"{'─'*60}")
+
+            cat_args = copy.deepcopy(args)
+            cat_args.dataset = 'wafer'
+            cat_args.wafer_category = cat
+            cat_args.wafer_view = view
+            cat_args.mode = 'train'
+
+            try:
+                model = train(cat_args)
+                results[cat_view] = 'trained'
+                print(f"  ✅ {cat_view} 训练完成")
+            except Exception as e:
+                print(f"  ❌ {cat_view} 训练失败: {e}")
+                results[cat_view] = f'failed: {e}'
+
+    # 汇总
+    success = sum(1 for v in results.values() if v == 'trained')
+    failed = sum(1 for v in results.values() if 'failed' in str(v))
+    print(f"\n{'='*70}")
+    print(f"全品类训练完成! 成功: {success}, 失败: {failed}")
+    print(f"{'='*70}")
+
+    # 保存汇总
+    summary_file = Path(args.save_dir) / "wafer_all_results.json"
+    with open(summary_file, 'w', encoding='utf-8') as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
+    print(f"[INFO] 汇总保存: {summary_file}")
 
 
 def main():
@@ -543,8 +692,17 @@ def main():
         train(args)
     elif args.mode == 'eval':
         if not args.checkpoint:
-            args.checkpoint = str(Path(args.save_dir) / f"best_model_{args.dataset}.pth")
+            if args.dataset == 'wafer' and args.wafer_category:
+                model_tag = f"{args.dataset}_{args.wafer_category}_{args.wafer_view}"
+            else:
+                model_tag = args.dataset
+            args.checkpoint = str(Path(args.save_dir) / f"best_model_{model_tag}.pth")
         evaluate(args)
+    elif args.mode == 'train_all_wafer':
+        if args.dataset != 'wafer':
+            print("[ERROR] train_all_wafer模式只支持wafer数据集")
+            return
+        train_all_wafer_modes(args)
     elif args.mode == 'train_eval_all':
         if args.dataset != 'mvtec':
             print("[ERROR] train_eval_all模式只支持mvtec数据集")
