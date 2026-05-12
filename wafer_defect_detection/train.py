@@ -550,55 +550,7 @@ def parse_args():
     # 模式
     parser.add_argument('--mode', type=str, default='train',
                        choices=['train', 'eval', 'train_eval_all', 'train_all_wafer'],
-                       help='运行模式: train | eval | train_eval_all(MVTec) | train_all_wafer(全部晶圆品类)')
-
-
-def train_all_wafer_modes(args):
-    """遍历所有晶圆品类的UP/DOWN视图，逐个训练"""
-    import copy
-
-    data_root = Path(args.data_dir) / "晶圆分类数据集"
-    categories = get_wafer_categories(str(data_root))
-    views = ['UP', 'DOWN']
-
-    print(f"\\n{'='*70}")
-    print(f"全品类晶圆训练: {len(categories)}个品类 × 2个视图 = {len(categories)*2}个模型")
-    print(f"{'='*70}\\n")
-
-    results = {}
-    for cat in categories:
-        for view in views:
-            cat_view = f"{cat}_{view}"
-            print(f"\\n{'─'*60}")
-            print(f"[{list(categories).index(cat)+1}/{len(categories)}] 训练: {cat_view}")
-            print(f"{'─'*60}")
-
-            cat_args = copy.deepcopy(args)
-            cat_args.dataset = 'wafer'
-            cat_args.wafer_category = cat
-            cat_args.wafer_view = view
-            cat_args.mode = 'train'
-
-            try:
-                model = train(cat_args)
-                results[cat_view] = 'trained'
-                print(f"  ✅ {cat_view} 训练完成")
-            except Exception as e:
-                print(f"  ❌ {cat_view} 训练失败: {e}")
-                results[cat_view] = f'failed: {e}'
-
-    # 汇总
-    success = sum(1 for v in results.values() if v == 'trained')
-    failed = sum(1 for v in results.values() if 'failed' in str(v))
-    print(f"\n{'='*70}")
-    print(f"全品类训练完成! 成功: {success}, 失败: {failed}")
-    print(f"{'='*70}")
-
-    # 保存汇总
-    summary_file = Path(args.save_dir) / "wafer_all_results.json"
-    with open(summary_file, 'w', encoding='utf-8') as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-    print(f"[INFO] 汇总保存: {summary_file}")
+                        help='运行模式: train | eval | train_eval_all(MVTec) | train_all_wafer(全部晶圆品类)')
 
     return parser.parse_args()
 
