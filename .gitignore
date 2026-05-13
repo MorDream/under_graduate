@@ -1,5 +1,4 @@
 # ============ 数据文件 ============
-/data/
 /mvtec_anomaly_detection/
 *.zip
 *.7z

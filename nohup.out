@@ -93,3 +93,157 @@ Sample Auroc:0.725 | Acc:0.577 F1:0.500
 iter [750/1000], loss:0.4192
 iter [760/1000], loss:0.5303
 iter [770/1000], loss:0.5465
+iter [780/1000], loss:0.4885
+iter [790/1000], loss:0.4668
+iter [800/1000], loss:0.4742
+iter [810/1000], loss:0.4521
+iter [820/1000], loss:0.4384
+iter [830/1000], loss:0.4278
+iter [840/1000], loss:0.4213
+iter [850/1000], loss:0.4208
+iter [860/1000], loss:0.4116
+iter [870/1000], loss:0.4092
+iter [880/1000], loss:0.4061
+iter [890/1000], loss:0.4038
+iter [900/1000], loss:0.4121
+iter [910/1000], loss:0.6809
+iter [920/1000], loss:0.5843
+iter [930/1000], loss:0.5092
+iter [940/1000], loss:0.4666
+iter [950/1000], loss:0.4420
+iter [960/1000], loss:0.4280
+iter [970/1000], loss:0.4196
+iter [980/1000], loss:0.4210
+iter [990/1000], loss:0.4259
+Sample Auroc:0.848 | Acc:0.930 F1:0.800
+  混淆矩阵: [[TN=56, FP=0], [FN=5, TP=10]]
+  漏检率(FNR):0.3333  误检率(FPR):0.0000
+iter [1000/1000], loss:0.4828
+
+============================================================
+  BGA 12x4 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 0.8905
+  Accuracy:     0.8873
+  F1 Score:     0.6923
+  Threshold:    1.2628
+  混淆矩阵:
+    TP=9  FP=2
+    FN=6  TN=54
+    漏检率(FNR): 0.4000  误检率(FPR): 0.0357
+  混淆矩阵图片已保存至: /data/coding/under_graduate/recontrast/checkpoint/confusion_images/BGA 12x4/
+    TP: 9 张
+    FP: 2 张
+    FN: 6 张
+    TN: 54 张
+
+  -------- 错误分类图片 --------
+  [FP] 共 2 张:
+    KA1UXX015_A11_DOWN.jpg
+    KA1UXX015_E13_DOWN.jpg
+  [FN] 共 6 张:
+    KA1UXX015_A12_DOWN_synth_stain_010.jpg
+    KA1UXX015_A13_DOWN_synth_stain_018.jpg
+    KA1UXX015_A3_DOWN_synth_particle_025.jpg
+    KA1UXX015_A5_DOWN_synth_local_damage_012.jpg
+    KA1UXX015_B3_UP_synth_edge_defect_014.jpg
+    KA1UXX015_B6_DOWN_synth_scratch_cluster_028.jpg
+BGA S5E 16x7
+train image number: 322
+test image number: 25
+iter [21/1000], loss:1.0024
+iter [42/1000], loss:0.4955
+iter [63/1000], loss:0.4673
+iter [84/1000], loss:0.4685
+iter [105/1000], loss:0.4738
+iter [126/1000], loss:0.4758
+iter [147/1000], loss:0.4778
+iter [168/1000], loss:0.5089
+iter [189/1000], loss:0.4997
+iter [210/1000], loss:0.4859
+iter [231/1000], loss:0.4798
+Sample Auroc:0.840 | Acc:0.840 F1:0.778
+  混淆矩阵: [[TN=14, FP=2], [FN=2, TP=7]]
+  漏检率(FNR):0.2222  误检率(FPR):0.1250
+  >>> 保存最优模型 (AUROC=0.840)
+iter [252/1000], loss:0.4645
+iter [273/1000], loss:0.4542
+iter [294/1000], loss:0.4646
+iter [315/1000], loss:0.5464
+iter [336/1000], loss:0.4923
+iter [357/1000], loss:0.4581
+iter [378/1000], loss:0.4383
+iter [399/1000], loss:0.4251
+iter [420/1000], loss:0.4079
+iter [441/1000], loss:0.4006
+iter [462/1000], loss:0.3910
+iter [483/1000], loss:0.3966
+Sample Auroc:0.722 | Acc:0.680 F1:0.667
+  混淆矩阵: [[TN=9, FP=7], [FN=1, TP=8]]
+  漏检率(FNR):0.1111  误检率(FPR):0.4375
+iter [504/1000], loss:0.4709
+iter [525/1000], loss:0.4280
+iter [546/1000], loss:0.4085
+iter [567/1000], loss:0.4005
+iter [588/1000], loss:0.4380
+iter [609/1000], loss:0.4689
+iter [630/1000], loss:0.4438
+iter [651/1000], loss:0.4149
+iter [672/1000], loss:0.4223
+iter [693/1000], loss:0.4065
+iter [714/1000], loss:0.4338
+iter [735/1000], loss:0.4505
+Sample Auroc:0.896 | Acc:0.880 F1:0.800
+  混淆矩阵: [[TN=16, FP=0], [FN=3, TP=6]]
+  漏检率(FNR):0.3333  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=0.896)
+iter [756/1000], loss:0.4293
+iter [777/1000], loss:0.4093
+iter [798/1000], loss:0.3958
+iter [819/1000], loss:0.4027
+iter [840/1000], loss:0.4003
+iter [861/1000], loss:0.3979
+iter [882/1000], loss:0.4309
+iter [903/1000], loss:0.4190
+iter [924/1000], loss:0.4617
+iter [945/1000], loss:0.3994
+iter [966/1000], loss:0.3816
+iter [987/1000], loss:0.4202
+Sample Auroc:0.875 | Acc:0.880 F1:0.800
+  混淆矩阵: [[TN=16, FP=0], [FN=3, TP=6]]
+  漏检率(FNR):0.3333  误检率(FPR):0.0000
+iter [1000/1000], loss:0.3848
+
+============================================================
+  BGA S5E 16x7 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 0.8958
+  Accuracy:     0.8800
+  F1 Score:     0.8000
+  Threshold:    1.4396
+  混淆矩阵:
+    TP=6  FP=0
+    FN=3  TN=16
+    漏检率(FNR): 0.3333  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: /data/coding/under_graduate/recontrast/checkpoint/confusion_images/BGA S5E 16x7/
+    TP: 6 张
+    FP: 0 张
+    FN: 3 张
+    TN: 16 张
+
+  -------- 错误分类图片 --------
+  [FN] 共 3 张:
+    KA1TXM265_B2_DOWN_synth_scratch_cluster_003.jpg
+    KA1TXM265_C16_UP_synth_scratch_cluster_006.jpg
+    KA1TXM265_F6_UP_synth_stain_001.jpg
+ESSD 12x4
+train image number: 167
+test image number: 12
+iter [11/1000], loss:1.3373
+iter [22/1000], loss:0.6617
+iter [33/1000], loss:0.5783
+iter [44/1000], loss:0.5483
+iter [55/1000], loss:0.5250
+iter [66/1000], loss:0.5177
+iter [77/1000], loss:0.5187
+iter [88/1000], loss:0.5111
