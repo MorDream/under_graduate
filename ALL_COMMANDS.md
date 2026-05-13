@@ -18,9 +18,10 @@ code/
 ├── recontrast/                 ← ReContrast 模块
 ├── data/晶圆分类数据集/         ← 晶圆数据集（8产品族×UP/DOWN）
 ├── mvtec_anomaly_detection/    ← MVTec AD 数据集
-├── checkpoints_v3_baseline/    ← ViT+MoCo 模型保存（每品类子文件夹）
-├── ablation_results/           ← 消融实验输出
-└── saved_results/              ← ReContrast 结果
+├── checkpoints_v3_baseline/    ← 所有模型保存总目录
+│   ├── mycode/                  ← ② ViT+MoCo 主模型（每品类子文件夹）
+│   ├── recontrast/              ← ① ReContrast 模型（每品类子文件夹）
+│   └── ablation/                ← ③ 消融实验（Exp0→Exp5子文件夹）
 ```
 
 ---
@@ -59,7 +60,7 @@ tile, toothbrush, transistor, wood, zipper
 可通过 `--eval_interval N` 自定义间隔，设 `0` 关闭。
 
 > 🔥 **默认行为**：不指定 `--wafer_category` 时，自动遍历**所有8个晶圆品类**，每个品类训练 **UP + DOWN** 两个视图，共计16个模型！
-> 每个模型保存在 `checkpoints_v3_baseline/{品类}_{视图}/` 子文件夹中。
+> 每个模型保存在 `checkpoints_v3_baseline/mycode/{品类}_{视图}/` 子文件夹中。
 
 ### 1.1 晶圆数据集 - 训练
 
@@ -106,16 +107,17 @@ python -m wafer_defect_detection.train --mode train_all_wafer --dataset wafer --
 
 ```bash
 # 自动找最佳模型评估
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --save_dir ./checkpoints_v3_baseline
+python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --save_dir ./checkpoints_v3_baseline/mycode
 
-# 指定 checkpoint 评估
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --checkpoint ./checkpoints_v3_baseline/best_model_wafer.pth
+# 指定品类+视图 自动找checkpoint
+python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --wafer_category "BGA S5E 16x7" --wafer_view UP --save_dir ./checkpoints_v3_baseline/mycode
+
+# 指定完整checkpoint路径
+python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --checkpoint ./checkpoints_v3_baseline/mycode/BGA_S5E_16x7_UP/best_model_bga_s5e_16x7_up.pth --score_mode combined
 
 # 不同评分模式
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode combined --checkpoint ./checkpoints_v3_baseline/best_model_wafer.pth
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode mahal --checkpoint ./checkpoints_v3_baseline/best_model_wafer.pth
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode memory --checkpoint ./checkpoints_v3_baseline/best_model_wafer.pth
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode max --checkpoint ./checkpoints_v3_baseline/best_model_wafer.pth
+python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --score_mode mahal --checkpoint ./checkpoints_v3_baseline/mycode/BGA_S5E_16x7_UP/best_model_bga_s5e_16x7_up.pth
+python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --score_mode memory --checkpoint ./checkpoints_v3_baseline/mycode/BGA_S5E_16x7_UP/best_model_bga_s5e_16x7_up.pth
 ```
 
 ### 1.4 MVTec AD - 训练+评估
@@ -125,7 +127,7 @@ python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./
 python -m wafer_defect_detection.train --mode train --dataset mvtec --mvtec_dir ./mvtec_anomaly_detection --mvtec_category bottle --epochs 200 --batch_size 32 --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
 
 # 单类别评估
-python -m wafer_defect_detection.train --mode eval --dataset mvtec --mvtec_dir ./mvtec_anomaly_detection --mvtec_category bottle --checkpoint ./checkpoints_v3_baseline/best_model_mvtec.pth --score_mode combined
+python -m wafer_defect_detection.train --mode eval --dataset mvtec --mvtec_dir ./mvtec_anomaly_detection --mvtec_category bottle --checkpoint ./checkpoints_v3_baseline/mycode/mvtec_bottle/best_model_mvtec.pth --score_mode combined
 
 # 一键训练+评估所有15类
 python -m wafer_defect_detection.train --mode train_eval_all --dataset mvtec --mvtec_dir ./mvtec_anomaly_detection --epochs 200 --batch_size 32 --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
@@ -304,7 +306,7 @@ python recontrast_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --waf
 | `--seed` | 42 | 随机种子 |
 | `--val_ratio` | 0.2 | 验证集比例 |
 | `--eval_interval` | **10** 🔥 | 自动评估间隔（epoch），每10轮打印AUROC/F1/混淆矩阵 |
-| `--save_dir` | ./checkpoints_v3_baseline | 模型保存目录（品类训练时自动创建子文件夹） |
+| `--save_dir` | ./checkpoints_v3_baseline/mycode | 模型保存目录（品类训练时自动创建子文件夹） |
 | `--checkpoint` | — | 评估时用的checkpoint路径（自动在子文件夹中查找） |
 | `--pca_components` | None | PCA降维维度 |
 | `--score_mode` | combined | combined / mahal / memory / max |
@@ -317,15 +319,15 @@ python recontrast_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --waf
 | `--wafer_category` | None | 单个晶圆品类 |
 | `--wafer_view` | ALL | ALL / UP / DOWN |
 | `--wafer_data_dir` | ./data | 晶圆数据根目录 |
-| `--save_dir` | ./saved_results | 结果保存目录 |
-| `--save_name` | recontrast_wafer | 实验命名 |
+| `--save_dir` | ./checkpoints_v3_baseline/recontrast | 模型和结果保存目录（品类训练时自动创建子文件夹） |
+| `--save_name` | recontrast_wafer | 实验命名（日志用） |
 | `--gpu` | 0 | GPU ID |
 
 ### 消融实验参数
 | 参数 | 默认值 | 说明 |
 |------|--------|------|
 | `--exp_range` | None | 指定实验范围，如 "0-2" 或 "3,5" |
-| `--save_dir` | ./ablation_results | 结果保存目录 |
+| `--save_dir` | ./checkpoints_v3_baseline/ablation | 结果保存目录（自动创建Exp子文件夹） |
 | 其他 | 同 ViT+MoCo | 继承主模型所有参数 |
 
 ### DenseSimSiam 参数

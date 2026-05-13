@@ -774,7 +774,7 @@ def parse_args():
                        help='预训练权重路径（可选）')
 
     # 保存/加载
-    parser.add_argument('--save_dir', type=str, default='./checkpoints_v3_baseline',
+    parser.add_argument('--save_dir', type=str, default='./checkpoints_v3_baseline/mycode',
                        help='模型保存目录（品类训练时自动创建子文件夹）')
     parser.add_argument('--checkpoint', type=str, default='',
                        help='评估时加载的模型路径')
@@ -921,7 +921,7 @@ def main():
             print(f"{'='*70}")
             
             args.mvtec_category = category
-            args.save_dir = f'./checkpoints_v3_baseline/mvtec_{category}'
+            args.save_dir = f'./checkpoints_v3_baseline/mycode/mvtec_{category}'
             
             train(args)
             

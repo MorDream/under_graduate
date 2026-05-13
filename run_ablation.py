@@ -284,7 +284,8 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description='消融实验')
     parser.add_argument('--data_dir', type=str, default='./data')
-    parser.add_argument('--save_dir', type=str, default='./ablation_results')
+    parser.add_argument('--save_dir', type=str, default='./checkpoints_v3_baseline/ablation',
+                        help='结果保存目录（自动创建Exp子文件夹）')
     parser.add_argument('--img_size', type=int, default=224)
     parser.add_argument('--embed_dim', type=int, default=384)
     parser.add_argument('--queue_size', type=int, default=1024)

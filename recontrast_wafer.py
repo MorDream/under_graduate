@@ -196,7 +196,7 @@ def save_confusion_images(img_paths, gt_list, preds, save_root, _class_):
 # ============================================================
 # 训练函数
 # ============================================================
-def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data'):
+def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data', save_dir='./checkpoints_v3_baseline/recontrast'):
     print_fn(_class_)
     setup_seed(111)
 
@@ -246,7 +246,13 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data'):
     print_fn(f'test image number: {len(test_data)}')
 
     # 保存目录
-    model_save_dir = '/data/coding/under_graduate/recontrast/checkpoint'
+    model_save_dir = Path(save_dir)
+    if dataset == 'wafer' and wafer_view:
+        # 晶圆品类放在子文件夹: recontrast/{品类}_{视图}/
+        subdir = f"{_class_}_{wafer_view}".replace(' ', '_')
+        model_save_dir = model_save_dir / subdir
+    elif dataset == 'mvtec':
+        model_save_dir = model_save_dir / _class_
     os.makedirs(model_save_dir, exist_ok=True)
 
     # TensorBoard
@@ -371,8 +377,10 @@ if __name__ == '__main__':
                         help='晶圆视图: ALL/UP/DOWN')
     parser.add_argument('--categories', type=str, default=None,
                         help='要训练的品类列表，逗号分隔 (如 "grid,tile" 或 "BGA S5E 16x7,ESSD 12x5")')
-    parser.add_argument('--save_dir', type=str, default='./saved_results')
-    parser.add_argument('--save_name', type=str, default='recontrast_wafer')
+    parser.add_argument('--save_dir', type=str, default='./checkpoints_v3_baseline/recontrast',
+                        help='模型和结果保存目录（品类训练时自动创建子文件夹）')
+    parser.add_argument('--save_name', type=str, default='recontrast_wafer',
+                        help='实验命名（日志用）')
     parser.add_argument('--gpu', default='0', type=str, help='GPU id')
     args = parser.parse_args()
 
@@ -422,7 +430,8 @@ if __name__ == '__main__':
     for item in item_list:
         auroc_px_best, auroc_sp_best, aupro_px_best, acc, f1, fnr, fpr = train(
             item, dataset=args.dataset,
-            wafer_view=args.wafer_view, wafer_data_dir=args.wafer_data_dir)
+            wafer_view=args.wafer_view, wafer_data_dir=args.wafer_data_dir,
+            save_dir=args.save_dir)
         result_list.append([item, auroc_sp_best, acc, f1, fnr, fpr])
 
     # 汇总
