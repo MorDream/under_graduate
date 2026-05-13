@@ -9,7 +9,8 @@
 
 ```
 code/
-├── recontrast_wafer.py        ← ① ReContrast（对比基线）
+├── recontrast_wafer.py        ← ① ReContrast ResNet版（对比基线）
+├── recontrast_vit_wafer.py    ← 🔥 ReContrast ViT版 + DINOv2预训练
 ├── wafer_defect_detection/
 │   └── train.py                ← ② ViT+MoCo 主训练（每10轮自动评估）
 ├── train_improved_v3.py        ← ← 桥接文件，同上
@@ -42,11 +43,20 @@ code/
 
 每个产品族下有 `UP/` 和 `DOWN/` 两视图，含 `train/`（正常样本）和 `test/good` + `test/defect`。
 
-### MVTec AD 标准数据集（15类）
 ```
-bottle, cable, capsule, carpet, grid,
-hazelnut, leather, metal_nut, pill, screw,
-tile, toothbrush, transistor, wood, zipper
+mvtec_anomaly_detection/    ← MVTec AD 数据集
+├── bottle, cable, capsule, carpet, grid,
+├── hazelnut, leather, metal_nut, pill, screw,
+├── tile, toothbrush, transistor, wood, zipper
+```
+
+### 🆕 ReContrast ViT 输出目录
+```
+checkpoints_vit_recontrast/    ← ViT版ReContrast模型保存
+├── {品类}_{视图}/              ← 每个品类+视图的子文件夹
+│   ├── best_model_*.pth        ← 最优模型
+│   ├── tensorboard/            ← TensorBoard日志
+│   └── confusion_images/       ← 混淆矩阵分类图片
 ```
 
 ---
@@ -167,7 +177,73 @@ python recontrast_wafer.py --dataset wafer
 
 ---
 
-## 🧪 三、消融实验
+## 🔥 三、ReContrast ViT + DINOv2（新增）
+
+> 入口：`python recontrast_vit_wafer.py`
+> 基于 ViT 编码器 + DINOv2 预训练权重的重构对比方法
+> 依赖：`recontrast/models/recontrast_vit.py`, `timm`
+
+### 🎯 预训练模型选择
+
+| 排名 | 模型名 | 参数量 | 维度 | 推荐指数 |
+|:---:|------|:------:|:----:|:--------:|
+| 1 | `vit_small_patch14_dinov2.lvd142m` | 22.1M | 384 ✅ | ⭐⭐⭐⭐⭐ |
+| 2 | `vit_small_patch16_224.dino` | 21.7M | 384 ✅ | ⭐⭐⭐⭐ |
+| 3 | `vit_small_patch16_224.augreg_in21k` | 21.7M | 384 ✅ | ⭐⭐⭐ |
+
+**默认使用 DINOv2 Small** (`vit_small_patch14_dinov2.lvd142m`)
+- 专为密集预测设计，局部特征定位强
+- 异常检测/分割任务SOTA表现
+- `embed_dim=384`，完美匹配现有代码
+
+### 3.1 晶圆数据集 - 训练
+
+```bash
+# 【推荐】使用DINOv2预训练权重（默认）
+python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --wafer_view UP
+
+# 全品类自动训练（8品类×UP/DOWN = 16个模型）
+python recontrast_vit_wafer.py --dataset wafer
+
+# 指定多品类
+python recontrast_vit_wafer.py --dataset wafer --categories "BGA S5E 16x7,ESSD 12x5"
+
+# 使用现有的ViTEncoder（不用DINOv2）
+python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --wafer_view UP --use_wafer_encoder
+
+# 切换其他预训练模型
+python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --wafer_view UP --pretrained_model vit_small_patch16_224.dino
+
+# 自定义保存目录
+python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --wafer_view UP --save_dir ./my_vit_checkpoints
+```
+
+### 3.2 MVTec AD - 训练
+
+```bash
+# 单类别
+python recontrast_vit_wafer.py --dataset mvtec --categories bottle
+
+# 多类别
+python recontrast_vit_wafer.py --dataset mvtec --categories "bottle,capsule,carpet"
+
+# 默认品类
+python recontrast_vit_wafer.py --dataset mvtec
+```
+
+### 3.3 其他参数
+
+```bash
+# 指定GPU
+python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --wafer_view UP --gpu 0
+
+# 自定义数据目录
+python recontrast_vit_wafer.py --dataset wafer --wafer_data_dir ./data --wafer_category "BGA S5E 16x7"
+```
+
+---
+
+## 🧪 四、消融实验（原三）
 
 > 入口：`python run_ablation.py`
 > 6个实验逐步添加模块，验证各模块贡献
@@ -182,7 +258,7 @@ python recontrast_wafer.py --dataset wafer
 | Exp4 | + 特征生成-判别(SimpleNet) | SimpleNet |
 | Exp5 | + 记忆库(PatchCore) = 完整版 | 记忆库 |
 
-### 3.1 运行全部6个实验
+### 4.1 运行全部6个实验
 
 ```bash
 # 默认配置（200 epoch）
@@ -192,7 +268,7 @@ python run_ablation.py --data_dir ./data --save_dir ./ablation_results --epochs 
 python run_ablation.py --data_dir ./data --save_dir ./ablation_results --epochs 20 --batch_size 32
 ```
 
-### 3.2 指定实验范围
+### 4.2 指定实验范围
 
 ```bash
 # 前3个实验 (Exp0, Exp1, Exp2)
@@ -205,7 +281,7 @@ python run_ablation.py --data_dir ./data --save_dir ./ablation_results --epochs 
 python run_ablation.py --data_dir ./data --save_dir ./ablation_results --epochs 200 --batch_size 32 --exp_range "3,5"
 ```
 
-### 3.3 自定义参数
+### 4.3 自定义参数
 
 ```bash
 python run_ablation.py --data_dir ./data --save_dir ./ablation_results --img_size 224 --embed_dim 384 --queue_size 1024 --momentum 0.999 --temperature 0.07 --epochs 200 --batch_size 32 --lr 1e-3 --num_workers 4 --seed 42 --cutpaste_prob 0.3
@@ -213,7 +289,7 @@ python run_ablation.py --data_dir ./data --save_dir ./ablation_results --img_siz
 
 ---
 
-## 🔄 四、DenseSimSiam（备用对比方案）
+## 🔄 五、DenseSimSiam（备用对比方案）（原四）
 
 > 入口：`python train_simsiam.py`
 > SimSiam 无动量编码器 + 无负样本队列
@@ -231,7 +307,7 @@ python train_simsiam.py --mode train_eval_all --dataset mvtec --mvtec_dir ./mvte
 
 ---
 
-## 📊 五、常用组合场景
+## 📊 六、常用组合场景（原五）
 
 ### 场景A：论文核心实验（晶圆消融 + 完整版 + 对比方法）
 
@@ -242,10 +318,13 @@ python run_ablation.py --data_dir ./data --save_dir ./ablation_results --epochs 
 # Step 2: 完整版 ViT+MoCo 训练（每10轮自动评估）
 python -m wafer_defect_detection.train --mode train --dataset wafer --data_dir ./data --epochs 200 --batch_size 32 --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
 
-# Step 3: ReContrast 对比
+# Step 3: ReContrast ResNet版 对比
 python recontrast_wafer.py --dataset wafer
 
-# Step 4: DenseSimSiam 对比
+# Step 4: 🔥 ReContrast ViT+DINOv2 对比（新增）
+python recontrast_vit_wafer.py --dataset wafer
+
+# Step 5: DenseSimSiam 对比
 python train_simsiam.py --mode train --dataset wafer --data_dir ./data --epochs 200 --batch_size 32 --use_cutpaste --use_multiscale --use_dense --use_feature_generator --use_hypersphere
 ```
 
@@ -255,8 +334,11 @@ python train_simsiam.py --mode train --dataset wafer --data_dir ./data --epochs 
 # ViT+MoCo 全15类
 python -m wafer_defect_detection.train --mode train_eval_all --dataset mvtec --mvtec_dir ./mvtec_anomaly_detection --epochs 200 --batch_size 32 --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
 
-# ReContrast 全品类
+# ReContrast ResNet版 全品类
 python recontrast_wafer.py --dataset mvtec
+
+# 🔥 ReContrast ViT+DINOv2 全品类（新增）
+python recontrast_vit_wafer.py --dataset mvtec
 ```
 
 ### 场景C：快速验证（10-20 epoch）
@@ -268,13 +350,16 @@ python -m wafer_defect_detection.train --mode train --dataset wafer --data_dir .
 # 消融快速测试
 python run_ablation.py --data_dir ./data --save_dir ./ablation_results_quick --epochs 10 --batch_size 16
 
-# ReContrast 快速测试（1000 iters）
+# ReContrast ResNet版 快速测试（1000 iters）
 python recontrast_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --wafer_view UP
+
+# 🔥 ReContrast ViT+DINOv2 快速测试（新增）
+python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --wafer_view UP
 ```
 
 ---
 
-## ⚙️ 六、参数速查
+## ⚙️ 七、参数速查（原六）
 
 ### ViT+MoCo V3 参数
 | 参数 | 默认值 | 说明 |
@@ -311,7 +396,7 @@ python recontrast_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --waf
 | `--pca_components` | None | PCA降维维度 |
 | `--score_mode` | combined | combined / mahal / memory / max |
 
-### ReContrast 参数
+### ReContrast（ResNet版）参数
 | 参数 | 默认值 | 说明 |
 |------|--------|------|
 | `--dataset` | mvtec | mvtec / wafer |
@@ -322,6 +407,25 @@ python recontrast_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --waf
 | `--save_dir` | ./checkpoints_v3_baseline/recontrast | 模型和结果保存目录（品类训练时自动创建子文件夹） |
 | `--save_name` | recontrast_wafer | 实验命名（日志用） |
 | `--gpu` | 0 | GPU ID |
+
+### 🔥 ReContrast ViT + DINOv2 参数（新增）
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `--dataset` | mvtec | mvtec / wafer |
+| `--categories` | None | 品类列表，逗号分隔 |
+| `--wafer_category` | None | 单个晶圆品类 |
+| `--wafer_view` | ALL | ALL / UP / DOWN |
+| `--wafer_data_dir` | ./data | 晶圆数据根目录 |
+| `--save_dir` | ./checkpoints_vit_recontrast | 模型和结果保存目录 |
+| `--save_name` | recontrast_vit | 实验命名（日志用） |
+| `--use_wafer_encoder` | False | 使用现有ViTEncoder（而非DINOv2） |
+| `--pretrained_model` | vit_small_patch14_dinov2.lvd142m | DINOv2预训练模型名 |
+| `--gpu` | 0 | GPU ID |
+
+**预训练模型选项：**
+- `vit_small_patch14_dinov2.lvd142m` (22.1M, 384dim) ⭐⭐⭐⭐⭐ 推荐
+- `vit_small_patch16_224.dino` (21.7M, 384dim) ⭐⭐⭐⭐
+- `vit_small_patch16_224.augreg_in21k` (21.7M, 384dim) ⭐⭐⭐
 
 ### 消融实验参数
 | 参数 | 默认值 | 说明 |
@@ -340,5 +444,6 @@ python recontrast_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --waf
 
 ---
 
-> 🟡🦖 奶龙整理完毕！现在每10轮自动评估，打印 AUROC + F1 + 混淆矩阵 + FNR/FPR
+> 🟡🦖 奶龙整理完毕！新增 ReContrast ViT + DINOv2 预训练权重支持！
+> 现在可以跑三种对比方法：ResNet版 / ViT+DINOv2版 / DenseSimSiam
 > 所有命令都是直接复制粘贴就能跑哒～ 好朋友加油写论文嗷呜！✨
