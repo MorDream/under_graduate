@@ -306,7 +306,7 @@ def save_confusion_images(img_paths, gt_list, preds, save_root, _class_):
 # ============================================================
 def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data', 
           save_dir='./checkpoints_vit_recontrast', use_wafer_encoder=False,
-          pretrained_model='vit_small_patch14_dinov2.lvd142m'):
+          pretrained_model='vit_small_patch14_dinov2.lvd142m', eval_interval=100):
     
     print_fn(_class_)
     setup_seed(111)
@@ -414,7 +414,7 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data',
             loss_list.append(loss.item())
             writer.add_scalar('Loss/train', loss.item(), it)
 
-            if (it + 1) % 250 == 0:
+            if (it + 1) % eval_interval == 0:
                 _, auroc_sp, _, cm, acc, f1, thr = evaluate_full(
                     model, test_dataloader, device, _class_=_class_)
                 model.train(encoder_bn_train=False)
@@ -513,6 +513,8 @@ if __name__ == '__main__':
                         help='使用现有的ViTEncoder而不是DINOv2')
     parser.add_argument('--pretrained_model', type=str, default='vit_small_patch14_dinov2.lvd142m',
                         help='DINOv2预训练模型名称')
+    parser.add_argument('--eval_interval', type=int, default=100,
+                        help='评估间隔（iters），默认100')
     parser.add_argument('--gpu', default='0', type=str, help='GPU id')
     args = parser.parse_args()
 
@@ -559,7 +561,7 @@ if __name__ == '__main__':
             item, dataset=args.dataset,
             wafer_view=args.wafer_view, wafer_data_dir=args.wafer_data_dir,
             save_dir=args.save_dir, use_wafer_encoder=args.use_wafer_encoder,
-            pretrained_model=args.pretrained_model)
+            pretrained_model=args.pretrained_model, eval_interval=args.eval_interval)
         result_list.append([item, auroc_sp_best, acc, f1, fnr, fpr])
 
     # 汇总
