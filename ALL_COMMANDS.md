@@ -800,5 +800,58 @@ python train_simsiam.py --mode all --dataset wafer --data_dir ./data --epochs 10
 
 ---
 
-> 🟡🦖 奶龙整理完毕！所有命令都是直接复制粘贴就能跑哒～
-> 不管是晶圆数据、MVTec、消融实验、还是SimSiam对比，全部在这里啦！
+|---
+| > 🟡🦖 奶龙整理完毕！所有命令都是直接复制粘贴就能跑哒～
+
+## 🔄 七、ReContrast（对比方案二）
+
+> 入口脚本：`python recontrast_wafer.py`
+> 基于 ResNet + WideResNet 的 ReContrast 重构对比方法
+> 依赖包：`recontrast/` (dataset.py + utils.py + models/)
+
+### 7.1 MVTec AD - 训练+评估
+
+```bash
+# 单类别（晶圆相似类）
+python recontrast_wafer.py --dataset mvtec --categories "grid,tile,screw"
+
+# 指定任意MVTec类别
+python recontrast_wafer.py --dataset mvtec --categories "bottle,capsule,carpet"
+
+# 全部MVTec 15类（用晶圆相似默认）
+python recontrast_wafer.py --dataset mvtec
+```
+
+### 7.2 晶圆数据集 - 训练+评估
+
+```bash
+# 单品类（指定品类）
+python recontrast_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7"
+
+# 单品类+指定视图
+python recontrast_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --wafer_view UP
+
+# 多品类逗号分隔
+python recontrast_wafer.py --dataset wafer --categories "BGA S5E 16x7,ESSD 12x5"
+
+# 全品类自动检测
+python recontrast_wafer.py --dataset wafer
+```
+
+### 7.3 ReContrast 参数
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `--dataset` | mvtec | mvtec / wafer |
+| `--categories` | grid,tile,screw | 品类列表，逗号分隔 |
+| `--wafer_category` | None | 单个晶圆品类 |
+| `--wafer_view` | ALL | ALL / UP / DOWN |
+| `--wafer_data_dir` | ./data | 晶圆数据根目录 |
+| `--save_dir` | ./saved_results | 结果保存目录 |
+| `--save_name` | recontrast_wafer | 实验命名 |
+| `--gpu` | 0 | GPU ID |
+| `total_iters` | 2000 | 训练总迭代数（硬编码） |
+
+---
+
+## ⚙️ 八、完整参数速查
