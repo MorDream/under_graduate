@@ -149,7 +149,12 @@ def train(args):
                                            use_cutpaste=args.use_cutpaste,
                                            cutpaste_prob=args.cutpaste_prob)
         dataset = MVTecTrainDataset(data_root, args.mvtec_category, transform=transform)
-        val_dataset = None
+        val_dataset = MVTecEvalDataset(
+            data_root, args.mvtec_category,
+            transform=EvalTransform(img_size=args.img_size),
+            phase='test'
+        )
+        print(f"[INFO] MVTec {args.mvtec_category} 训练: {len(dataset)} 张  测试: {len(val_dataset)} 张")
     else:
         raise ValueError(f"未知数据集: {args.dataset}")
 
