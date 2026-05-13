@@ -126,7 +126,7 @@ def run_single_experiment(exp_config, args):
     save_dir.mkdir(exist_ok=True, parents=True)
     
     # ---- 数据集 ----
-    data_root = Path(args.data_dir) / "数据集" / "数据集"
+    data_root = Path(args.data_dir) / "晶圆分类数据集"
     transform = SemiconductorTransform(
         img_size=args.img_size,
         use_cutpaste=exp_config['use_cutpaste'],
