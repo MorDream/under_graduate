@@ -415,7 +415,6 @@ def train(args):
                 test_eval = PerCategoryWaferEvalDataset(data_root, args.wafer_category,
                     view=args.wafer_view, transform=eval_transform)
             elif args.dataset == 'mvtec':
-                from wafer_defect_detection.data import MVTecEvalDataset
                 data_root = Path(args.mvtec_dir)
                 train_eval = MVTecEvalDataset(data_root, args.mvtec_category,
                     transform=eval_transform, phase='train')
