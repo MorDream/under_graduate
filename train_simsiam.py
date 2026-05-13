@@ -175,7 +175,7 @@ def get_dataloaders(args, device):
     train_loader = DataLoader(
         train_dataset, batch_size=args.batch_size, shuffle=True,
         num_workers=args.num_workers, drop_last=True,
-        pin_memory=(device.type in ['cuda', 'xpu']),
+        pin_memory=(device.type == 'cuda'),
     )
     fit_loader = DataLoader(
         fit_dataset, batch_size=args.batch_size, shuffle=False,

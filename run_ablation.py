@@ -139,7 +139,7 @@ def run_single_experiment(exp_config, args):
     train_loader = DataLoader(
         train_dataset, batch_size=args.batch_size,
         shuffle=True, num_workers=args.num_workers,
-        drop_last=True, pin_memory=(device.type in ['cuda', 'xpu'])
+        drop_last=True, pin_memory=(device.type == 'cuda')
     )
     
     # 评估集

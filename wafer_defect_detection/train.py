@@ -112,7 +112,7 @@ def train(args):
     dataloader = DataLoader(
         dataset, batch_size=args.batch_size,
         shuffle=True, num_workers=args.num_workers,
-        drop_last=True, pin_memory=(device.type in ['cuda', 'xpu'])
+        drop_last=True, pin_memory=(device.type == 'cuda')
     )
 
     # 模型
