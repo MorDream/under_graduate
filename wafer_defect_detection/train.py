@@ -193,7 +193,7 @@ def train(args):
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
 
     # 训练
-    print(f"\\n{'='*60}")
+    print(f"\n{'='*60}")
     print(f"开始训练 | 设备: {device} | 数据集: {args.dataset}")
     if args.dataset == 'wafer' and args.wafer_category:
         print(f"品类: {args.wafer_category} | 视图: {args.wafer_view}")
