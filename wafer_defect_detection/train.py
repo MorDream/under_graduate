@@ -77,7 +77,7 @@ def train(args):
             print(f"[INFO] 品类[{args.wafer_category}] 视图[{args.wafer_view}]")
             dataset = train_dataset
         else:
-            data_root = Path(args.data_dir) / "数据集" / "数据集"
+            data_root = Path(args.data_dir) / "晶圆分类数据集"
             transform = SemiconductorTransform(img_size=args.img_size, 
                                                use_cutpaste=args.use_cutpaste,
                                                cutpaste_prob=args.cutpaste_prob)
