@@ -58,14 +58,20 @@ tile, toothbrush, transistor, wood, zipper
 **亮点：训练中每10轮自动评估一次**，打印 AUROC / F1 / Acc / 混淆矩阵 / FNR+FPR，最佳 AUROC 模型自动保存。
 可通过 `--eval_interval N` 自定义间隔，设 `0` 关闭。
 
+> 🔥 **默认行为**：不指定 `--wafer_category` 时，自动遍历**所有8个晶圆品类**，每个品类训练 **UP + DOWN** 两个视图，共计16个模型！
+> 每个模型保存在 `checkpoints_v3_baseline/{品类}_{视图}/` 子文件夹中。
+
 ### 1.1 晶圆数据集 - 训练
 
 ```bash
-# 完整版（全部改进模块，200 epoch，每10轮自动评估）
+# 【推荐】全品类逐个训练（8品类 × UP/DOWN = 16个模型，每10轮自动评估）
 python -m wafer_defect_detection.train --mode train --dataset wafer --data_dir ./data --epochs 200 --batch_size 32 --lr 1e-3 --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
 
-# 快速测试（20 epoch）
-python -m wafer_defect_detection.train --mode train --dataset wafer --data_dir ./data --epochs 20 --batch_size 16 --lr 1e-3 --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
+# 指定单个品类+视图训练
+python -m wafer_defect_detection.train --mode train --dataset wafer --data_dir ./data --epochs 200 --batch_size 32 --wafer_category "BGA S5E 16x7" --wafer_view UP --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
+
+# 快速测试（只跑一个品类的一个视图）
+python -m wafer_defect_detection.train --mode train --dataset wafer --data_dir ./data --epochs 20 --batch_size 16 --wafer_category "BGA S5E 16x7" --wafer_view UP --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
 
 # 纯ViT+MoCo（关闭所有改进模块）
 python -m wafer_defect_detection.train --mode train --dataset wafer --data_dir ./data --epochs 200 --batch_size 32 --lr 1e-3 --no-use_cutpaste --no-use_feature_generator --no-use_hypersphere
@@ -254,8 +260,8 @@ python recontrast_wafer.py --dataset mvtec
 ### 场景C：快速验证（10-20 epoch）
 
 ```bash
-# ViT+MoCo 快速测试（每5轮评估）
-python -m wafer_defect_detection.train --mode train --dataset wafer --data_dir ./data --epochs 10 --batch_size 16 --eval_interval 5 --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
+# ViT+MoCo 快速测试（指定一个品类的一个视图，每5轮评估）
+python -m wafer_defect_detection.train --mode train --dataset wafer --data_dir ./data --epochs 10 --batch_size 16 --wafer_category "BGA S5E 16x7" --wafer_view UP --eval_interval 5 --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
 
 # 消融快速测试
 python run_ablation.py --data_dir ./data --save_dir ./ablation_results_quick --epochs 10 --batch_size 16
