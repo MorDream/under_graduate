@@ -322,11 +322,9 @@ def train(args):
                     min_pca_components=32, pca_variance=0.995,
                     score_mode=getattr(args, 'score_mode', 'combined'),
                 )
-                # 用训练集拟合
-                train_eval_loader = DataLoader(
-                    dataset, batch_size=args.batch_size,
-                    shuffle=False, num_workers=args.num_workers
-                ) if val_dataset is not None else _eval_dataloader
+                # 用验证集拟合（val_dataset返回3值：img,label,path）
+                # 注：fit()内部会过滤正常样本，所以即使val含异常样本也安全
+                train_eval_loader = _eval_dataloader
                 detector.fit(encoder_eval, train_eval_loader,
                              use_multiscale=args.use_multiscale)
                 scores, labels, _ = detector.score(
