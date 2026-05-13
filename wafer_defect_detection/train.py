@@ -499,10 +499,16 @@ def parse_args():
                        help='使用多尺度特征')
     parser.add_argument('--use_cutpaste', action='store_true', default=True,
                        help='使用CutPaste增强')
+    parser.add_argument('--no-use_cutpaste', action='store_false', dest='use_cutpaste',
+                       help='关闭CutPaste增强')
     parser.add_argument('--use_feature_generator', action='store_true', default=True,
                        help='使用特征生成器')
+    parser.add_argument('--no-use_feature_generator', action='store_false', dest='use_feature_generator',
+                       help='关闭特征生成器')
     parser.add_argument('--use_hypersphere', action='store_true', default=True,
                        help='使用超球面约束')
+    parser.add_argument('--no-use_hypersphere', action='store_false', dest='use_hypersphere',
+                       help='关闭超球面约束')
 
     # 损失权重
     parser.add_argument('--hypersphere_weight', type=float, default=0.1,
