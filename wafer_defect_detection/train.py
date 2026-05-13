@@ -819,8 +819,11 @@ def train_all_wafer_modes(args):
     for i, cat in enumerate(categories):
         for view in views:
             cat_view = f"{cat}_{view}"
+            cat_subdir = cat_view.replace(' ', '_')
+            model_path = Path(args.save_dir) / cat_subdir
             print(f"\n{'─'*60}")
-            print(f"[{i+1}/{len(categories)}] 训练: {cat_view}")
+            print(f"[{i+1}/{len(categories)}] 🏭 {cat} | 视图: {view}")
+            print(f"    模型保存: {model_path}/")
             print(f"{'─'*60}")
 
             cat_args = copy.deepcopy(args)
@@ -870,7 +873,7 @@ def main():
     print(f"\n[INFO] 当前工作目录: {Path.cwd()}")
     print(f"[INFO] 数据集: {args.dataset}")
     if args.dataset == 'wafer':
-        data_path = Path(args.data_dir) / "数据集" / "数据集"
+        data_path = Path(args.data_dir) / "晶圆分类数据集"
         print(f"[INFO] 晶圆数据路径: {data_path} (绝对路径: {data_path.absolute()})")
         print(f"[INFO] 路径是否存在: {data_path.exists()}")
         if data_path.exists():
@@ -886,14 +889,20 @@ def main():
     print("=" * 70)
 
     if args.mode == 'train':
-        train(args)
+        if args.dataset == 'wafer' and not args.wafer_category:
+            # 未指定品类 → 遍历所有品类逐个训练（每个品类含UP/DOWN）
+            train_all_wafer_modes(args)
+        else:
+            train(args)
     elif args.mode == 'eval':
         if not args.checkpoint:
             if args.dataset == 'wafer' and args.wafer_category:
-                model_tag = f"{args.dataset}_{args.wafer_category}_{args.wafer_view}"
+                cat_subdir = f"{args.wafer_category}_{args.wafer_view}".replace(' ', '_')
+                model_tag = cat_subdir.lower()
+                args.checkpoint = str(Path(args.save_dir) / cat_subdir / f"best_model_{model_tag}.pth")
             else:
                 model_tag = args.dataset
-            args.checkpoint = str(Path(args.save_dir) / f"best_model_{model_tag}.pth")
+                args.checkpoint = str(Path(args.save_dir) / f"best_model_{model_tag}.pth")
         evaluate(args)
     elif args.mode == 'train_all_wafer':
         if args.dataset != 'wafer':
@@ -912,7 +921,7 @@ def main():
             print(f"{'='*70}")
             
             args.mvtec_category = category
-            args.save_dir = f'./checkpoints_v3/mvtec_{category}'
+            args.save_dir = f'./checkpoints_v3_baseline/mvtec_{category}'
             
             train(args)
             
