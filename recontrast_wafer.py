@@ -201,7 +201,7 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data'):
     setup_seed(111)
 
     total_iters = 1000
-    batch_size = 8
+    batch_size = 16
     image_size = 256
     crop_size = 256
 
@@ -347,6 +347,12 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data'):
         print_fn(f'  混淆矩阵图片已保存至: {confusion_save_root}/{_class_}/')
         for cat_name in ['TP', 'FP', 'FN', 'TN']:
             print_fn(f'    {cat_name}: {len(cat_counts[cat_name])} 张')
+        print_fn(f'\n  -------- 错误分类图片 --------')
+        for cat_name in ['FP', 'FN']:
+            if cat_counts[cat_name]:
+                print_fn(f'  [{cat_name}] 共 {len(cat_counts[cat_name])} 张:')
+                for p in cat_counts[cat_name]:
+                    print_fn(f'    {os.path.basename(p)}')
 
     writer.close()
     return 0, auroc_sp_best, 0, best_acc, best_f1, fnr, fpr

@@ -1,0 +1,95 @@
+cuda:0
+BGA 12x4
+train image number: 151
+test image number: 71
+>>> 数据集: wafer, 品类: ['BGA 12x4', 'BGA S5E 16x7', 'ESSD 12x4', 'ESSD 12x5', 'INAND 19x5', 'MicroSD 20x4', 'SDSIP 22x3', 'UBGA 12x5']
+>>> 视图: ALL
+[INFO] 使用 CUDA: NVIDIA GeForce RTX 4060 Ti
+iter [10/1000], loss:1.4321
+iter [20/1000], loss:0.7444
+iter [30/1000], loss:0.6826
+iter [40/1000], loss:0.6044
+iter [50/1000], loss:0.5772
+iter [60/1000], loss:0.5599
+iter [70/1000], loss:0.5501
+iter [80/1000], loss:0.5468
+iter [90/1000], loss:0.5524
+iter [100/1000], loss:0.5564
+iter [110/1000], loss:0.5616
+iter [120/1000], loss:0.5664
+iter [130/1000], loss:0.5640
+iter [140/1000], loss:0.5912
+iter [150/1000], loss:0.5691
+iter [160/1000], loss:0.5744
+iter [170/1000], loss:0.5684
+iter [180/1000], loss:0.5602
+iter [190/1000], loss:0.5504
+iter [200/1000], loss:0.5423
+iter [210/1000], loss:0.5355
+iter [220/1000], loss:0.5368
+iter [230/1000], loss:0.5423
+iter [240/1000], loss:0.5315
+Sample Auroc:0.826 | Acc:0.831 F1:0.600
+  混淆矩阵: [[TN=50, FP=6], [FN=6, TP=9]]
+  漏检率(FNR):0.4000  误检率(FPR):0.1071
+  >>> 保存最优模型 (AUROC=0.826)
+iter [250/1000], loss:0.5254
+iter [260/1000], loss:0.5127
+iter [270/1000], loss:0.5095
+iter [280/1000], loss:0.5025
+iter [290/1000], loss:0.4955
+iter [300/1000], loss:0.4936
+iter [310/1000], loss:0.4869
+iter [320/1000], loss:0.4833
+iter [330/1000], loss:0.5372
+iter [340/1000], loss:0.5445
+iter [350/1000], loss:0.5275
+iter [360/1000], loss:0.4977
+iter [370/1000], loss:0.4908
+iter [380/1000], loss:0.4771
+iter [390/1000], loss:0.4710
+iter [400/1000], loss:0.4625
+iter [410/1000], loss:0.4600
+iter [420/1000], loss:0.4528
+iter [430/1000], loss:0.4535
+iter [440/1000], loss:0.4513
+iter [450/1000], loss:0.4484
+iter [460/1000], loss:0.4398
+iter [470/1000], loss:0.4333
+iter [480/1000], loss:0.4299
+iter [490/1000], loss:0.4280
+Sample Auroc:0.890 | Acc:0.887 F1:0.692
+  混淆矩阵: [[TN=54, FP=2], [FN=6, TP=9]]
+  漏检率(FNR):0.4000  误检率(FPR):0.0357
+  >>> 保存最优模型 (AUROC=0.890)
+iter [500/1000], loss:0.4254
+iter [510/1000], loss:0.4219
+iter [520/1000], loss:0.4199
+iter [530/1000], loss:0.4185
+iter [540/1000], loss:0.4163
+iter [550/1000], loss:0.4127
+iter [560/1000], loss:0.4103
+iter [570/1000], loss:0.4120
+iter [580/1000], loss:0.4094
+iter [590/1000], loss:0.4105
+iter [600/1000], loss:0.4098
+iter [610/1000], loss:0.4085
+iter [620/1000], loss:0.4070
+iter [630/1000], loss:0.4071
+iter [640/1000], loss:0.4092
+iter [650/1000], loss:0.4064
+iter [660/1000], loss:0.4090
+iter [670/1000], loss:0.4068
+iter [680/1000], loss:0.4069
+iter [690/1000], loss:0.4029
+iter [700/1000], loss:0.4053
+iter [710/1000], loss:0.4183
+iter [720/1000], loss:0.4127
+iter [730/1000], loss:0.4078
+iter [740/1000], loss:0.4050
+Sample Auroc:0.725 | Acc:0.577 F1:0.500
+  混淆矩阵: [[TN=26, FP=30], [FN=0, TP=15]]
+  漏检率(FNR):0.0000  误检率(FPR):0.5357
+iter [750/1000], loss:0.4192
+iter [760/1000], loss:0.5303
+iter [770/1000], loss:0.5465
