@@ -30,6 +30,9 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from sklearn.metrics import roc_auc_score, precision_recall_curve, f1_score, accuracy_score
 from tqdm import tqdm
+import shutil
+import logging
+from torch.utils.tensorboard import SummaryWriter
 
 # 添加路径
 sys.path.insert(0, str(Path(__file__).parent))
@@ -189,6 +192,46 @@ def get_dataloaders(args, device):
     return train_loader, fit_loader, val_loader
 
 
+def get_logger(name, save_path=None, level='INFO'):
+    logger = logging.getLogger(name)
+    logger.setLevel(getattr(logging, level))
+    log_format = logging.Formatter('%(message)s')
+    streamHandler = logging.StreamHandler()
+    streamHandler.setFormatter(log_format)
+    logger.addHandler(streamHandler)
+    if save_path is not None:
+        os.makedirs(save_path, exist_ok=True)
+        fileHandler = logging.FileHandler(os.path.join(save_path, 'log.txt'))
+        fileHandler.setFormatter(log_format)
+        logger.addHandler(fileHandler)
+    return logger
+
+
+def save_confusion_images(img_paths, gt_list, preds, save_root, class_name):
+    """将测试图片按TP/FP/FN/TN分类保存到对应文件夹"""
+    categories = {'TP': [], 'FP': [], 'FN': [], 'TN': []}
+    for i, (img_path, gt, pred) in enumerate(zip(img_paths, gt_list, preds)):
+        if gt == 1 and pred == 1:
+            categories['TP'].append(img_path)
+        elif gt == 0 and pred == 1:
+            categories['FP'].append(img_path)
+        elif gt == 1 and pred == 0:
+            categories['FN'].append(img_path)
+        elif gt == 0 and pred == 0:
+            categories['TN'].append(img_path)
+    for cat_name, paths in categories.items():
+        cat_dir = os.path.join(save_root, class_name, cat_name)
+        os.makedirs(cat_dir, exist_ok=True)
+        for src_path in paths:
+            fname = os.path.basename(src_path)
+            dst_path = os.path.join(cat_dir, fname)
+            try:
+                shutil.copy2(src_path, dst_path)
+            except Exception as e:
+                print(f"  [WARN] 复制失败 {src_path}: {e}")
+    return categories
+
+
 def train(args):
     """DenseSimSiam 训练流程"""
     device = get_device()
@@ -247,11 +290,18 @@ def train(args):
     print(f"{'='*60}\n")
 
     best_loss = float('inf')
+    best_auroc = 0.0
     suffix = f"_{args.dataset}"
     if args.dataset == 'mvtec':
         suffix += f"_{args.mvtec_category}"
     elif args.wafer_category:
         suffix += f"_{args.wafer_category}_{args.wafer_view}"
+    
+    # TensorBoard
+    writer = SummaryWriter(log_dir=save_dir / 'tensorboard' / suffix.lstrip('_'))
+    eval_interval = getattr(args, 'eval_interval', 25)
+    print(f"[INFO] TensorBoard日志: {save_dir / 'tensorboard' / suffix.lstrip('_')}")
+    print(f"[INFO] 定期评估间隔: {eval_interval} epochs")
 
     for epoch in range(args.epochs):
         model.train()
@@ -302,8 +352,14 @@ def train(args):
               f"Dsc:{loss_track['discriminator']:.3f} "
               f"Gen:{loss_track['generator']:.3f} | "
               f"LR: {lr:.6f}")
+        
+        # TensorBoard日志
+        writer.add_scalar('Loss/train', epoch_loss, epoch)
+        for k in loss_track:
+            writer.add_scalar(f'Loss/{k}', loss_track[k], epoch)
+        writer.add_scalar('LR', lr, epoch)
 
-        # 保存最佳模型
+        # 保存最佳模型（基于loss）
         if epoch_loss < best_loss:
             best_loss = epoch_loss
             checkpoint_path = save_dir / f"best_model{suffix}.pth"
@@ -315,6 +371,63 @@ def train(args):
                 'args': vars(args),
             }, checkpoint_path)
             print(f"  → 最佳模型已保存: {checkpoint_path}")
+        
+        # 定期评估（每 eval_interval epoch）
+        if (epoch + 1) % eval_interval == 0 and val_loader is not None:
+            print(f"\n{'─'*40}")
+            print(f"[EVAL] Epoch {epoch+1}/{args.epochs} 定期评估...")
+            print(f"{'─'*40}")
+            try:
+                model.eval()
+                from wafer_defect_detection.detectors import AnomalyDetector
+                detector = AnomalyDetector(
+                    device=device,
+                    n_components=args.pca_components,
+                    use_hypersphere=args.use_hypersphere,
+                    use_memory_bank=True, memory_ratio=0.1,
+                    min_pca_components=32, pca_variance=0.995,
+                    score_mode=args.score_mode,
+                )
+                detector.fit(model, fit_loader, use_multiscale=model.use_multiscale)
+                scores, labels, _ = detector.score(model, val_loader,
+                    use_multiscale=model.use_multiscale)
+                auroc = roc_auc_score(labels, scores)
+                precision, recall, thresholds = precision_recall_curve(labels, scores)
+                f1_s = 2 * precision * recall / (precision + recall + 1e-8)
+                best_idx = np.argmax(f1_s)
+                best_thr = thresholds[best_idx] if best_idx < len(thresholds) else thresholds[-1]
+                best_f1 = f1_s[best_idx]
+                preds_eval = (scores > best_thr).astype(int)
+                acc = accuracy_score(labels, preds_eval)
+                tp_e = ((preds_eval == 1) & (labels == 1)).sum()
+                fp_e = ((preds_eval == 1) & (labels == 0)).sum()
+                fn_e = ((preds_eval == 0) & (labels == 1)).sum()
+                tn_e = ((preds_eval == 0) & (labels == 0)).sum()
+                fnr_e = fn_e / (tp_e + fn_e + 1e-8)
+                fpr_e = fp_e / (fp_e + tn_e + 1e-8)
+                print(f"  AUROC={auroc:.4f} | F1={best_f1:.4f} | Acc={acc:.4f}")
+                print(f"  FNR={fnr_e:.4f} | FPR={fpr_e:.4f}")
+                writer.add_scalar('Metrics/AUROC', auroc, epoch)
+                writer.add_scalar('Metrics/F1', best_f1, epoch)
+                writer.add_scalar('Metrics/Accuracy', acc, epoch)
+                writer.add_scalar('Metrics/FNR', fnr_e, epoch)
+                writer.add_scalar('Metrics/FPR', fpr_e, epoch)
+                if auroc > best_auroc:
+                    best_auroc = auroc
+                    torch.save({
+                        'epoch': epoch + 1,
+                        'model_state_dict': model.state_dict(),
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'loss': epoch_loss,
+                        'auroc': auroc,
+                        'args': vars(args),
+                    }, save_dir / f"best_auroc{suffix}.pth")
+                    print(f"  >>> 保存AUROC最优模型 (AUROC={auroc:.4f})")
+                model.train()
+            except Exception as e:
+                print(f"  [WARN] 定期评估失败: {e}")
+                model.train()
+            print(f"{'─'*40}\n")
 
     # 保存最终模型
     final_path = save_dir / f"final_model{suffix}.pth"
@@ -324,8 +437,82 @@ def train(args):
         'loss': epoch_loss,
         'args': vars(args),
     }, final_path)
-    print(f"\n训练完成! 最佳Loss: {best_loss:.4f}")
+    print(f"\n训练完成! 最佳Loss: {best_loss:.4f} | 最佳AUROC: {best_auroc:.4f}")
     print(f"最终模型: {final_path}")
+    
+    writer.close()
+
+    # ===== 最终评估 + 混淆矩阵图片保存 =====
+    try:
+        print(f"\n{'='*50}")
+        print(f"[FINAL] 加载最佳模型进行最终评估...")
+        print(f"{'='*50}")
+        best_ckpt_path = save_dir / f"best_auroc{suffix}.pth"
+        if not best_ckpt_path.exists():
+            best_ckpt_path = save_dir / f"best_model{suffix}.pth"
+        if best_ckpt_path.exists() and val_loader is not None:
+            ckpt = torch.load(str(best_ckpt_path), map_location='cpu', weights_only=False)
+            ckpt_args = ckpt.get('args', {})
+            eval_model = DenseSimSiam(
+                embed_dim=ckpt_args.get('embed_dim', args.embed_dim),
+                img_size=ckpt_args.get('img_size', args.img_size),
+                proj_dim=ckpt_args.get('proj_dim', args.proj_dim),
+                pred_hidden=ckpt_args.get('pred_hidden', args.pred_hidden),
+                use_multiscale=ckpt_args.get('use_multiscale', args.use_multiscale),
+                use_dense=ckpt_args.get('use_dense', args.use_dense),
+                use_feature_generator=False,
+                use_hypersphere=False,
+            ).to(device)
+            eval_model.load_state_dict(ckpt['model_state_dict'], strict=False)
+            eval_model.eval()
+            
+            from wafer_defect_detection.detectors import AnomalyDetector
+            b_detector = AnomalyDetector(
+                device=device, n_components=args.pca_components,
+                use_hypersphere=True, use_memory_bank=True,
+                memory_ratio=0.1, min_pca_components=32,
+                pca_variance=0.995, score_mode=args.score_mode,
+            )
+            b_detector.fit(eval_model, fit_loader, use_multiscale=eval_model.use_multiscale)
+            scores, labels, paths = b_detector.score(eval_model, val_loader,
+                use_multiscale=eval_model.use_multiscale)
+            
+            from sklearn.metrics import roc_auc_score, accuracy_score
+            auroc = roc_auc_score(labels, scores)
+            precision, recall, thresholds = precision_recall_curve(labels, scores)
+            f1_s = 2 * precision * recall / (precision + recall + 1e-8)
+            best_idx = np.argmax(f1_s)
+            best_thr = thresholds[best_idx] if best_idx < len(thresholds) else thresholds[-1]
+            preds = (scores > best_thr).astype(int)
+            cm_tp = ((preds == 1) & (labels == 1)).sum()
+            cm_fp = ((preds == 1) & (labels == 0)).sum()
+            cm_fn = ((preds == 0) & (labels == 1)).sum()
+            cm_tn = ((preds == 0) & (labels == 0)).sum()
+            cm_fnr = cm_fn / (cm_tp + cm_fn + 1e-8)
+            cm_fpr = cm_fp / (cm_fp + cm_tn + 1e-8)
+            
+            print(f"\n最终评估结果:")
+            print(f"  AUROC={auroc:.4f} | Acc={accuracy_score(labels, preds):.4f}")
+            print(f"  TP={cm_tp} FP={cm_fp} FN={cm_fn} TN={cm_tn}")
+            print(f"  FNR={cm_fnr:.4f} FPR={cm_fpr:.4f}")
+            
+            confusion_root = save_dir / 'confusion_images'
+            class_name = suffix.lstrip('_')
+            cat_counts = save_confusion_images(paths, labels, preds,
+                                                str(confusion_root), class_name)
+            print(f"\n混淆矩阵图片已保存至: {confusion_root}/{class_name}/")
+            for cat_name in ['TP', 'FP', 'FN', 'TN']:
+                print(f"  {cat_name}: {len(cat_counts[cat_name])} 张")
+            for cat_name in ['FP', 'FN']:
+                if cat_counts[cat_name]:
+                    print(f"  [{cat_name}] 共 {len(cat_counts[cat_name])} 张:")
+                    for p in cat_counts[cat_name]:
+                        print(f"    {os.path.basename(p)}")
+        else:
+            print(f"  [WARN] 未找到模型或无验证集，跳过混淆矩阵保存")
+    except Exception as e:
+        print(f"  [WARN] 最终评估失败: {e}")
+        import traceback; traceback.print_exc()
 
     return model
 
