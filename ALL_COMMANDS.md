@@ -239,6 +239,12 @@ python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" -
 
 # 自定义数据目录
 python recontrast_vit_wafer.py --dataset wafer --wafer_data_dir ./data --wafer_category "BGA S5E 16x7"
+
+# 自定义评估间隔（每50 iters评估一次）
+python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --wafer_view UP --eval_interval 50
+
+# 较少评估（每200 iters一次，加快训练）
+python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --wafer_view UP --eval_interval 200
 ```
 
 ---
@@ -420,6 +426,7 @@ python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" -
 | `--save_name` | recontrast_vit | 实验命名（日志用） |
 | `--use_wafer_encoder` | False | 使用现有ViTEncoder（而非DINOv2） |
 | `--pretrained_model` | vit_small_patch14_dinov2.lvd142m | DINOv2预训练模型名 |
+| `--eval_interval` | **100** 🔥 | 评估间隔（iters），默认100 |
 | `--gpu` | 0 | GPU ID |
 
 **预训练模型选项：**
