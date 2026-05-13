@@ -314,7 +314,6 @@ def train(args):
             try:
                 encoder_eval = model.encoder_q
                 encoder_eval.eval()
-                from wafer_defect_detection.detectors import AnomalyDetector
                 detector = AnomalyDetector(
                     device=device, n_components=args.pca_components,
                     use_hypersphere=args.use_hypersphere,
@@ -396,7 +395,6 @@ def train(args):
         if not best_ckpt_path.exists():
             best_ckpt_path = save_dir / f"best_model_{model_tag}.pth"
         if best_ckpt_path.exists():
-            from wafer_defect_detection.detectors import AnomalyDetector
             b_encoder = ViTEncoder(img_size=args.img_size, embed_dim=args.embed_dim)
             b_ckpt = torch.load(str(best_ckpt_path), map_location='cpu', weights_only=False)
             b_encoder.load_state_dict(b_ckpt['encoder_q_state_dict'])
@@ -406,7 +404,6 @@ def train(args):
             # 准备评估数据
             eval_transform = EvalTransform(img_size=args.img_size)
             if args.dataset == 'wafer' and args.wafer_category:
-                from wafer_defect_detection.data import PerCategoryWaferEvalDataset
                 data_root = Path(args.data_dir) / "晶圆分类数据集"
                 train_eval = PerCategoryWaferEvalDataset(data_root, args.wafer_category,
                     view=args.wafer_view, transform=eval_transform)
