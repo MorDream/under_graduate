@@ -18,7 +18,7 @@ code/
 ├── recontrast/                 ← ReContrast 模块
 ├── data/晶圆分类数据集/         ← 晶圆数据集（8产品族×UP/DOWN）
 ├── mvtec_anomaly_detection/    ← MVTec AD 数据集
-├── checkpoints_v3/             ← ViT+MoCo 模型保存
+├── checkpoints_v3_baseline/    ← ViT+MoCo 模型保存（每品类子文件夹）
 ├── ablation_results/           ← 消融实验输出
 └── saved_results/              ← ReContrast 结果
 ```
@@ -100,16 +100,16 @@ python -m wafer_defect_detection.train --mode train_all_wafer --dataset wafer --
 
 ```bash
 # 自动找最佳模型评估
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --save_dir ./checkpoints_v3
+python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --save_dir ./checkpoints_v3_baseline
 
 # 指定 checkpoint 评估
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --checkpoint ./checkpoints_v3/best_model_wafer.pth
+python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --checkpoint ./checkpoints_v3_baseline/best_model_wafer.pth
 
 # 不同评分模式
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode combined --checkpoint ./checkpoints_v3/best_model_wafer.pth
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode mahal --checkpoint ./checkpoints_v3/best_model_wafer.pth
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode memory --checkpoint ./checkpoints_v3/best_model_wafer.pth
-python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode max --checkpoint ./checkpoints_v3/best_model_wafer.pth
+python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode combined --checkpoint ./checkpoints_v3_baseline/best_model_wafer.pth
+python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode mahal --checkpoint ./checkpoints_v3_baseline/best_model_wafer.pth
+python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode memory --checkpoint ./checkpoints_v3_baseline/best_model_wafer.pth
+python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./data --val_ratio 0.2 --score_mode max --checkpoint ./checkpoints_v3_baseline/best_model_wafer.pth
 ```
 
 ### 1.4 MVTec AD - 训练+评估
@@ -119,7 +119,7 @@ python -m wafer_defect_detection.train --mode eval --dataset wafer --data_dir ./
 python -m wafer_defect_detection.train --mode train --dataset mvtec --mvtec_dir ./mvtec_anomaly_detection --mvtec_category bottle --epochs 200 --batch_size 32 --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
 
 # 单类别评估
-python -m wafer_defect_detection.train --mode eval --dataset mvtec --mvtec_dir ./mvtec_anomaly_detection --mvtec_category bottle --checkpoint ./checkpoints_v3/best_model_mvtec.pth --score_mode combined
+python -m wafer_defect_detection.train --mode eval --dataset mvtec --mvtec_dir ./mvtec_anomaly_detection --mvtec_category bottle --checkpoint ./checkpoints_v3_baseline/best_model_mvtec.pth --score_mode combined
 
 # 一键训练+评估所有15类
 python -m wafer_defect_detection.train --mode train_eval_all --dataset mvtec --mvtec_dir ./mvtec_anomaly_detection --epochs 200 --batch_size 32 --use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere
@@ -298,8 +298,8 @@ python recontrast_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --waf
 | `--seed` | 42 | 随机种子 |
 | `--val_ratio` | 0.2 | 验证集比例 |
 | `--eval_interval` | **10** 🔥 | 自动评估间隔（epoch），每10轮打印AUROC/F1/混淆矩阵 |
-| `--save_dir` | ./checkpoints_v3 | 模型保存目录 |
-| `--checkpoint` | — | 评估时用的checkpoint路径 |
+| `--save_dir` | ./checkpoints_v3_baseline | 模型保存目录（品类训练时自动创建子文件夹） |
+| `--checkpoint` | — | 评估时用的checkpoint路径（自动在子文件夹中查找） |
 | `--pca_components` | None | PCA降维维度 |
 | `--score_mode` | combined | combined / mahal / memory / max |
 

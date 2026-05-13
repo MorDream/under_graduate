@@ -193,8 +193,12 @@ def train(args):
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
 
     # 训练
-    print(f"\n{'='*60}")
+    print(f"\\n{'='*60}")
     print(f"开始训练 | 设备: {device} | 数据集: {args.dataset}")
+    if args.dataset == 'wafer' and args.wafer_category:
+        print(f"品类: {args.wafer_category} | 视图: {args.wafer_view}")
+    elif args.dataset == 'wafer':
+        print(f"品类: 全部品类混合训练（建议使用 --wafer_category 指定品类）")
     print(f"Epochs: {args.epochs} | Batch Size: {args.batch_size}")
     print(f"改进: CutPaste={args.use_cutpaste}, 特征生成器={args.use_feature_generator}, 超球面={args.use_hypersphere}")
     print(f"{'='*60}\n")
@@ -202,11 +206,15 @@ def train(args):
     best_loss = float('inf')
     best_auroc = 0.0
     save_dir = Path(args.save_dir)
+    if args.dataset == 'wafer' and args.wafer_category:
+        # 品类模型保存在子文件夹中
+        cat_subdir = f"{args.wafer_category}_{args.wafer_view}".replace(' ', '_')
+        save_dir = save_dir / cat_subdir
     save_dir.mkdir(exist_ok=True, parents=True)
     
     # 模型保存后缀
     if args.dataset == 'wafer' and args.wafer_category:
-        model_tag = f"{args.dataset}_{args.wafer_category}_{args.wafer_view}"
+        model_tag = cat_subdir.lower()
     else:
         model_tag = args.dataset
     
@@ -527,13 +535,16 @@ def evaluate(args):
 
     # 加载模型
     if args.dataset == 'wafer' and args.wafer_category:
-        model_tag = f"{args.dataset}_{args.wafer_category}_{args.wafer_view}"
+        cat_subdir = f"{args.wafer_category}_{args.wafer_view}".replace(' ', '_')
+        model_tag = cat_subdir.lower()
+        eval_save_dir = Path(args.save_dir) / cat_subdir
     else:
         model_tag = args.dataset
+        eval_save_dir = Path(args.save_dir)
     
     # 自动检测checkpoint路径（如果未指定）
     if not args.checkpoint:
-        args.checkpoint = str(Path(args.save_dir) / f"best_model_{model_tag}.pth")
+        args.checkpoint = str(eval_save_dir / f"best_model_{model_tag}.pth")
     
     encoder = ViTEncoder(img_size=args.img_size, embed_dim=args.embed_dim)
     checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
@@ -763,8 +774,8 @@ def parse_args():
                        help='预训练权重路径（可选）')
 
     # 保存/加载
-    parser.add_argument('--save_dir', type=str, default='./checkpoints_v3',
-                       help='模型保存目录')
+    parser.add_argument('--save_dir', type=str, default='./checkpoints_v3_baseline',
+                       help='模型保存目录（品类训练时自动创建子文件夹）')
     parser.add_argument('--checkpoint', type=str, default='',
                        help='评估时加载的模型路径')
 
