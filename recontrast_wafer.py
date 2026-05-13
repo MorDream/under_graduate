@@ -30,6 +30,7 @@ from recontrast.utils import (setup_seed, get_device, evaluation, visualize,
 from torch.nn import functional as F
 from functools import partial
 from sklearn.metrics import confusion_matrix, accuracy_score, f1_score, roc_auc_score
+from torch.utils.tensorboard import SummaryWriter
 from scipy.ndimage import gaussian_filter
 import cv2
 from PIL import Image
@@ -133,16 +134,17 @@ class WaferTrainDataset(torch.utils.data.Dataset):
 # ============================================================
 # 评估函数
 # ============================================================
-def evaluate_full(model, dataloader, device, _class_=None):
+def evaluate_full(model, dataloader, device, _class_=None, return_details=False):
     """完整评估：AUROC + 混淆矩阵 + 准确率 + F1"""
     model.eval()
     gt_list_px = []
     pr_list_px = []
     gt_list_sp = []
     pr_list_sp = []
+    img_paths = []
 
     with torch.no_grad():
-        for img, gt, label, _ in dataloader:
+        for img, gt, label, img_path in dataloader:
             img = img.to(device)
             en, de = model(img)
             anomaly_map, _ = cal_anomaly_map(en, de, img.shape[-1], amap_mode='a')
@@ -150,6 +152,7 @@ def evaluate_full(model, dataloader, device, _class_=None):
             sp_score = anomaly_map.max()
             gt_list_sp.append(label.item())
             pr_list_sp.append(sp_score)
+            img_paths.append(img_path[0] if isinstance(img_path, (list, tuple)) else img_path)
 
         auroc_sp = round(roc_auc_score(gt_list_sp, pr_list_sp), 4)
 
@@ -159,7 +162,35 @@ def evaluate_full(model, dataloader, device, _class_=None):
         acc = accuracy_score(gt_list_sp, preds)
         f1 = f1_score(gt_list_sp, preds)
 
+    if return_details:
+        return 0, auroc_sp, 0, cm, acc, f1, best_thr, img_paths, gt_list_sp, pr_list_sp, preds
     return 0, auroc_sp, 0, cm, acc, f1, best_thr
+
+
+def save_confusion_images(img_paths, gt_list, preds, save_root, _class_):
+    """将测试图片按 TP/FP/FN/TN 分类保存到对应文件夹"""
+    import shutil
+
+    categories = {'TP': [], 'FP': [], 'FN': [], 'TN': []}
+    for i, (img_path, gt, pred) in enumerate(zip(img_paths, gt_list, preds)):
+        if gt == 1 and pred == 1:
+            categories['TP'].append(img_path)
+        elif gt == 0 and pred == 1:
+            categories['FP'].append(img_path)
+        elif gt == 1 and pred == 0:
+            categories['FN'].append(img_path)
+        elif gt == 0 and pred == 0:
+            categories['TN'].append(img_path)
+
+    for cat_name, paths in categories.items():
+        cat_dir = os.path.join(save_root, _class_, cat_name)
+        os.makedirs(cat_dir, exist_ok=True)
+        for src_path in paths:
+            fname = os.path.basename(src_path)
+            dst_path = os.path.join(cat_dir, fname)
+            shutil.copy2(src_path, dst_path)
+
+    return categories
 
 
 # ============================================================
@@ -169,7 +200,7 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data'):
     print_fn(_class_)
     setup_seed(111)
 
-    total_iters = 2000
+    total_iters = 1000
     batch_size = 8
     image_size = 256
     crop_size = 256
@@ -215,8 +246,12 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data'):
     print_fn(f'test image number: {len(test_data)}')
 
     # 保存目录
-    model_save_dir = os.path.join(args.save_dir, args.save_name, 'models')
+    model_save_dir = '/data/coding/under_graduate/recontrast/checkpoint'
     os.makedirs(model_save_dir, exist_ok=True)
+
+    # TensorBoard
+    log_dir = os.path.join(model_save_dir, 'tensorboard', _class_)
+    writer = SummaryWriter(log_dir=log_dir)
 
     auroc_sp_best = 0
     best_cm, best_acc, best_f1, best_thr = None, 0, 0, 0
@@ -241,16 +276,29 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data'):
             optimizer.step()
             optimizer2.step()
             loss_list.append(loss.item())
+            writer.add_scalar('Loss/train', loss.item(), it)
 
             if (it + 1) % 250 == 0:
                 _, auroc_sp, _, cm, acc, f1, thr = evaluate_full(
                     model, test_dataloader, device, _class_=_class_)
                 model.train(encoder_bn_train=False)
 
+                writer.add_scalar('Metrics/AUROC', auroc_sp, it)
+                writer.add_scalar('Metrics/Accuracy', acc, it)
+                writer.add_scalar('Metrics/F1', f1, it)
+
+                if cm is not None and len(cm) == 2:
+                    tn, fp, fn, tp = cm[0][0], cm[0][1], cm[1][0], cm[1][1]
+                    fnr = fn / (tp + fn + 1e-8)
+                    fpr = fp / (fp + tn + 1e-8)
+                    writer.add_scalar('Metrics/FNR', fnr, it)
+                    writer.add_scalar('Metrics/FPR', fpr, it)
+
                 print_fn(
                     f'Sample Auroc:{auroc_sp:.3f} | Acc:{acc:.3f} F1:{f1:.3f}')
                 if cm is not None and len(cm) == 2:
                     print_fn(f'  混淆矩阵: [[TN={cm[0][0]}, FP={cm[0][1]}], [FN={cm[1][0]}, TP={cm[1][1]}]]')
+                    print_fn(f'  漏检率(FNR):{fnr:.4f}  误检率(FPR):{fpr:.4f}')
 
                 if auroc_sp >= auroc_sp_best:
                     auroc_sp_best = auroc_sp
@@ -275,14 +323,33 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data'):
     print_fn(f'  Accuracy:     {best_acc:.4f}')
     print_fn(f'  F1 Score:     {best_f1:.4f}')
     print_fn(f'  Threshold:    {best_thr:.4f}')
+    fnr = None
+    fpr = None
     if best_cm is not None:
         tn, fp, fn, tp = best_cm[0][0], best_cm[0][1], best_cm[1][0], best_cm[1][1]
         print_fn(f'  混淆矩阵:')
         print_fn(f'    TP={tp}  FP={fp}')
         print_fn(f'    FN={fn}  TN={tn}')
-        print_fn(f'    漏检率(FNR): {fn/(tp+fn+1e-8):.4f}  误检率(FPR): {fp/(fp+tn+1e-8):.4f}')
+        fnr = fn / (tp + fn + 1e-8)
+        fpr = fp / (fp + tn + 1e-8)
+        print_fn(f'    漏检率(FNR): {fnr:.4f}  误检率(FPR): {fpr:.4f}')
 
-    return 0, auroc_sp_best, 0, best_acc, best_f1
+    # 加载最优模型，保存混淆矩阵分类图片
+    best_model_path = os.path.join(model_save_dir, f'best_model_{_class_}.pth')
+    if os.path.exists(best_model_path):
+        checkpoint = torch.load(best_model_path, map_location=device)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        _, _, _, _, _, _, _, img_paths, gt_list, _, preds = evaluate_full(
+            model, test_dataloader, device, _class_=_class_, return_details=True)
+        confusion_save_root = os.path.join(model_save_dir, 'confusion_images')
+        cat_counts = save_confusion_images(img_paths, gt_list, preds,
+                                           confusion_save_root, _class_)
+        print_fn(f'  混淆矩阵图片已保存至: {confusion_save_root}/{_class_}/')
+        for cat_name in ['TP', 'FP', 'FN', 'TN']:
+            print_fn(f'    {cat_name}: {len(cat_counts[cat_name])} 张')
+
+    writer.close()
+    return 0, auroc_sp_best, 0, best_acc, best_f1, fnr, fpr
 
 
 if __name__ == '__main__':
@@ -347,20 +414,24 @@ if __name__ == '__main__':
 
     result_list = []
     for item in item_list:
-        auroc_px_best, auroc_sp_best, aupro_px_best, acc, f1 = train(
+        auroc_px_best, auroc_sp_best, aupro_px_best, acc, f1, fnr, fpr = train(
             item, dataset=args.dataset,
             wafer_view=args.wafer_view, wafer_data_dir=args.wafer_data_dir)
-        result_list.append([item, auroc_sp_best, acc, f1])
+        result_list.append([item, auroc_sp_best, acc, f1, fnr, fpr])
 
     # 汇总
     print_fn(f'\n{"=" * 60}')
     print_fn(f'  汇总结果')
     print_fn(f'{"=" * 60}')
-    print_fn(f'  {"品类":<16} {"Sample AUROC":>12} {"Acc":>8} {"F1":>8}')
+    print_fn(f'  {"品类":<16} {"Sample AUROC":>12} {"Acc":>8} {"F1":>8} {"FPR":>8} {"FNR":>8}')
     for r in result_list:
-        print_fn(f'  {r[0]:<16} {r[1]:>12.4f} {r[2]:>8.4f} {r[3]:>8.4f}')
+        fpr_str = f'{r[4]:>8.4f}' if r[4] is not None else f'{"N/A":>8}'
+        fnr_str = f'{r[5]:>8.4f}' if r[5] is not None else f'{"N/A":>8}'
+        print_fn(f'  {r[0]:<16} {r[1]:>12.4f} {r[2]:>8.4f} {r[3]:>8.4f} {fpr_str} {fnr_str}')
 
     avg_auroc = np.mean([r[1] for r in result_list])
     avg_acc = np.mean([r[2] for r in result_list])
     avg_f1 = np.mean([r[3] for r in result_list])
-    print_fn(f'  {"平均":<16} {avg_auroc:>12.4f} {avg_acc:>8.4f} {avg_f1:>8.4f}')
+    avg_fpr = np.mean([r[4] for r in result_list if r[4] is not None])
+    avg_fnr = np.mean([r[5] for r in result_list if r[5] is not None])
+    print_fn(f'  {"平均":<16} {avg_auroc:>12.4f} {avg_acc:>8.4f} {avg_f1:>8.4f} {avg_fpr:>8.4f} {avg_fnr:>8.4f}')
