@@ -334,8 +334,9 @@ def train(args):
                 tn_e = ((preds_eval == 0) & (labels == 0)).sum()
                 fnr_e = fn_e / (tp_e + fn_e + 1e-8)
                 fpr_e = fp_e / (fp_e + tn_e + 1e-8)
-                print(f"  AUROC={auroc:.4f} | F1={best_f1:.4f} | Acc={acc:.4f}")
-                print(f"  FNR={fnr_e:.4f} | FPR={fpr_e:.4f}")
+                print(f'  AUROC:{auroc:.4f} | Acc:{acc:.4f} F1:{best_f1:.4f}')
+                print(f'  混淆矩阵: [[TN={tn_e}, FP={fp_e}], [FN={fn_e}, TP={tp_e}]]')
+                print(f'  漏检率(FNR):{fnr_e:.4f}  误检率(FPR):{fpr_e:.4f}')
                 # TensorBoard
                 writer.add_scalar('Metrics/AUROC', auroc, epoch)
                 writer.add_scalar('Metrics/F1', best_f1, epoch)
@@ -437,10 +438,10 @@ def train(args):
             cm_fnr = cm_fn / (cm_tp + cm_fn + 1e-8)
             cm_fpr = cm_fp / (cm_fp + cm_tn + 1e-8)
             
-            print(f"\n最终评估结果:")
-            print(f"  AUROC={auroc:.4f} | Acc={accuracy_score(labels, preds):.4f}")
-            print(f"  TP={cm_tp} FP={cm_fp} FN={cm_fn} TN={cm_tn}")
-            print(f"  FNR={cm_fnr:.4f} FPR={cm_fpr:.4f}")
+            print(f'\n最终评估结果:')
+            print(f'  AUROC:{auroc:.4f} | Acc:{accuracy_score(labels, preds):.4f} F1:{f1_score(labels, preds):.4f}')
+            print(f'  混淆矩阵: [[TN={cm_tn}, FP={cm_fp}], [FN={cm_fn}, TP={cm_tp}]]')
+            print(f'  漏检率(FNR):{cm_fnr:.4f}  误检率(FPR):{cm_fpr:.4f}')
             
             # 保存混淆矩阵图片
             confusion_root = save_dir / 'confusion_images'
@@ -777,8 +778,8 @@ def parse_args():
                        help='评估MVTec所有类别')
     parser.add_argument('--val_ratio', type=float, default=0.2,
                        help='验证集比例 (0.0-1.0)，默认0.2')
-    parser.add_argument('--eval_interval', type=int, default=25,
-                       help='定期评估间隔epoch数（默认25，设为0关闭）')
+    parser.add_argument('--eval_interval', type=int, default=10,
+                        help='定期评估间隔epoch数（默认10，设为0关闭）')
 
     # 模式
     parser.add_argument('--mode', type=str, default='train',

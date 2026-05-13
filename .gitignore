@@ -1,4 +1,5 @@
 # ============ 数据文件 ============
+/data/
 /mvtec_anomaly_detection/
 *.zip
 *.7z
@@ -19,6 +20,7 @@ baseline/checkpoints_v2/
 
 # ============ 训练日志 ============
 *.log
+nohup.out
 
 # ============ Python缓存 ============
 __pycache__/
@@ -47,3 +49,8 @@ __MACOSX/
 .env
 venv/
 .venv/
+
+# ============ 实验结果 ============
+ablation_results/
+saved_results/
+recontrast/checkpoint/
