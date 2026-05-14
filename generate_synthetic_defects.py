@@ -219,21 +219,20 @@ def generate_defect(img,
     """
     if intensity == 'light':
         params = {
-            'scratch': {'max_scratches': 1, 'min_opacity': 0.2, 'max_opacity': 0.4},
-            'stains': {'max_stains': 1, 'min_opacity': 0.15, 'max_opacity': 0.3},
-            'spots': {'max_spots': 5}
+            'scratch': {'max_scratches': 1, 'min_opacity': 0.1, 'max_opacity': 0.2},
+            'stains': {'max_stains': 1, 'min_opacity': 0.08, 'max_opacity': 0.15},
+            'spots': {'max_spots': 3, 'opacity_range': (0.08, 0.15)},
+            'missing': {'max_regions': 1, 'min_ratio': 0.02, 'max_ratio': 0.06},
         }
     elif intensity == 'medium':
+        # 使用函数默认参数（已调至适中）
+        params = {}
+    else:  # heavy — UP视图用
         params = {
-            'scratch': {'max_scratches': 2, 'min_opacity': 0.3, 'max_opacity': 0.6},
-            'stains': {'max_stains': 2, 'min_opacity': 0.2, 'max_opacity': 0.45},
-            'spots': {'max_spots': 8}
-        }
-    else:  # heavy
-        params = {
-            'scratch': {'max_scratches': 3, 'min_opacity': 0.4, 'max_opacity': 0.8},
-            'stains': {'max_stains': 3, 'min_opacity': 0.3, 'max_opacity': 0.6},
-            'spots': {'max_spots': 12}
+            'scratch': {'max_scratches': 2, 'min_width': 1, 'max_width': 3, 'min_opacity': 0.35, 'max_opacity': 0.6},
+            'stains': {'max_stains': 3, 'min_size': 10, 'max_size': 40, 'min_opacity': 0.25, 'max_opacity': 0.45},
+            'spots': {'max_spots': 10, 'spot_size': 3, 'opacity_range': (0.3, 0.55)},
+            'missing': {'max_regions': 1, 'min_ratio': 0.05, 'max_ratio': 0.15},
         }
     
     result = img.copy()
