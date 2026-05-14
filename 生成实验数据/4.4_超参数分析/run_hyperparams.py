@@ -38,6 +38,9 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+# ─── 项目根目录（绝对路径）───
+ROOT = '/data/coding/under_graduate'
+
 # ─── 数据集 ───
 MVTEC_ALL = ['bottle','cable','capsule','carpet','grid','hazelnut','leather',
              'metal_nut','pill','screw','tile','toothbrush','transistor','wood','zipper']
@@ -97,8 +100,8 @@ def run_single_hp(category, dim_name, exp_label, extra_args, output_dir, dataset
     safe_exp = exp_label.replace('=', '_').replace('(', '').replace(')', '').replace(' ', '_')
     save_dir = f"{output_dir}/checkpoints/{dim_name}/{safe_exp}/{safe_cat}"
     
-    base_args = f"--dataset {dataset} --categories {category} --save_dir {save_dir} --eval_interval 200"
-    cmd = f"python recontrast_vit_wafer.py {base_args} {extra_args}"
+    base_args = f"--dataset {dataset} --categories {category} --save_dir {save_dir} --data_dir {ROOT}/data --mvtec_dir {ROOT}/mvtec_anomaly_detection --eval_interval 200"
+    cmd = f"python {ROOT}/recontrast_vit_wafer.py {base_args} {extra_args}"
     
     print(f"\n{'='*70}")
     print(f"  [{datetime.now().strftime('%H:%M:%S')}] {dim_name} | {exp_label} | {category}")
@@ -265,7 +268,7 @@ def main():
     else:
         dims = [d.strip() for d in args.dims.split(',')]
     
-    output_dir = './生成实验数据/4.4_超参数分析/output'
+    output_dir = f'{ROOT}/生成实验数据/4.4_超参数分析/output'
     
     print(f"\n{'#'*70}")
     print(f"# 4.4 超参数分析")

@@ -41,6 +41,9 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+# ─── 项目根目录（绝对路径）───
+ROOT = '/data/coding/under_graduate'
+
 # ─── 数据集配置 ───
 MVTEC_ALL = ['bottle','cable','capsule','carpet','grid','hazelnut','leather',
              'metal_nut','pill','screw','tile','toothbrush','transistor','wood','zipper']
@@ -77,7 +80,7 @@ def _make_methods(output_dir):
         'vit_recontrast': {
             'label': 'ViT+ReContrast (本文)',
             'cmd': lambda cat: (
-                f"python recontrast_vit_wafer.py --dataset {_ds} "
+                f"python {ROOT}/recontrast_vit_wafer.py --dataset {_ds} --data_dir {ROOT}/data --mvtec_dir {ROOT}/mvtec_anomaly_detection "
                 f"--categories {cat} --epochs 200 --eval_interval 200 "
                 f"--save_dir {output_dir}/vit_recontrast/{cat.replace(' ','_')}"
             ),
@@ -85,8 +88,8 @@ def _make_methods(output_dir):
         'moco': {
             'label': 'MoCo v2 (ViT)',
             'cmd': lambda cat: (
-                f"python -m wafer_defect_detection.train --mode train "
-                f"--dataset {_ds} --data_dir ./data --mvtec_dir ./mvtec_anomaly_detection "
+                f"cd {ROOT} && python -m wafer_defect_detection.train --mode train "
+                f"--dataset {_ds} --data_dir {ROOT}/data --mvtec_dir {ROOT}/mvtec_anomaly_detection "
                 f"--{_cat_arg} {cat} --epochs 200 --batch_size 32 "
                 f"--use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere "
                 f"--save_dir {output_dir}/moco --eval_interval 200"
@@ -95,7 +98,7 @@ def _make_methods(output_dir):
         'recontrast_resnet': {
             'label': 'ReContrast (ResNet)',
             'cmd': lambda cat: (
-                f"python recontrast_wafer.py --dataset {_ds} "
+                f"python {ROOT}/recontrast_wafer.py --dataset {_ds} --data_dir {ROOT}/data --mvtec_dir {ROOT}/mvtec_anomaly_detection "
                 f"--categories {cat} --epochs 200 --eval_interval 200 "
                 f"--save_dir {output_dir}/recontrast_resnet/{cat.replace(' ','_')}"
             ),
@@ -346,7 +349,7 @@ def main():
         categories = [c.strip() for c in args.categories.split(',')]
     
     method_ids = [m.strip() for m in args.methods.split(',')]
-    output_dir = './生成实验数据/4.3_对比实验/output'
+    output_dir = f'{ROOT}/生成实验数据/4.3_对比实验/output'
     
     print(f"\n{'#'*70}")
     print(f"# 4.3 对比实验")

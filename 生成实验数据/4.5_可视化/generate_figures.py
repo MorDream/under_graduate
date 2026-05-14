@@ -39,8 +39,11 @@ from pathlib import Path
 
 warnings.filterwarnings("ignore")
 
+# ─── 项目根目录（绝对路径）───
+ROOT = '/data/coding/under_graduate'
+
 # ─── 输出目录 ───
-OUTPUT_DIR = Path('./生成实验数据/4.5_可视化/output')
+OUTPUT_DIR = Path(f'{ROOT}/生成实验数据/4.5_可视化/output')
 
 
 # ═══════════════════════════════════════════════
@@ -366,13 +369,13 @@ def main():
     parser = argparse.ArgumentParser(description='4.5 可视化 — 论文图表生成')
     parser.add_argument('--checkpoint', type=str, default='',
                        help='训练好的模型checkpoint路径（用于热力图）')
-    parser.add_argument('--tensorboard_dir', type=str, default='./recontrast/checkpoint/tensorboard',
+    parser.add_argument('--tensorboard_dir', type=str, default=f'{ROOT}/recontrast/checkpoint/tensorboard',
                        help='TensorBoard event文件目录（用于训练曲线）')
     parser.add_argument('--categories', type=str, default='carpet',
                        help='品类名，逗号分隔')
     parser.add_argument('--dataset', type=str, default='mvtec', choices=['mvtec', 'wafer'])
-    parser.add_argument('--data_dir', type=str, default='./data')
-    parser.add_argument('--mvtec_dir', type=str, default='./mvtec_anomaly_detection')
+    parser.add_argument('--data_dir', type=str, default=f'{ROOT}/data')
+    parser.add_argument('--mvtec_dir', type=str, default=f'{ROOT}/mvtec_anomaly_detection')
     parser.add_argument('--figs', type=str, default='architecture',
                        help='要生成的图表: heatmap, curves, architecture, 或 all')
     parser.add_argument('--all', action='store_true', help='生成全部图表')

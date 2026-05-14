@@ -40,6 +40,9 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+# ─── 项目根目录（绝对路径）───
+ROOT = '/data/coding/under_graduate'
+
 # ─── 数据集配置 ───
 MVTEC_ALL = ['bottle','cable','capsule','carpet','grid','hazelnut','leather',
              'metal_nut','pill','screw','tile','toothbrush','transistor','wood','zipper']
@@ -71,10 +74,10 @@ def parse_auroc_f1(output: str):
 
 
 def run_single_exp(category, exp_name, extra_args, save_subdir, dataset='mvtec', 
-                   base_cmd='python recontrast_vit_wafer.py', eval_interval=200):
+                   base_cmd=f'python {ROOT}/recontrast_vit_wafer.py', eval_interval=200):
     """运行单个品类×单个实验配置，返回 (success, auroc, f1, elapsed)"""
-    save_dir = f"./生成实验数据/4.2_消融实验/output/checkpoints/{save_subdir}/{category.replace(' ','_')}"
-    cmd = (f"{base_cmd} --dataset {dataset} --categories {category} "
+    save_dir = f"{ROOT}/生成实验数据/4.2_消融实验/output/checkpoints/{save_subdir}/{category.replace(' ','_')}"
+    cmd = (f"{base_cmd} --dataset {dataset} --categories {category} --data_dir {ROOT}/data --mvtec_dir {ROOT}/mvtec_anomaly_detection "
            f"--epochs 200 --save_dir {save_dir} "
            f"{extra_args} --eval_interval {eval_interval}")
     
@@ -146,7 +149,7 @@ def run_all(categories, dataset, experiments, skip_existing=False):
 
 def _save_results(all_results, categories, dataset):
     """增量保存结果到 JSON / MD / CSV"""
-    out_dir = Path('./生成实验数据/4.2_消融实验/output')
+    out_dir = Path(f'{ROOT}/生成实验数据/4.2_消融实验/output')
     out_dir.mkdir(parents=True, exist_ok=True)
     
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
