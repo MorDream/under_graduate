@@ -1,0 +1,106 @@
+{
+  "BGA 12x4": {
+    "train_good": 151,
+    "views": {
+      "UP": {
+        "good": 26,
+        "defect": 26
+      },
+      "DOWN": {
+        "good": 30,
+        "defect": 30
+      }
+    }
+  },
+  "BGA S5E 16x7": {
+    "train_good": 322,
+    "views": {
+      "UP": {
+        "good": 9,
+        "defect": 9
+      },
+      "DOWN": {
+        "good": 7,
+        "defect": 7
+      }
+    }
+  },
+  "ESSD 12x4": {
+    "train_good": 167,
+    "views": {
+      "UP": {
+        "good": 7,
+        "defect": 5
+      },
+      "DOWN": {
+        "good": 3,
+        "defect": 5
+      }
+    }
+  },
+  "ESSD 12x5": {
+    "train_good": 469,
+    "views": {
+      "UP": {
+        "good": 4,
+        "defect": 5
+      },
+      "DOWN": {
+        "good": 6,
+        "defect": 5
+      }
+    }
+  },
+  "INAND 19x5": {
+    "train_good": 168,
+    "views": {
+      "UP": {
+        "good": 7,
+        "defect": 5
+      },
+      "DOWN": {
+        "good": 9,
+        "defect": 11
+      }
+    }
+  },
+  "MicroSD 20x4": {
+    "train_good": 318,
+    "views": {
+      "UP": {
+        "good": 6,
+        "defect": 5
+      },
+      "DOWN": {
+        "good": 4,
+        "defect": 5
+      }
+    }
+  },
+  "SDSIP 22x3": {
+    "train_good": 239,
+    "views": {
+      "UP": {
+        "good": 5,
+        "defect": 5
+      },
+      "DOWN": {
+        "good": 5,
+        "defect": 5
+      }
+    }
+  },
+  "UBGA 12x5": {
+    "train_good": 206,
+    "views": {
+      "UP": {
+        "good": 5,
+        "defect": 5
+      },
+      "DOWN": {
+        "good": 5,
+        "defect": 5
+      }
+    }
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "bottle": {
+    "type": "物体",
+    "train_good": 209,
+    "test_good": 20,
+    "test_defect_total": 63,
+    "defect_types": {
+      "broken_large": 20,
+      "broken_small": 22,
+      "contamination": 21
+    },
+    "test_total": 83
+  },
+  "cable": {
+    "type": "物体",
+    "train_good": 224,
+    "test_good": 58,
+    "test_defect_total": 92,
+    "defect_types": {
+      "bent_wire": 13,
+      "cable_swap": 12,
+      "combined": 11,
+      "cut_inner_insulation": 14,
+      "cut_outer_insulation": 10,
+      "missing_cable": 12,
+      "missing_wire": 10,
+      "poke_insulation": 10
+    },
+    "test_total": 150
+  },
+  "capsule": {
+    "type": "物体",
+    "train_good": 219,
+    "test_good": 23,
+    "test_defect_total": 109,
+    "defect_types": {
+      "crack": 23,
+      "faulty_imprint": 22,
+      "poke": 21,
+      "scratch": 23,
+      "squeeze": 20
+    },
+    "test_total": 132
+  },
+  "carpet": {
+    "type": "纹理",
+    "train_good": 280,
+    "test_good": 28,
+    "test_defect_total": 89,
+    "defect_types": {
+      "color": 19,
+      "cut": 17,
+      "hole": 17,
+      "metal_contamination": 17,
+      "thread": 19
+    },
+    "test_total": 117
+  },
+  "grid": {
+    "type": "纹理",
+    "train_good": 264,
+    "test_good": 21,
+    "test_defect_total": 57,
+    "defect_types": {
+      "bent": 12,
+      "broken": 12,
+      "glue": 11,
+      "metal_contamination": 11,
+      "thread": 11
+    },
+    "test_total": 78
+  },
+  "hazelnut": {
+    "type": "物体",
+    "train_good": 391,
+    "test_good": 40,
+    "test_defect_total": 70,
+    "defect_types": {
+      "crack": 18,
+      "cut": 17,
+      "hole": 18,
+      "print": 17
+    },
+    "test_total": 110
+  },
+  "leather": {
+    "type": "纹理",
+    "train_good": 245,
+    "test_good": 32,
+    "test_defect_total": 92,
+    "defect_types": {
+      "color": 19,
+      "cut": 19,
+      "fold": 17,
+      "glue": 19,
+      "poke": 18
+    },
+    "test_total": 124
+  },
+  "metal_nut": {
+    "type": "物体",
+    "train_good": 220,
+    "test_good": 22,
+    "test_defect_total": 93,
+    "defect_types": {
+      "bent": 25,
+      "color": 22,
+      "flip": 23,
+      "scratch": 23
+    },
+    "test_total": 115
+  },
+  "pill": {
+    "type": "物体",
+    "train_good": 267,
+    "test_good": 26,
+    "test_defect_total": 141,
+    "defect_types": {
+      "color": 25,
+      "combined": 17,
+      "contamination": 21,
+      "crack": 26,
+      "faulty_imprint": 19,
+      "pill_type": 9,
+      "scratch": 24
+    },
+    "test_total": 167
+  },
+  "screw": {
+    "type": "物体",
+    "train_good": 320,
+    "test_good": 41,
+    "test_defect_total": 119,
+    "defect_types": {
+      "manipulated_front": 24,
+      "scratch_head": 24,
+      "scratch_neck": 25,
+      "thread_side": 23,
+      "thread_top": 23
+    },
+    "test_total": 160
+  },
+  "tile": {
+    "type": "纹理",
+    "train_good": 230,
+    "test_good": 33,
+    "test_defect_total": 84,
+    "defect_types": {
+      "crack": 17,
+      "glue_strip": 18,
+      "gray_stroke": 16,
+      "oil": 18,
+      "rough": 15
+    },
+    "test_total": 117
+  },
+  "toothbrush": {
+    "type": "物体",
+    "train_good": 60,
+    "test_good": 12,
+    "test_defect_total": 30,
+    "defect_types": {
+      "defective": 30
+    },
+    "test_total": 42
+  },
+  "transistor": {
+    "type": "物体",
+    "train_good": 213,
+    "test_good": 60,
+    "test_defect_total": 40,
+    "defect_types": {
+      "bent_lead": 10,
+      "cut_lead": 10,
+      "damaged_case": 10,
+      "misplaced": 10
+    },
+    "test_total": 100
+  },
+  "wood": {
+    "type": "纹理",
+    "train_good": 247,
+    "test_good": 19,
+    "test_defect_total": 60,
+    "defect_types": {
+      "color": 8,
+      "combined": 11,
+      "hole": 10,
+      "liquid": 10,
+      "scratch": 21
+    },
+    "test_total": 79
+  },
+  "zipper": {
+    "type": "物体",
+    "train_good": 240,
+    "test_good": 32,
+    "test_defect_total": 119,
+    "defect_types": {
+      "broken_teeth": 19,
+      "combined": 16,
+      "fabric_border": 17,
+      "fabric_interior": 16,
+      "rough": 17,
+      "split_teeth": 18,
+      "squeezed_teeth": 16
+    },
+    "test_total": 151
+  }
+}
