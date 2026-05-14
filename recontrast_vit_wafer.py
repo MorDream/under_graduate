@@ -67,7 +67,7 @@ def modify_grad(x, inds, factor=0.):
     """抑制易重建token的梯度，迫使模型关注难例"""
     mask_float = inds.float()
     scale = 1.0 - mask_float + mask_float * factor
-    return x * scale
+    return x * scale.unsqueeze(-1)  # [B,N] → [B,N,1] 对齐 [B,N,C]
 
 
 def global_cosine_hm_tokens(a_list, b_list, alpha=1.0, factor=0.):
