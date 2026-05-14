@@ -32,6 +32,7 @@
 
 import os
 import sys
+sys.stdout.reconfigure(line_buffering=True)  # 实时输出到日志
 import json
 import time
 import subprocess
