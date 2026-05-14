@@ -313,8 +313,8 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data',
 
     total_iters = 1000
     batch_size = 8  # ViT需要更小的batch size
-    image_size = 224  # DINOv2通常使用224
-    crop_size = 224
+    image_size = 518  # DINOv2原生尺寸
+    crop_size = 518
 
     data_transform, gt_transform = get_data_transforms(image_size, crop_size)
 
