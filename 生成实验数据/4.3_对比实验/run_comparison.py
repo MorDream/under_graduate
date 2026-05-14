@@ -65,26 +65,32 @@ def _make_methods(output_dir):
     return {
         'vit_recontrast': {
             'label': 'ViT+ReContrast (本文)',
-            'cmd': lambda cat: (
-                f"cd {ROOT} && python {ROOT}/recontrast_vit_wafer.py --dataset {_ds} "
-                f"--categories {cat} --eval_interval 200 "
+            'cmd': lambda cat, view='': (
+                f"cd {ROOT} && python {ROOT}/recontrast_vit_wafer.py "
+                f"--dataset {_ds} "
+                f"{'--wafer_category \"' + cat + '\" --wafer_view ' + view if _ds == 'wafer' else '--categories ' + cat} "
+                f"--eval_interval 200 "
                 f"--save_dir {output_dir}/vit_recontrast/{cat.replace(' ','_')}"
             ),
         },
         'moco': {
             'label': 'MoCo v2 (ViT)',
-            'cmd': lambda cat: (
+            'cmd': lambda cat, view='': (
                 f"cd {ROOT} && python -m wafer_defect_detection.train --mode train "
-                f"--dataset {_ds} --{_cat_arg} {cat} --epochs 200 --batch_size 32 "
+                f"--dataset {_ds} --{_cat_arg} \"{cat}\" "
+                f"{'--wafer_view ' + view if _ds == 'wafer' else ''} "
+                f"--epochs 200 --batch_size 32 "
                 f"--use_cutpaste --use_multiscale --use_feature_generator --use_hypersphere "
                 f"--save_dir {output_dir}/moco --eval_interval 200"
             ),
         },
         'recontrast_resnet': {
             'label': 'ReContrast (ResNet)',
-            'cmd': lambda cat: (
-                f"cd {ROOT} && python {ROOT}/recontrast_wafer.py --dataset {_ds} "
-                f"--categories {cat} --eval_interval 200 "
+            'cmd': lambda cat, view='': (
+                f"cd {ROOT} && python {ROOT}/recontrast_wafer.py "
+                f"--dataset {_ds} "
+                f"{'--wafer_category \"' + cat + '\" --wafer_view ' + view if _ds == 'wafer' else '--categories ' + cat} "
+                f"--eval_interval 200 "
                 f"--save_dir {output_dir}/recontrast_resnet/{cat.replace(' ','_')}"
             ),
         },
@@ -99,12 +105,13 @@ def parse_auroc_f1(output):
     return auroc, f1
 
 
-def run_method(method_id, method_info, category, dataset):
+def run_method(method_id, method_info, category, dataset, wafer_view=None):
     global _ds, _cat_arg
     _ds = dataset
     _cat_arg = 'mvtec_category' if dataset == 'mvtec' else 'wafer_category'
 
-    cmd = method_info['cmd'](category)
+    view_suffix = f'_{wafer_view}' if wafer_view else ''
+    cmd = method_info['cmd'](category, wafer_view or '')
 
     print(f"\n{'='*70}")
     print(f"  [{datetime.now().strftime('%H:%M:%S')}] {method_info['label']} | {category}")
@@ -144,6 +151,9 @@ def run_all(categories, dataset, method_ids, output_dir):
     methods = _make_methods(output_dir)
     methods = {k: v for k, v in methods.items() if k in method_ids}
 
+    # For wafer, each category has UP and DOWN views
+    wafer_views = ['UP', 'DOWN'] if dataset == 'wafer' else [None]
+
     all_results = {}
 
     for cat in categories:
@@ -151,19 +161,35 @@ def run_all(categories, dataset, method_ids, output_dir):
         all_results[cat_key] = {}
 
         for mid, minfo in methods.items():
-            print(f"\n{'#'*70}")
-            print(f"# 品类: {cat}  |  方法: {minfo['label']}")
-            print(f"{'#'*70}")
+            view_aurocs = []
+            view_f1s = []
 
-            ok, auroc, f1, elapsed = run_method(mid, minfo, cat, dataset)
+            for view in wafer_views:
+                view_label = f' {view}' if view else ''
+                print(f"\n{'#'*70}")
+                print(f"# 品类: {cat}{view_label}  |  方法: {minfo['label']}")
+                print(f"{'#'*70}")
+
+                ok, auroc, f1, elapsed = run_method(mid, minfo, cat, dataset, wafer_view=view)
+
+                if auroc is not None:
+                    view_aurocs.append(auroc)
+                if f1 is not None:
+                    view_f1s.append(f1)
+
+            # Average across views for wafer
+            avg_auroc = sum(view_aurocs) / len(view_aurocs) if view_aurocs else None
+            avg_f1 = sum(view_f1s) / len(view_f1s) if view_f1s else None
 
             all_results[cat_key][mid] = {
                 'label': minfo['label'],
-                'success': ok,
-                'auroc': auroc,
-                'f1': f1,
+                'success': ok if len(wafer_views) == 1 else (len(view_aurocs) > 0),
+                'auroc': avg_auroc,
+                'f1': avg_f1,
                 'time_s': round(elapsed, 0),
             }
+            if len(wafer_views) > 1:
+                all_results[cat_key][mid]['view_aurocs'] = dict(zip(wafer_views, view_aurocs))
             _save_results(all_results, categories, dataset, output_dir)
 
     if dataset == 'mvtec':
