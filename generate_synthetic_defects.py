@@ -227,12 +227,12 @@ def generate_defect(img,
     elif intensity == 'medium':
         # 使用函数默认参数（已调至适中）
         params = {}
-    else:  # heavy — UP视图用
+    else:  # heavy — UP视图用（较浓）
         params = {
-            'scratch': {'max_scratches': 2, 'min_width': 1, 'max_width': 3, 'min_opacity': 0.35, 'max_opacity': 0.6},
-            'stains': {'max_stains': 3, 'min_size': 10, 'max_size': 40, 'min_opacity': 0.25, 'max_opacity': 0.45},
-            'spots': {'max_spots': 10, 'spot_size': 3, 'opacity_range': (0.3, 0.55)},
-            'missing': {'max_regions': 1, 'min_ratio': 0.05, 'max_ratio': 0.15},
+            'scratch': {'max_scratches': 3, 'min_width': 2, 'max_width': 4, 'min_opacity': 0.45, 'max_opacity': 0.75},
+            'stains': {'max_stains': 3, 'min_size': 12, 'max_size': 50, 'min_opacity': 0.35, 'max_opacity': 0.55},
+            'spots': {'max_spots': 12, 'spot_size': 3, 'opacity_range': (0.4, 0.65)},
+            'missing': {'max_regions': 2, 'min_ratio': 0.05, 'max_ratio': 0.18},
         }
     
     result = img.copy()
