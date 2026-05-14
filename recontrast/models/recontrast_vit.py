@@ -219,9 +219,12 @@ def load_dinov2_encoder(model_name='vit_small_patch14_dinov2.lvd142m', pretraine
     def new_forward(x, return_all_layers=False):
         """兼容的forward函数"""
         if return_all_layers:
-            # 返回多尺度特征 (使用intermediate layers)
-            # DINOv2有12层，我们取第3, 6, 9, 12层
-            return encoder.get_intermediate_layers(x, n=4, return_class_token=True)
+            # 返回多尺度特征: (final_layer_patch_tokens, [intermediate_patch_tokens])
+            # DINOv2有12层，取第3, 6, 9, 12层
+            layers_out = encoder.get_intermediate_layers(x, n=4, return_prefix_tokens=True)
+            # layers_out: list of 4 tuples (patch_tokens, prefix_token)
+            all_feats = [l[0] for l in layers_out]  # 只取patch tokens
+            return (all_feats[-1], all_feats[:-1])  # (final, [layer0, layer1, layer2])
         else:
             return original_forward(x)
     
