@@ -1,0 +1,1255 @@
+cuda:0
+carpet
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 280
+test image number: 117
+cuda:0
+carpet
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 280
+test image number: 117
+cuda:0
+carpet
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 280
+test image number: 117
+iter [70/1000], loss:0.1061
+cuda:0
+carpet
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 280
+test image number: 117
+iter [70/1000], loss:0.1061
+Sample Auroc:0.466 | Acc:0.761 F1:0.864
+  混淆矩阵: [[TN=0, FP=28], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):1.0000
+  >>> 保存最优模型 (AUROC=0.466)
+iter [140/1000], loss:0.0373
+Sample Auroc:0.451 | Acc:0.769 F1:0.868
+  混淆矩阵: [[TN=1, FP=27], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.9643
+iter [210/1000], loss:0.0232
+iter [280/1000], loss:0.0174
+Sample Auroc:0.407 | Acc:0.761 F1:0.864
+  混淆矩阵: [[TN=0, FP=28], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):1.0000
+iter [350/1000], loss:0.0151
+Sample Auroc:0.370 | Acc:0.769 F1:0.868
+  混淆矩阵: [[TN=1, FP=27], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.9643
+iter [420/1000], loss:0.0130
+iter [490/1000], loss:0.0126
+cuda:0
+carpet
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 280
+test image number: 117
+iter [70/1000], loss:0.1055
+Sample Auroc:0.443 | Acc:0.761 F1:0.864
+  混淆矩阵: [[TN=0, FP=28], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):1.0000
+  >>> 保存最优模型 (AUROC=0.443)
+iter [140/1000], loss:0.0349
+Sample Auroc:0.460 | Acc:0.761 F1:0.864
+  混淆矩阵: [[TN=0, FP=28], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):1.0000
+  >>> 保存最优模型 (AUROC=0.460)
+iter [210/1000], loss:0.0213
+iter [280/1000], loss:0.0171
+Sample Auroc:0.477 | Acc:0.761 F1:0.864
+  混淆矩阵: [[TN=0, FP=28], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):1.0000
+  >>> 保存最优模型 (AUROC=0.477)
+cuda:0
+carpet
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 280
+test image number: 117
+cuda:0
+carpet
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 280
+test image number: 117
+iter [70/1000], loss:0.8472
+Sample Auroc:0.995 | Acc:0.991 F1:0.994
+  混淆矩阵: [[TN=27, FP=1], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0357
+  >>> 保存最优模型 (AUROC=0.995)
+iter [140/1000], loss:0.5091
+Sample Auroc:0.992 | Acc:0.983 F1:0.989
+  混淆矩阵: [[TN=26, FP=2], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0714
+iter [210/1000], loss:0.4741
+iter [280/1000], loss:0.4228
+Sample Auroc:0.998 | Acc:0.983 F1:0.989
+  混淆矩阵: [[TN=27, FP=1], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.0357
+  >>> 保存最优模型 (AUROC=0.998)
+iter [350/1000], loss:0.3843
+Sample Auroc:0.999 | Acc:0.991 F1:0.994
+  混淆矩阵: [[TN=27, FP=1], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0357
+  >>> 保存最优模型 (AUROC=0.999)
+iter [420/1000], loss:0.3554
+iter [490/1000], loss:0.3555
+Sample Auroc:0.994 | Acc:0.966 F1:0.978
+  混淆矩阵: [[TN=25, FP=3], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.1071
+iter [560/1000], loss:0.3521
+Sample Auroc:0.998 | Acc:0.991 F1:0.994
+  混淆矩阵: [[TN=28, FP=0], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.0000
+iter [630/1000], loss:0.3406
+Sample Auroc:0.999 | Acc:0.991 F1:0.994
+  混淆矩阵: [[TN=28, FP=0], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=0.999)
+iter [700/1000], loss:0.3282
+iter [770/1000], loss:0.3318
+Sample Auroc:0.999 | Acc:0.991 F1:0.994
+  混淆矩阵: [[TN=27, FP=1], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0357
+iter [840/1000], loss:0.3334
+Sample Auroc:1.000 | Acc:0.991 F1:0.994
+  混淆矩阵: [[TN=27, FP=1], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0357
+  >>> 保存最优模型 (AUROC=1.000)
+iter [910/1000], loss:0.3290
+iter [980/1000], loss:0.3242
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=28, FP=0], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [1000/1000], loss:0.3243
+
+============================================================
+  carpet 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 1.0000
+  Accuracy:     1.0000
+  F1 Score:     1.0000
+  Threshold:    0.2248
+  混淆矩阵:
+    TP=89  FP=0
+    FN=0  TN=28
+    漏检率(FNR): 0.0000  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/carpet/confusion_images/carpet/
+    TP: 89 张
+    FP: 0 张
+    FN: 0 张
+    TN: 28 张
+
+  -------- 错误分类图片 --------
+
+============================================================
+  汇总结果
+============================================================
+  品类               Sample AUROC      Acc       F1      FPR      FNR
+  carpet                 1.0000   1.0000   1.0000   0.0000   0.0000
+  平均                     1.0000   1.0000   1.0000   0.0000   0.0000
+cuda:0
+BGA 12x4
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 151
+test image number: 69
+iter [38/1000], loss:1.4257
+iter [76/1000], loss:0.7386
+Sample Auroc:0.979 | Acc:0.942 F1:0.846
+  混淆矩阵: [[TN=54, FP=2], [FN=2, TP=11]]
+  漏检率(FNR):0.1538  误检率(FPR):0.0357
+  >>> 保存最优模型 (AUROC=0.979)
+iter [114/1000], loss:0.6426
+iter [152/1000], loss:0.6294
+iter [190/1000], loss:0.6111
+Sample Auroc:0.986 | Acc:0.971 F1:0.923
+  混淆矩阵: [[TN=55, FP=1], [FN=1, TP=12]]
+  漏检率(FNR):0.0769  误检率(FPR):0.0179
+  >>> 保存最优模型 (AUROC=0.986)
+iter [228/1000], loss:0.5745
+iter [266/1000], loss:0.5605
+Sample Auroc:0.995 | Acc:0.986 F1:0.960
+  混淆矩阵: [[TN=56, FP=0], [FN=1, TP=12]]
+  漏检率(FNR):0.0769  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=0.995)
+iter [304/1000], loss:0.5404
+iter [342/1000], loss:0.5211
+iter [380/1000], loss:0.5295
+Sample Auroc:0.974 | Acc:0.957 F1:0.889
+  混淆矩阵: [[TN=54, FP=2], [FN=1, TP=12]]
+  漏检率(FNR):0.0769  误检率(FPR):0.0357
+iter [418/1000], loss:0.5252
+iter [456/1000], loss:0.5120
+iter [494/1000], loss:0.5044
+Sample Auroc:0.968 | Acc:0.971 F1:0.923
+  混淆矩阵: [[TN=55, FP=1], [FN=1, TP=12]]
+  漏检率(FNR):0.0769  误检率(FPR):0.0179
+iter [532/1000], loss:0.5085
+iter [570/1000], loss:0.4891
+Sample Auroc:0.986 | Acc:0.986 F1:0.960
+  混淆矩阵: [[TN=56, FP=0], [FN=1, TP=12]]
+  漏检率(FNR):0.0769  误检率(FPR):0.0000
+iter [608/1000], loss:0.4806
+iter [646/1000], loss:0.4856
+iter [684/1000], loss:0.4862
+Sample Auroc:0.979 | Acc:0.942 F1:0.867
+  混淆矩阵: [[TN=52, FP=4], [FN=0, TP=13]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0714
+iter [722/1000], loss:0.4895
+iter [760/1000], loss:0.4806
+iter [798/1000], loss:0.4936
+Sample Auroc:0.982 | Acc:0.986 F1:0.960
+  混淆矩阵: [[TN=56, FP=0], [FN=1, TP=12]]
+  漏检率(FNR):0.0769  误检率(FPR):0.0000
+iter [836/1000], loss:0.4652
+iter [874/1000], loss:0.4645
+Sample Auroc:0.978 | Acc:0.942 F1:0.857
+  混淆矩阵: [[TN=53, FP=3], [FN=1, TP=12]]
+  漏检率(FNR):0.0769  误检率(FPR):0.0536
+iter [912/1000], loss:0.4715
+iter [950/1000], loss:0.4546
+iter [988/1000], loss:0.4571
+Sample Auroc:0.960 | Acc:0.971 F1:0.923
+  混淆矩阵: [[TN=55, FP=1], [FN=1, TP=12]]
+  漏检率(FNR):0.0769  误检率(FPR):0.0179
+iter [1000/1000], loss:0.4595
+
+============================================================
+  BGA 12x4 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 0.9945
+  Accuracy:     0.9855
+  F1 Score:     0.9600
+  Threshold:    0.3984
+  混淆矩阵:
+    TP=12  FP=0
+    FN=1  TN=56
+    漏检率(FNR): 0.0769  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/BGA_12x4_ALL/confusion_images/BGA 12x4/
+    TP: 12 张
+    FP: 0 张
+    FN: 1 张
+    TN: 56 张
+
+  -------- 错误分类图片 --------
+  [FN] 共 1 张:
+    KA1UXX015_A5_DOWN_synth_local_damage_012.jpg
+BGA S5E 16x7
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 322
+test image number: 25
+iter [81/1000], loss:0.9295
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=16, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [162/1000], loss:0.5626
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=16, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [243/1000], loss:0.5327
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=16, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [324/1000], loss:0.5095
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=16, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [405/1000], loss:0.5046
+iter [486/1000], loss:0.4824
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=16, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [567/1000], loss:0.5045
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=16, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [648/1000], loss:0.4965
+Sample Auroc:0.986 | Acc:0.960 F1:0.941
+  混淆矩阵: [[TN=16, FP=0], [FN=1, TP=8]]
+  漏检率(FNR):0.1111  误检率(FPR):0.0000
+iter [729/1000], loss:0.4784
+Sample Auroc:0.993 | Acc:0.960 F1:0.947
+  混淆矩阵: [[TN=15, FP=1], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0625
+iter [810/1000], loss:0.4867
+iter [891/1000], loss:0.4812
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=16, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [972/1000], loss:0.4728
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=16, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [1000/1000], loss:0.4667
+
+============================================================
+  BGA S5E 16x7 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 1.0000
+  Accuracy:     1.0000
+  F1 Score:     1.0000
+  Threshold:    0.3742
+  混淆矩阵:
+    TP=9  FP=0
+    FN=0  TN=16
+    漏检率(FNR): 0.0000  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/BGA_S5E_16x7_ALL/confusion_images/BGA S5E 16x7/
+    TP: 9 张
+    FP: 0 张
+    FN: 0 张
+    TN: 16 张
+
+  -------- 错误分类图片 --------
+ESSD 12x4
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 167
+test image number: 12
+iter [42/1000], loss:1.3523
+iter [84/1000], loss:0.7416
+Sample Auroc:0.969 | Acc:0.917 F1:0.941
+  混淆矩阵: [[TN=3, FP=1], [FN=0, TP=8]]
+  漏检率(FNR):0.0000  误检率(FPR):0.2500
+  >>> 保存最优模型 (AUROC=0.969)
+iter [126/1000], loss:0.6288
+iter [168/1000], loss:0.6135
+Sample Auroc:0.969 | Acc:0.917 F1:0.941
+  混淆矩阵: [[TN=3, FP=1], [FN=0, TP=8]]
+  漏检率(FNR):0.0000  误检率(FPR):0.2500
+  >>> 保存最优模型 (AUROC=0.969)
+iter [210/1000], loss:0.5901
+iter [252/1000], loss:0.5748
+iter [294/1000], loss:0.5612
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=4, FP=0], [FN=0, TP=8]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [336/1000], loss:0.5399
+iter [378/1000], loss:0.5383
+Sample Auroc:0.938 | Acc:0.917 F1:0.941
+  混淆矩阵: [[TN=3, FP=1], [FN=0, TP=8]]
+  漏检率(FNR):0.0000  误检率(FPR):0.2500
+iter [420/1000], loss:0.5316
+iter [462/1000], loss:0.5370
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=4, FP=0], [FN=0, TP=8]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [504/1000], loss:0.5323
+iter [546/1000], loss:0.5170
+iter [588/1000], loss:0.5132
+Sample Auroc:0.969 | Acc:0.917 F1:0.941
+  混淆矩阵: [[TN=3, FP=1], [FN=0, TP=8]]
+  漏检率(FNR):0.0000  误检率(FPR):0.2500
+iter [630/1000], loss:0.5149
+iter [672/1000], loss:0.5174
+Sample Auroc:0.969 | Acc:0.917 F1:0.941
+  混淆矩阵: [[TN=3, FP=1], [FN=0, TP=8]]
+  漏检率(FNR):0.0000  误检率(FPR):0.2500
+iter [714/1000], loss:0.4954
+iter [756/1000], loss:0.5018
+iter [798/1000], loss:0.4969
+Sample Auroc:0.969 | Acc:0.917 F1:0.941
+  混淆矩阵: [[TN=3, FP=1], [FN=0, TP=8]]
+  漏检率(FNR):0.0000  误检率(FPR):0.2500
+iter [840/1000], loss:0.4914
+iter [882/1000], loss:0.4856
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=4, FP=0], [FN=0, TP=8]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [924/1000], loss:0.5054
+iter [966/1000], loss:0.4822
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=4, FP=0], [FN=0, TP=8]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [1000/1000], loss:0.4819
+
+============================================================
+  ESSD 12x4 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 1.0000
+  Accuracy:     1.0000
+  F1 Score:     1.0000
+  Threshold:    0.3541
+  混淆矩阵:
+    TP=8  FP=0
+    FN=0  TN=4
+    漏检率(FNR): 0.0000  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/ESSD_12x4_ALL/confusion_images/ESSD 12x4/
+    TP: 8 张
+    FP: 0 张
+    FN: 0 张
+    TN: 4 张
+
+  -------- 错误分类图片 --------
+ESSD 12x5
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 469
+test image number: 14
+Sample Auroc:0.800 | Acc:0.786 F1:0.857
+  混淆矩阵: [[TN=2, FP=3], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.6000
+  >>> 保存最优模型 (AUROC=0.800)
+iter [118/1000], loss:1.0686
+Sample Auroc:0.911 | Acc:0.857 F1:0.900
+  混淆矩阵: [[TN=3, FP=2], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.4000
+  >>> 保存最优模型 (AUROC=0.911)
+iter [236/1000], loss:0.7415
+Sample Auroc:0.933 | Acc:0.929 F1:0.947
+  混淆矩阵: [[TN=4, FP=1], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.2000
+  >>> 保存最优模型 (AUROC=0.933)
+iter [354/1000], loss:0.6952
+Sample Auroc:0.867 | Acc:0.857 F1:0.900
+  混淆矩阵: [[TN=3, FP=2], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.4000
+iter [472/1000], loss:0.6791
+Sample Auroc:0.844 | Acc:0.857 F1:0.900
+  混淆矩阵: [[TN=3, FP=2], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.4000
+iter [590/1000], loss:0.6696
+Sample Auroc:0.711 | Acc:0.786 F1:0.857
+  混淆矩阵: [[TN=2, FP=3], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.6000
+Sample Auroc:0.844 | Acc:0.786 F1:0.857
+  混淆矩阵: [[TN=2, FP=3], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.6000
+iter [708/1000], loss:0.6426
+Sample Auroc:0.756 | Acc:0.786 F1:0.857
+  混淆矩阵: [[TN=2, FP=3], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.6000
+iter [826/1000], loss:0.6300
+Sample Auroc:0.933 | Acc:0.929 F1:0.941
+  混淆矩阵: [[TN=5, FP=0], [FN=1, TP=8]]
+  漏检率(FNR):0.1111  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=0.933)
+iter [944/1000], loss:0.6020
+Sample Auroc:0.800 | Acc:0.786 F1:0.857
+  混淆矩阵: [[TN=2, FP=3], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.6000
+iter [1000/1000], loss:0.5904
+
+============================================================
+  ESSD 12x5 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 0.9333
+  Accuracy:     0.9286
+  F1 Score:     0.9412
+  Threshold:    0.3383
+  混淆矩阵:
+    TP=8  FP=0
+    FN=1  TN=5
+    漏检率(FNR): 0.1111  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/ESSD_12x5_ALL/confusion_images/ESSD 12x5/
+    TP: 8 张
+    FP: 0 张
+    FN: 1 张
+    TN: 5 张
+
+  -------- 错误分类图片 --------
+  [FN] 共 1 张:
+    S59X7333A_A1_UP_synth_stain_002.jpg
+INAND 19x5
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 168
+test image number: 18
+iter [42/1000], loss:1.4330
+iter [84/1000], loss:0.8595
+Sample Auroc:0.938 | Acc:0.944 F1:0.968
+  混淆矩阵: [[TN=2, FP=0], [FN=1, TP=15]]
+  漏检率(FNR):0.0625  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=0.938)
+iter [126/1000], loss:0.7621
+iter [168/1000], loss:0.7468
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=16]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [210/1000], loss:0.7098
+iter [252/1000], loss:0.6806
+iter [294/1000], loss:0.6610
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=16]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [336/1000], loss:0.6512
+iter [378/1000], loss:0.6410
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=16]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [420/1000], loss:0.6441
+iter [462/1000], loss:0.6255
+Sample Auroc:0.969 | Acc:0.944 F1:0.970
+  混淆矩阵: [[TN=1, FP=1], [FN=0, TP=16]]
+  漏检率(FNR):0.0000  误检率(FPR):0.5000
+iter [504/1000], loss:0.6259
+iter [546/1000], loss:0.6174
+iter [588/1000], loss:0.6268
+Sample Auroc:0.969 | Acc:0.944 F1:0.970
+  混淆矩阵: [[TN=1, FP=1], [FN=0, TP=16]]
+  漏检率(FNR):0.0000  误检率(FPR):0.5000
+iter [630/1000], loss:0.6216
+iter [672/1000], loss:0.5934
+Sample Auroc:0.875 | Acc:0.944 F1:0.970
+  混淆矩阵: [[TN=1, FP=1], [FN=0, TP=16]]
+  漏检率(FNR):0.0000  误检率(FPR):0.5000
+iter [714/1000], loss:0.5812
+iter [756/1000], loss:0.5966
+iter [798/1000], loss:0.5969
+Sample Auroc:0.812 | Acc:0.944 F1:0.970
+  混淆矩阵: [[TN=1, FP=1], [FN=0, TP=16]]
+  漏检率(FNR):0.0000  误检率(FPR):0.5000
+iter [840/1000], loss:0.5862
+iter [882/1000], loss:0.5764
+Sample Auroc:0.844 | Acc:0.889 F1:0.941
+  混淆矩阵: [[TN=0, FP=2], [FN=0, TP=16]]
+  漏检率(FNR):0.0000  误检率(FPR):1.0000
+iter [924/1000], loss:0.5816
+iter [966/1000], loss:0.5732
+Sample Auroc:0.938 | Acc:0.944 F1:0.968
+  混淆矩阵: [[TN=2, FP=0], [FN=1, TP=15]]
+  漏检率(FNR):0.0625  误检率(FPR):0.0000
+iter [1000/1000], loss:0.5792
+
+============================================================
+  INAND 19x5 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 1.0000
+  Accuracy:     1.0000
+  F1 Score:     1.0000
+  Threshold:    0.2722
+  混淆矩阵:
+    TP=16  FP=0
+    FN=0  TN=2
+    漏检率(FNR): 0.0000  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/INAND_19x5_ALL/confusion_images/INAND 19x5/
+    TP: 16 张
+    FP: 0 张
+    FN: 0 张
+    TN: 2 张
+
+  -------- 错误分类图片 --------
+MicroSD 20x4
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 318
+test image number: 12
+iter [80/1000], loss:1.0912
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=10]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [160/1000], loss:0.6319
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=10]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [240/1000], loss:0.5869
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=10]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [320/1000], loss:0.5599
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=10]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [400/1000], loss:0.5359
+iter [480/1000], loss:0.5226
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=10]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [560/1000], loss:0.5252
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=10]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [640/1000], loss:0.5038
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=10]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [720/1000], loss:0.4926
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=10]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [800/1000], loss:0.5016
+iter [880/1000], loss:0.4865
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=10]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [960/1000], loss:0.4718
+Sample Auroc:0.900 | Acc:0.917 F1:0.952
+  混淆矩阵: [[TN=1, FP=1], [FN=0, TP=10]]
+  漏检率(FNR):0.0000  误检率(FPR):0.5000
+iter [1000/1000], loss:0.4675
+
+============================================================
+  MicroSD 20x4 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 1.0000
+  Accuracy:     1.0000
+  F1 Score:     1.0000
+  Threshold:    0.2550
+  混淆矩阵:
+    TP=10  FP=0
+    FN=0  TN=2
+    漏检率(FNR): 0.0000  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/MicroSD_20x4_ALL/confusion_images/MicroSD 20x4/
+    TP: 10 张
+    FP: 0 张
+    FN: 0 张
+    TN: 2 张
+
+  -------- 错误分类图片 --------
+SDSIP 22x3
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 239
+test image number: 11
+iter [60/1000], loss:1.2427
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [120/1000], loss:0.7286
+iter [180/1000], loss:0.6994
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [240/1000], loss:0.6692
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [300/1000], loss:0.6471
+iter [360/1000], loss:0.6371
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [420/1000], loss:0.6267
+iter [480/1000], loss:0.6129
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [540/1000], loss:0.6079
+Sample Auroc:0.889 | Acc:0.909 F1:0.941
+  混淆矩阵: [[TN=2, FP=0], [FN=1, TP=8]]
+  漏检率(FNR):0.1111  误检率(FPR):0.0000
+iter [600/1000], loss:0.5886
+iter [660/1000], loss:0.5881
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [720/1000], loss:0.5775
+iter [780/1000], loss:0.5639
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [840/1000], loss:0.5609
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [900/1000], loss:0.5673
+iter [960/1000], loss:0.5487
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=2, FP=0], [FN=0, TP=9]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [1000/1000], loss:0.5211
+
+============================================================
+  SDSIP 22x3 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 1.0000
+  Accuracy:     1.0000
+  F1 Score:     1.0000
+  Threshold:    0.2995
+  混淆矩阵:
+    TP=9  FP=0
+    FN=0  TN=2
+    漏检率(FNR): 0.0000  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/SDSIP_22x3_ALL/confusion_images/SDSIP 22x3/
+    TP: 9 张
+    FP: 0 张
+    FN: 0 张
+    TN: 2 张
+
+  -------- 错误分类图片 --------
+UBGA 12x5
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 206
+test image number: 11
+iter [52/1000], loss:1.2461
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=4, FP=0], [FN=0, TP=7]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [104/1000], loss:0.6518
+iter [156/1000], loss:0.6222
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=4, FP=0], [FN=0, TP=7]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [208/1000], loss:0.5925
+iter [260/1000], loss:0.5730
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=4, FP=0], [FN=0, TP=7]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [312/1000], loss:0.5573
+iter [364/1000], loss:0.5498
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=4, FP=0], [FN=0, TP=7]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [416/1000], loss:0.5551
+iter [468/1000], loss:0.5496
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=4, FP=0], [FN=0, TP=7]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [520/1000], loss:0.5432
+iter [572/1000], loss:0.5407
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=4, FP=0], [FN=0, TP=7]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [624/1000], loss:0.5196
+iter [676/1000], loss:0.5248
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=4, FP=0], [FN=0, TP=7]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [728/1000], loss:0.5200
+iter [780/1000], loss:0.5356
+Sample Auroc:0.964 | Acc:0.909 F1:0.933
+  混淆矩阵: [[TN=3, FP=1], [FN=0, TP=7]]
+  漏检率(FNR):0.0000  误检率(FPR):0.2500
+iter [832/1000], loss:0.5308
+iter [884/1000], loss:0.5037
+Sample Auroc:0.893 | Acc:0.909 F1:0.923
+  混淆矩阵: [[TN=4, FP=0], [FN=1, TP=6]]
+  漏检率(FNR):0.1429  误检率(FPR):0.0000
+iter [936/1000], loss:0.5076
+iter [988/1000], loss:0.5025
+Sample Auroc:0.964 | Acc:0.909 F1:0.933
+  混淆矩阵: [[TN=3, FP=1], [FN=0, TP=7]]
+  漏检率(FNR):0.0000  误检率(FPR):0.2500
+iter [1000/1000], loss:0.4956
+
+============================================================
+  UBGA 12x5 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 1.0000
+  Accuracy:     1.0000
+  F1 Score:     1.0000
+  Threshold:    0.2984
+  混淆矩阵:
+    TP=7  FP=0
+    FN=0  TN=4
+    漏检率(FNR): 0.0000  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/UBGA_12x5_ALL/confusion_images/UBGA 12x5/
+    TP: 7 张
+    FP: 0 张
+    FN: 0 张
+    TN: 4 张
+
+  -------- 错误分类图片 --------
+
+============================================================
+  汇总结果
+============================================================
+  品类               Sample AUROC      Acc       F1      FPR      FNR
+  BGA 12x4               0.9945   0.9855   0.9600   0.0769   0.0000
+  BGA S5E 16x7           1.0000   1.0000   1.0000   0.0000   0.0000
+  ESSD 12x4              1.0000   1.0000   1.0000   0.0000   0.0000
+  ESSD 12x5              0.9333   0.9286   0.9412   0.1111   0.0000
+  INAND 19x5             1.0000   1.0000   1.0000   0.0000   0.0000
+  MicroSD 20x4           1.0000   1.0000   1.0000   0.0000   0.0000
+  SDSIP 22x3             1.0000   1.0000   1.0000   0.0000   0.0000
+  UBGA 12x5              1.0000   1.0000   1.0000   0.0000   0.0000
+  平均                     0.9910   0.9893   0.9876   0.0235   0.0000
+cuda:0
+bottle
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 209
+test image number: 83
+iter [53/1000], loss:1.0102
+Sample Auroc:0.962 | Acc:0.964 F1:0.976
+  混淆矩阵: [[TN=18, FP=2], [FN=1, TP=62]]
+  漏检率(FNR):0.0159  误检率(FPR):0.1000
+  >>> 保存最优模型 (AUROC=0.962)
+iter [106/1000], loss:0.4576
+iter [159/1000], loss:0.4645
+Sample Auroc:0.978 | Acc:0.952 F1:0.968
+  混淆矩阵: [[TN=19, FP=1], [FN=3, TP=60]]
+  漏检率(FNR):0.0476  误检率(FPR):0.0500
+  >>> 保存最优模型 (AUROC=0.978)
+iter [212/1000], loss:0.4461
+iter [265/1000], loss:0.4273
+Sample Auroc:0.998 | Acc:0.988 F1:0.992
+  混淆矩阵: [[TN=19, FP=1], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0500
+  >>> 保存最优模型 (AUROC=0.998)
+iter [318/1000], loss:0.4137
+iter [371/1000], loss:0.4098
+Sample Auroc:0.998 | Acc:0.988 F1:0.992
+  混淆矩阵: [[TN=19, FP=1], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0500
+  >>> 保存最优模型 (AUROC=0.998)
+iter [424/1000], loss:0.4026
+iter [477/1000], loss:0.3958
+Sample Auroc:0.997 | Acc:0.988 F1:0.992
+  混淆矩阵: [[TN=19, FP=1], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0500
+iter [530/1000], loss:0.3932
+iter [583/1000], loss:0.3944
+Sample Auroc:0.999 | Acc:0.988 F1:0.992
+  混淆矩阵: [[TN=19, FP=1], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0500
+  >>> 保存最优模型 (AUROC=0.999)
+iter [636/1000], loss:0.3877
+iter [689/1000], loss:0.3886
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=20, FP=0], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [742/1000], loss:0.3839
+iter [795/1000], loss:0.3859
+Sample Auroc:0.980 | Acc:0.940 F1:0.961
+  混淆矩阵: [[TN=16, FP=4], [FN=1, TP=62]]
+  漏检率(FNR):0.0159  误检率(FPR):0.2000
+iter [848/1000], loss:0.3810
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=20, FP=0], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [901/1000], loss:0.3822
+iter [954/1000], loss:0.3742
+Sample Auroc:0.977 | Acc:0.940 F1:0.959
+  混淆矩阵: [[TN=19, FP=1], [FN=4, TP=59]]
+  漏检率(FNR):0.0635  误检率(FPR):0.0500
+iter [1000/1000], loss:0.3643
+
+============================================================
+  bottle 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 1.0000
+  Accuracy:     1.0000
+  F1 Score:     1.0000
+  Threshold:    0.2785
+  混淆矩阵:
+    TP=63  FP=0
+    FN=0  TN=20
+    漏检率(FNR): 0.0000  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/bottle/confusion_images/bottle/
+    TP: 63 张
+    FP: 0 张
+    FN: 0 张
+    TN: 20 张
+
+  -------- 错误分类图片 --------
+capsule
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 219
+test image number: 132
+iter [55/1000], loss:1.0258
+Sample Auroc:0.866 | Acc:0.894 F1:0.939
+  混淆矩阵: [[TN=10, FP=13], [FN=1, TP=108]]
+  漏检率(FNR):0.0092  误检率(FPR):0.5652
+  >>> 保存最优模型 (AUROC=0.866)
+iter [110/1000], loss:0.4880
+iter [165/1000], loss:0.5046
+Sample Auroc:0.821 | Acc:0.856 F1:0.919
+  混淆矩阵: [[TN=5, FP=18], [FN=1, TP=108]]
+  漏检率(FNR):0.0092  误检率(FPR):0.7826
+iter [220/1000], loss:0.4852
+iter [275/1000], loss:0.4761
+Sample Auroc:0.870 | Acc:0.879 F1:0.929
+  混淆矩阵: [[TN=12, FP=11], [FN=5, TP=104]]
+  漏检率(FNR):0.0459  误检率(FPR):0.4783
+  >>> 保存最优模型 (AUROC=0.870)
+iter [330/1000], loss:0.4520
+iter [385/1000], loss:0.4531
+Sample Auroc:0.852 | Acc:0.871 F1:0.926
+  混淆矩阵: [[TN=9, FP=14], [FN=3, TP=106]]
+  漏检率(FNR):0.0275  误检率(FPR):0.6087
+iter [440/1000], loss:0.4537
+iter [495/1000], loss:0.4455
+Sample Auroc:0.685 | Acc:0.841 F1:0.912
+  混淆矩阵: [[TN=2, FP=21], [FN=0, TP=109]]
+  漏检率(FNR):0.0000  误检率(FPR):0.9130
+iter [550/1000], loss:0.4509
+Sample Auroc:0.786 | Acc:0.848 F1:0.914
+  混淆矩阵: [[TN=6, FP=17], [FN=3, TP=106]]
+  漏检率(FNR):0.0275  误检率(FPR):0.7391
+iter [605/1000], loss:0.4413
+iter [660/1000], loss:0.4434
+Sample Auroc:0.746 | Acc:0.833 F1:0.908
+  混淆矩阵: [[TN=2, FP=21], [FN=1, TP=108]]
+  漏检率(FNR):0.0092  误检率(FPR):0.9130
+iter [715/1000], loss:0.4300
+iter [770/1000], loss:0.4507
+Sample Auroc:0.770 | Acc:0.841 F1:0.911
+  混淆矩阵: [[TN=4, FP=19], [FN=2, TP=107]]
+  漏检率(FNR):0.0183  误检率(FPR):0.8261
+iter [825/1000], loss:0.4325
+iter [880/1000], loss:0.4288
+Sample Auroc:0.772 | Acc:0.856 F1:0.918
+  混淆矩阵: [[TN=6, FP=17], [FN=2, TP=107]]
+  漏检率(FNR):0.0183  误检率(FPR):0.7391
+iter [935/1000], loss:0.4265
+iter [990/1000], loss:0.4271
+Sample Auroc:0.702 | Acc:0.826 F1:0.905
+  混淆矩阵: [[TN=0, FP=23], [FN=0, TP=109]]
+  漏检率(FNR):0.0000  误检率(FPR):1.0000
+iter [1000/1000], loss:0.4405
+
+============================================================
+  capsule 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 0.8704
+  Accuracy:     0.8788
+  F1 Score:     0.9286
+  Threshold:    0.2254
+  混淆矩阵:
+    TP=104  FP=11
+    FN=5  TN=12
+    漏检率(FNR): 0.0459  误检率(FPR): 0.4783
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/capsule/confusion_images/capsule/
+    TP: 104 张
+    FP: 11 张
+    FN: 5 张
+    TN: 12 张
+
+  -------- 错误分类图片 --------
+  [FP] 共 11 张:
+    000.png
+    002.png
+    006.png
+    008.png
+    011.png
+    012.png
+    013.png
+    014.png
+    019.png
+    020.png
+    021.png
+  [FN] 共 5 张:
+    000.png
+    008.png
+    004.png
+    012.png
+    001.png
+carpet
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 280
+test image number: 117
+iter [70/1000], loss:0.8472
+Sample Auroc:0.995 | Acc:0.991 F1:0.994
+  混淆矩阵: [[TN=27, FP=1], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0357
+  >>> 保存最优模型 (AUROC=0.995)
+iter [140/1000], loss:0.5091
+Sample Auroc:0.992 | Acc:0.983 F1:0.989
+  混淆矩阵: [[TN=26, FP=2], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0714
+iter [210/1000], loss:0.4742
+iter [280/1000], loss:0.4227
+Sample Auroc:0.998 | Acc:0.983 F1:0.989
+  混淆矩阵: [[TN=27, FP=1], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.0357
+  >>> 保存最优模型 (AUROC=0.998)
+iter [350/1000], loss:0.3838
+Sample Auroc:0.998 | Acc:0.991 F1:0.994
+  混淆矩阵: [[TN=27, FP=1], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0357
+  >>> 保存最优模型 (AUROC=0.998)
+iter [420/1000], loss:0.3585
+iter [490/1000], loss:0.3591
+Sample Auroc:0.996 | Acc:0.974 F1:0.983
+  混淆矩阵: [[TN=26, FP=2], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.0714
+iter [560/1000], loss:0.3498
+Sample Auroc:0.998 | Acc:0.991 F1:0.994
+  混淆矩阵: [[TN=28, FP=0], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.0000
+iter [630/1000], loss:0.3399
+Sample Auroc:0.999 | Acc:0.991 F1:0.994
+  混淆矩阵: [[TN=28, FP=0], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=0.999)
+iter [700/1000], loss:0.3262
+iter [770/1000], loss:0.3344
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=28, FP=0], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [840/1000], loss:0.3329
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=28, FP=0], [FN=0, TP=89]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [910/1000], loss:0.3268
+iter [980/1000], loss:0.3327
+Sample Auroc:0.996 | Acc:0.983 F1:0.989
+  混淆矩阵: [[TN=27, FP=1], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.0357
+iter [1000/1000], loss:0.3406
+
+============================================================
+  carpet 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 1.0000
+  Accuracy:     1.0000
+  F1 Score:     1.0000
+  Threshold:    0.2506
+  混淆矩阵:
+    TP=89  FP=0
+    FN=0  TN=28
+    漏检率(FNR): 0.0000  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/carpet/confusion_images/carpet/
+    TP: 89 张
+    FP: 0 张
+    FN: 0 张
+    TN: 28 张
+
+  -------- 错误分类图片 --------
+cable
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 224
+test image number: 150
+iter [56/1000], loss:1.1934
+Sample Auroc:0.893 | Acc:0.853 F1:0.874
+  混淆矩阵: [[TN=52, FP=6], [FN=16, TP=76]]
+  漏检率(FNR):0.1739  误检率(FPR):0.1034
+  >>> 保存最优模型 (AUROC=0.893)
+iter [112/1000], loss:0.6779
+iter [168/1000], loss:0.6897
+Sample Auroc:0.883 | Acc:0.840 F1:0.859
+  混淆矩阵: [[TN=53, FP=5], [FN=19, TP=73]]
+  漏检率(FNR):0.2065  误检率(FPR):0.0862
+iter [224/1000], loss:0.6644
+iter [280/1000], loss:0.6473
+Sample Auroc:0.905 | Acc:0.873 F1:0.885
+  混淆矩阵: [[TN=58, FP=0], [FN=19, TP=73]]
+  漏检率(FNR):0.2065  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=0.905)
+iter [336/1000], loss:0.6392
+iter [392/1000], loss:0.6332
+Sample Auroc:0.891 | Acc:0.847 F1:0.870
+  混淆矩阵: [[TN=50, FP=8], [FN=15, TP=77]]
+  漏检率(FNR):0.1630  误检率(FPR):0.1379
+iter [448/1000], loss:0.6351
+Sample Auroc:0.895 | Acc:0.860 F1:0.879
+  混淆矩阵: [[TN=53, FP=5], [FN=16, TP=76]]
+  漏检率(FNR):0.1739  误检率(FPR):0.0862
+iter [504/1000], loss:0.6231
+iter [560/1000], loss:0.6082
+Sample Auroc:0.854 | Acc:0.800 F1:0.835
+  混淆矩阵: [[TN=44, FP=14], [FN=16, TP=76]]
+  漏检率(FNR):0.1739  误检率(FPR):0.2414
+iter [616/1000], loss:0.6036
+iter [672/1000], loss:0.6259
+Sample Auroc:0.840 | Acc:0.820 F1:0.842
+  混淆矩阵: [[TN=51, FP=7], [FN=20, TP=72]]
+  漏检率(FNR):0.2174  误检率(FPR):0.1207
+iter [728/1000], loss:0.5998
+iter [784/1000], loss:0.6088
+Sample Auroc:0.857 | Acc:0.847 F1:0.864
+  混淆矩阵: [[TN=54, FP=4], [FN=19, TP=73]]
+  漏检率(FNR):0.2065  误检率(FPR):0.0690
+iter [840/1000], loss:0.5939
+iter [896/1000], loss:0.5877
+Sample Auroc:0.859 | Acc:0.800 F1:0.835
+  混淆矩阵: [[TN=44, FP=14], [FN=16, TP=76]]
+  漏检率(FNR):0.1739  误检率(FPR):0.2414
+iter [952/1000], loss:0.5661
+Sample Auroc:0.867 | Acc:0.840 F1:0.855
+  混淆矩阵: [[TN=55, FP=3], [FN=21, TP=71]]
+  漏检率(FNR):0.2283  误检率(FPR):0.0517
+iter [1000/1000], loss:0.5726
+
+============================================================
+  cable 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 0.9054
+  Accuracy:     0.8733
+  F1 Score:     0.8848
+  Threshold:    0.3139
+  混淆矩阵:
+    TP=73  FP=0
+    FN=19  TN=58
+    漏检率(FNR): 0.2065  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/cable/confusion_images/cable/
+    TP: 73 张
+    FP: 0 张
+    FN: 19 张
+    TN: 58 张
+
+  -------- 错误分类图片 --------
+  [FN] 共 19 张:
+    000.png
+    001.png
+    002.png
+    003.png
+    004.png
+    005.png
+    006.png
+    007.png
+    008.png
+    010.png
+    011.png
+    000.png
+    002.png
+    004.png
+    005.png
+    006.png
+    007.png
+    008.png
+    008.png
+
+============================================================
+  汇总结果
+============================================================
+  品类               Sample AUROC      Acc       F1      FPR      FNR
+  bottle                 1.0000   1.0000   1.0000   0.0000   0.0000
+  capsule                0.8704   0.8788   0.9286   0.0459   0.4783
+  carpet                 1.0000   1.0000   1.0000   0.0000   0.0000
+  cable                  0.9054   0.8733   0.8848   0.2065   0.0000
+  平均                     0.9440   0.9380   0.9534   0.0631   0.1196
+cuda:0
+bottle
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 209
+test image number: 83
+iter [53/1000], loss:1.0103
+Sample Auroc:0.963 | Acc:0.964 F1:0.976
+  混淆矩阵: [[TN=18, FP=2], [FN=1, TP=62]]
+  漏检率(FNR):0.0159  误检率(FPR):0.1000
+  >>> 保存最优模型 (AUROC=0.963)
+iter [106/1000], loss:0.4578
+iter [159/1000], loss:0.4647
+Sample Auroc:0.978 | Acc:0.940 F1:0.961
+  混淆矩阵: [[TN=17, FP=3], [FN=2, TP=61]]
+  漏检率(FNR):0.0317  误检率(FPR):0.1500
+  >>> 保存最优模型 (AUROC=0.978)
+iter [212/1000], loss:0.4462
+iter [265/1000], loss:0.4275
+Sample Auroc:0.998 | Acc:0.988 F1:0.992
+  混淆矩阵: [[TN=19, FP=1], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0500
+  >>> 保存最优模型 (AUROC=0.998)
+iter [318/1000], loss:0.4138
+iter [371/1000], loss:0.4093
+Sample Auroc:0.998 | Acc:0.988 F1:0.992
+  混淆矩阵: [[TN=19, FP=1], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0500
+  >>> 保存最优模型 (AUROC=0.998)
+iter [424/1000], loss:0.4025
+iter [477/1000], loss:0.3954
+Sample Auroc:0.997 | Acc:0.988 F1:0.992
+  混淆矩阵: [[TN=19, FP=1], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0500
+iter [530/1000], loss:0.3932
+iter [583/1000], loss:0.3945
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=20, FP=0], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [636/1000], loss:0.3877
+iter [689/1000], loss:0.3891
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=20, FP=0], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [742/1000], loss:0.3847
+iter [795/1000], loss:0.3854
+Sample Auroc:0.979 | Acc:0.940 F1:0.961
+  混淆矩阵: [[TN=17, FP=3], [FN=2, TP=61]]
+  漏检率(FNR):0.0317  误检率(FPR):0.1500
+iter [848/1000], loss:0.3801
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=20, FP=0], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [901/1000], loss:0.3785
+iter [954/1000], loss:0.3747
+Sample Auroc:0.991 | Acc:0.964 F1:0.976
+  混淆矩阵: [[TN=18, FP=2], [FN=1, TP=62]]
+  漏检率(FNR):0.0159  误检率(FPR):0.1000
+iter [1000/1000], loss:0.3632
+
+============================================================
+  bottle 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 1.0000
+  Accuracy:     1.0000
+  F1 Score:     1.0000
+  Threshold:    0.2877
+  混淆矩阵:
+    TP=63  FP=0
+    FN=0  TN=20
+    漏检率(FNR): 0.0000  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_vit_recontrast/bottle/confusion_images/bottle/
+    TP: 63 张
+    FP: 0 张
+    FN: 0 张
+    TN: 20 张
+
+  -------- 错误分类图片 --------
+capsule
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 219
+test image number: 132
+iter [55/1000], loss:1.0258
+Sample Auroc:0.866 | Acc:0.894 F1:0.939
+  混淆矩阵: [[TN=10, FP=13], [FN=1, TP=108]]
+  漏检率(FNR):0.0092  误检率(FPR):0.5652
+  >>> 保存最优模型 (AUROC=0.866)
+iter [110/1000], loss:0.4880
+iter [165/1000], loss:0.5045
+Sample Auroc:0.821 | Acc:0.864 F1:0.920
+  混淆矩阵: [[TN=11, FP=12], [FN=6, TP=103]]
+  漏检率(FNR):0.0550  误检率(FPR):0.5217
+iter [220/1000], loss:0.4854
+iter [275/1000], loss:0.4762
+Sample Auroc:0.872 | Acc:0.886 F1:0.933
+  混淆矩阵: [[TN=13, FP=10], [FN=5, TP=104]]
+  漏检率(FNR):0.0459  误检率(FPR):0.4348
+  >>> 保存最优模型 (AUROC=0.872)
+iter [330/1000], loss:0.4521
+iter [385/1000], loss:0.4522
+Sample Auroc:0.855 | Acc:0.848 F1:0.915
+  混淆矩阵: [[TN=4, FP=19], [FN=1, TP=108]]
+  漏检率(FNR):0.0092  误检率(FPR):0.8261
+iter [440/1000], loss:0.4527
+iter [495/1000], loss:0.4449
+Sample Auroc:0.718 | Acc:0.841 F1:0.912
+  混淆矩阵: [[TN=2, FP=21], [FN=0, TP=109]]
+  漏检率(FNR):0.0000  误检率(FPR):0.9130
+iter [550/1000], loss:0.4507
+cuda:0
+bottle
+[INFO] 使用DINOv2预训练模型: vit_small_patch14_dinov2.lvd142m
+train image number: 209
+test image number: 83
+iter [53/1000], loss:1.0103
