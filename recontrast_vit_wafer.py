@@ -353,7 +353,14 @@ def save_confusion_images(img_paths, gt_list, preds, save_root, _class_):
 # ============================================================
 def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data', 
           save_dir='./checkpoints_vit_recontrast', use_wafer_encoder=False,
-          pretrained_model='vit_small_patch14_dinov2.lvd142m', eval_interval=100):
+          pretrained_model='vit_small_patch14_dinov2.lvd142m', eval_interval=100,
+          ablation_no_cutpaste=False,
+          ablation_self_recon=False,
+          ablation_no_hard_mining=False,
+          ablation_no_pretrained=False,
+          ablation_n_layers=4,
+          ablation_image_size=None,
+          ablation_no_cross_recon=False):
     
     print_fn(_class_)
     setup_seed(111)
@@ -362,6 +369,13 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data',
     batch_size = 4  # 518x518+DINOv2，12GB显存建议batch_size=4
     image_size = 518  # DINOv2原生尺寸
     crop_size = 518
+    
+    # 消融: 覆盖输入分辨率
+    if ablation_image_size is not None:
+        image_size = ablation_image_size
+        crop_size = ablation_image_size
+        batch_size = 8 if ablation_image_size <= 224 else batch_size
+        print_fn(f"[ABLATION] 输入分辨率: {image_size}x{image_size}")
 
     data_transform, gt_transform = get_data_transforms(image_size, crop_size)
 
@@ -393,9 +407,14 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data',
             wafer_encoder=wafer_encoder, use_pretrained=False
         )
     else:
-        print_fn(f"[INFO] 使用DINOv2预训练模型: {pretrained_model}")
+        use_pretrained_flag = not ablation_no_pretrained
+        if ablation_no_pretrained:
+            print_fn(f"[ABLATION] 预训练关闭，使用随机初始化")
+        print_fn(f"[INFO] 使用DINOv2模型: {pretrained_model}")
         model, encoder, encoder_freeze = build_recontrast_vit(
-            wafer_encoder=None, use_pretrained=True, pretrained_model=pretrained_model
+            wafer_encoder=None, use_pretrained=use_pretrained_flag, 
+            pretrained_model=pretrained_model,
+            n_intermediate_layers=ablation_n_layers
         )
 
     model = model.to(device)
@@ -430,26 +449,56 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data',
     best_cm, best_acc, best_f1, best_thr = None, 0, 0, 0
     it = 0
 
+    # 消融日志
+    if ablation_no_cutpaste:
+        print_fn("[ABLATION] CutPaste关闭")
+    if ablation_self_recon:
+        print_fn("[ABLATION] 交叉重建→自重建")
+    if ablation_no_hard_mining:
+        print_fn("[ABLATION] 难例挖掘关闭")
+    if ablation_no_cross_recon:
+        print_fn("[ABLATION] 损失不分前后半，全部直接对比")
+
     for epoch in range(int(np.ceil(total_iters / len(train_dataloader)))):
         model.train(encoder_bn_train=False)
 
         loss_list = []
         for img, label in train_dataloader:
             img = img.to(device)
-            # CutPaste增强训练分支：随机对部分图像切块重贴，制造"伪异常"
-            img_aug = torch.stack([cut_paste(i) if np.random.random() < 0.5 else i for i in img])
+            # CutPaste增强（可关闭）
+            if ablation_no_cutpaste:
+                img_aug = img
+            else:
+                img_aug = torch.stack([cut_paste(i) if np.random.random() < 0.5 else i for i in img])
             en, de = model(img, img_aug)
 
-            # 交叉重建损失（与原版ReContrast一致）
-            # en = [freeze_0, freeze_1, freeze_2, freeze_3, train_0, train_1, train_2, train_3]
-            # de = [train_recon_0, train_recon_1, train_recon_2, train_recon_3,
-            #       freeze_recon_0, freeze_recon_1, freeze_recon_2, freeze_recon_3]
-            # 前半: freeze vs train_recon (训练分支预测冻结特征)
-            # 后半: train vs freeze_recon (冻结分支预测训练特征)
-            n = len(en) // 2  # 4
-            alpha = min(-3 + 4 * it / (total_iters * 0.1), 1.0)
-            loss = (global_cosine_hm_tokens(en[:n], de[:n], alpha=alpha) / 2 +
-                    global_cosine_hm_tokens(en[n:], de[n:], alpha=alpha) / 2)
+            # 损失函数
+            n = len(en) // 2  # 半长度
+            if ablation_no_hard_mining:
+                # 简单余弦损失：平均所有token
+                loss = 0
+                if ablation_no_cross_recon:
+                    for e, d in zip(en, de):
+                        e_n = F.normalize(e.detach(), dim=-1)
+                        d_n = F.normalize(d, dim=-1)
+                        loss += torch.mean(1 - (e_n * d_n).sum(dim=-1))
+                else:
+                    for e, d in zip(en[:n], de[:n]):
+                        e_n = F.normalize(e.detach(), dim=-1)
+                        d_n = F.normalize(d, dim=-1)
+                        loss += torch.mean(1 - (e_n * d_n).sum(dim=-1))
+                    for e, d in zip(en[n:], de[n:]):
+                        e_n = F.normalize(e.detach(), dim=-1)
+                        d_n = F.normalize(d, dim=-1)
+                        loss += torch.mean(1 - (e_n * d_n).sum(dim=-1))
+                loss = loss / len(en)
+            else:
+                alpha = min(-3 + 4 * it / (total_iters * 0.1), 1.0)
+                if ablation_no_cross_recon:
+                    loss = (global_cosine_hm_tokens(en, de, alpha=alpha))
+                else:
+                    loss = (global_cosine_hm_tokens(en[:n], de[:n], alpha=alpha) / 2 +
+                            global_cosine_hm_tokens(en[n:], de[n:], alpha=alpha) / 2)
 
             optimizer.zero_grad()
             optimizer2.zero_grad()
@@ -561,6 +610,21 @@ if __name__ == '__main__':
     parser.add_argument('--eval_interval', type=int, default=100,
                         help='评估间隔（iters），默认100')
     parser.add_argument('--gpu', default='0', type=str, help='GPU id')
+    # 消融实验参数
+    parser.add_argument('--ablation_no_cutpaste', action='store_true',
+                        help='[消融] 关闭CutPaste增强')
+    parser.add_argument('--ablation_self_recon', action='store_true',
+                        help='[消融] 使用自重建代替交叉重建')
+    parser.add_argument('--ablation_no_hard_mining', action='store_true',
+                        help='[消融] 关闭难例挖掘')
+    parser.add_argument('--ablation_no_pretrained', action='store_true',
+                        help='[消融] 关闭预训练（随机初始化）')
+    parser.add_argument('--ablation_n_layers', type=int, default=4,
+                        help='[消融] 中间特征层数 (默认4)')
+    parser.add_argument('--ablation_image_size', type=int, default=None,
+                        help='[消融] 覆盖输入分辨率')
+    parser.add_argument('--ablation_no_cross_recon', action='store_true',
+                        help='[消融] 损失不分前后半交叉')
     args = parser.parse_args()
 
     # 确定品类列表
@@ -606,7 +670,14 @@ if __name__ == '__main__':
             item, dataset=args.dataset,
             wafer_view=args.wafer_view, wafer_data_dir=args.wafer_data_dir,
             save_dir=args.save_dir, use_wafer_encoder=args.use_wafer_encoder,
-            pretrained_model=args.pretrained_model, eval_interval=args.eval_interval)
+            pretrained_model=args.pretrained_model, eval_interval=args.eval_interval,
+            ablation_no_cutpaste=args.ablation_no_cutpaste,
+            ablation_self_recon=args.ablation_self_recon,
+            ablation_no_hard_mining=args.ablation_no_hard_mining,
+            ablation_no_pretrained=args.ablation_no_pretrained,
+            ablation_n_layers=args.ablation_n_layers,
+            ablation_image_size=args.ablation_image_size,
+            ablation_no_cross_recon=args.ablation_no_cross_recon)
         result_list.append([item, auroc_sp_best, acc, f1, fnr, fpr])
 
     # 汇总

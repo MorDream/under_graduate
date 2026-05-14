@@ -179,7 +179,8 @@ class ReContrastViT(nn.Module):
         return self
 
 
-def load_dinov2_encoder(model_name='vit_small_patch14_dinov2.lvd142m', pretrained=True, **kwargs):
+def load_dinov2_encoder(model_name='vit_small_patch14_dinov2.lvd142m', pretrained=True, 
+                         n_intermediate_layers=4, **kwargs):
     """
     加载DINOv2预训练模型作为编码器
     
@@ -229,8 +230,8 @@ def load_dinov2_encoder(model_name='vit_small_patch14_dinov2.lvd142m', pretraine
         """兼容的forward函数"""
         if return_all_layers:
             # 返回多尺度特征: (final_layer_patch_tokens, [intermediate_patch_tokens])
-            # DINOv2有12层，取第3, 6, 9, 12层
-            layers_out = encoder.get_intermediate_layers(x, n=4, return_prefix_tokens=True)
+            # DINOv2有12层，取最后 n_intermediate_layers 层
+            layers_out = encoder.get_intermediate_layers(x, n=n_intermediate_layers, return_prefix_tokens=True)
             # layers_out: list of 4 tuples (patch_tokens, prefix_token)
             all_feats = [l[0] for l in layers_out]  # 只取patch tokens
             return (all_feats[-1], all_feats[:-1])  # (final, [layer0, layer1, layer2])
@@ -244,7 +245,9 @@ def load_dinov2_encoder(model_name='vit_small_patch14_dinov2.lvd142m', pretraine
     return encoder
 
 
-def build_recontrast_vit(wafer_encoder=None, use_pretrained=True, pretrained_model='vit_small_patch14_dinov2.lvd142m'):
+def build_recontrast_vit(wafer_encoder=None, use_pretrained=True, 
+                         pretrained_model='vit_small_patch14_dinov2.lvd142m',
+                         n_intermediate_layers=4):
     """
     构建ViT版本的ReContrast模型
     
@@ -277,8 +280,10 @@ def build_recontrast_vit(wafer_encoder=None, use_pretrained=True, pretrained_mod
         embed_dim = wafer_encoder.embed_dim
     else:
         # 使用DINOv2预训练模型
-        encoder = load_dinov2_encoder(pretrained_model, pretrained=use_pretrained)
-        encoder_freeze = load_dinov2_encoder(pretrained_model, pretrained=use_pretrained)
+        encoder = load_dinov2_encoder(pretrained_model, pretrained=use_pretrained,
+                                       n_intermediate_layers=n_intermediate_layers)
+        encoder_freeze = load_dinov2_encoder(pretrained_model, pretrained=use_pretrained,
+                                              n_intermediate_layers=n_intermediate_layers)
         embed_dim = encoder.embed_dim
     
     # 冻结encoder_freeze

@@ -451,6 +451,77 @@ python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" -
 
 ---
 
+## 🧪 六、ViT+ReContrast 消融实验
+
+> 入口：`python run_ablation_vit.py`
+> 
+> 基于 ViT (DINOv2) + ReContrast 架构，验证各模块贡献
+
+### 消融实验矩阵
+
+| Exp | 实验 | 变量 | 验证目标 |
+|-----|------|------|---------|
+| Baseline | 全开 | CutPaste+交叉重建+难例挖掘 | 上限 |
+| Exp0 | CutPaste OFF | `--ablation_no_cutpaste` | ViT无BN→必须CutPaste |
+| Exp1 | 自重建 | `--ablation_self_recon` | 交叉vs自重建 |
+| Exp2 | 难例挖掘 OFF | `--ablation_no_hard_mining` | 难例挖掘贡献 |
+| Exp3 | 随机初始化 | `--ablation_no_pretrained` | DINOv2预训练必要性 |
+| Exp4 | 224分辨率 | `--ablation_image_size 224` | 518 vs 224 |
+| Exp5 | n_layers变化 | `--ablation_n_layers 2/6` | 多尺度层数影响 |
+
+### 一键运行
+
+```bash
+# 快速验证(carpet，约2小时)
+python run_ablation_vit.py --categories carpet --all
+
+# 全品类消融
+python run_ablation_vit.py --categories "carpet,grid,tile" --all
+
+# 只跑Baseline
+python run_ablation_vit.py --categories carpet
+```
+
+### 单独运行某个Exp
+
+```bash
+# Baseline（默认全开）
+python recontrast_vit_wafer.py --dataset mvtec --categories carpet
+
+# Exp0: 关闭CutPaste
+python recontrast_vit_wafer.py --dataset mvtec --categories carpet --ablation_no_cutpaste
+
+# Exp1: 自重建
+python recontrast_vit_wafer.py --dataset mvtec --categories carpet --ablation_self_recon
+
+# Exp2: 关闭难例挖掘
+python recontrast_vit_wafer.py --dataset mvtec --categories carpet --ablation_no_hard_mining
+
+# Exp3: 随机初始化(无预训练)
+python recontrast_vit_wafer.py --dataset mvtec --categories carpet --ablation_no_pretrained
+
+# Exp4: 224分辨率
+python recontrast_vit_wafer.py --dataset mvtec --categories carpet --ablation_image_size 224
+
+# Exp5: n_layers=2
+python recontrast_vit_wafer.py --dataset mvtec --categories carpet --ablation_n_layers 2
+
+# Exp5: n_layers=6
+python recontrast_vit_wafer.py --dataset mvtec --categories carpet --ablation_n_layers 6
+```
+
+### 合成缺陷生成
+
+```bash
+# 预览效果
+python generate_synthetic_defects.py --preview
+
+# 平衡全部品类测试集
+python generate_synthetic_defects.py
+```
+
+---
+
 > 🟡🦖 奶龙整理完毕！新增 ReContrast ViT + DINOv2 预训练权重支持！
 > 现在可以跑三种对比方法：ResNet版 / ViT+DINOv2版 / DenseSimSiam
 > 所有命令都是直接复制粘贴就能跑哒～ 好朋友加油写论文嗷呜！✨
