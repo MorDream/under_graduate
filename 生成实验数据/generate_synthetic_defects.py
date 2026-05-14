@@ -92,11 +92,11 @@ def add_scratch(img,
 
 
 def add_stains(img, 
-               max_stains=4,
-               min_size=10, max_size=60,
-               min_opacity=0.2, max_opacity=0.5):
+               max_stains=2,
+               min_size=8, max_size=30,
+               min_opacity=0.12, max_opacity=0.28):
     """
-    添加污渍/污染斑块"""
+    添加污渍/污染斑块（中等大小、半透明）"""
     h, w = img.shape[:2]
     result = img.copy()
     
@@ -105,21 +105,20 @@ def add_stains(img,
         cx = random.randint(0, w-1)
         cy = random.randint(0, h-1)
         
-        # 不规则形状：叠加多个椭圆
-        n_ellipses = random.randint(1, 3)
+        # 少量叠加椭圆
+        n_ellipses = random.randint(1, 2)
         for _ in range(n_ellipses):
             rx = random.randint(min_size // 2, max_size // 2)
             ry = random.randint(min_size // 2, max_size // 2)
             
             if random.random() < 0.5:
-                color = random.randint(20, 100)  # 暗色污渍
+                color = random.randint(20, 100)
             else:
-                color = random.randint(180, 230)  # 亮色污渍
-            color_bgr = (color, color, color)
+                color = random.randint(180, 230)
             
             cv2.ellipse(overlay, (cx, cy), (rx, ry), 
                        random.randint(0, 180), 0, 360,
-                       color_bgr, -1)
+                       (color, color, color), -1)
         
         # 高斯模糊使边缘柔和
         kernel_size = random.choice([5, 7, 9, 11])
