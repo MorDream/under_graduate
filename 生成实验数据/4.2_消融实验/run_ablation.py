@@ -77,7 +77,7 @@ def run_single_exp(category, exp_name, extra_args, save_subdir, dataset='mvtec',
         base_cmd = f'python {ROOT}/recontrast_vit_wafer.py'
     save_dir = f"{ROOT}/生成实验数据/4.2_消融实验/output/checkpoints/{save_subdir}/{category.replace(' ','_')}"
     wafer_arg = f"--wafer_data_dir {ROOT}/data" if dataset == 'wafer' else ""
-    cmd = (f"cd {ROOT} && {base_cmd} --dataset {dataset} --categories {category} "
+    cmd = (f"cd {ROOT} && {base_cmd} --dataset {dataset} --categories \"{category}\" "
            f"{wafer_arg} --save_dir {save_dir} "
            f"{extra_args} --eval_interval {eval_interval}")
 
