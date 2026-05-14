@@ -148,9 +148,13 @@ class ReContrastViT(nn.Module):
         de_train = [d.chunk(2, dim=0)[0] for d in de]
         de_freeze = [d.chunk(2, dim=0)[1] for d in de]
         
-        # 交错返回: freeze特征 + train特征 (与原始ReContrast保持一致)
+        # 交叉返回: de_train + de_freeze (与原始ReContrast保持一致)
+        # en = [freeze_0, freeze_1, ... , train_0, train_1, ...]
+        # de = [train_recon_0, train_recon_1, ..., freeze_recon_0, freeze_recon_1, ...]
+        # loss: en[:3] freeze features vs de[:3] train reconstructions (交叉!)
+        #       en[3:] train features vs de[3:] freeze reconstructions (交叉!)
         en_out = freeze_feat_list + train_feat_list
-        de_out = de_freeze + de_train
+        de_out = de_train + de_freeze
         
         return en_out, de_out
     

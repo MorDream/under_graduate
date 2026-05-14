@@ -60,6 +60,42 @@ except ImportError:
     HAS_WAFER_ENCODER = False
 
 
+from functools import partial
+
+
+def modify_grad(x, inds, factor=0.):
+    """抑制易重建token的梯度，迫使模型关注难例"""
+    mask_float = inds.float()
+    scale = 1.0 - mask_float + mask_float * factor
+    return x * scale
+
+
+def global_cosine_hm_tokens(a_list, b_list, alpha=1.0, factor=0.):
+    """
+    ViT版的交叉重建损失+难例挖掘（适配[B, N, C] token特征）
+    原版global_cosine_hm的token适配版
+    """
+    cos_loss = torch.nn.CosineSimilarity(dim=-1)
+    loss = 0
+    for item in range(len(a_list)):
+        a_ = a_list[item].detach()  # 固定target
+        b_ = b_list[item]
+        
+        with torch.no_grad():
+            point_dist = 1 - cos_loss(a_, b_)  # [B, N] per-token距离
+        mean_dist = point_dist.mean()
+        std_dist = point_dist.reshape(-1).std()
+        
+        loss += torch.mean(1 - cos_loss(a_, b_))
+        
+        # 难例挖掘: 只对距离超过阈值的token保留梯度
+        thresh = mean_dist + alpha * std_dist
+        partial_func = partial(modify_grad, inds=point_dist < thresh, factor=factor)
+        b_.register_hook(partial_func)
+    
+    return loss
+
+
 def get_logger(name, save_path=None, level='INFO'):
     logger = logging.getLogger(name)
     logger.setLevel(getattr(logging, level))
@@ -229,8 +265,11 @@ def vit_features_to_anomaly_map(en_features, de_features, img_size=256):
         
         H = W = H_patches
         
-        # 计算patch级误差
-        error_patches = F.mse_loss(en_patches, de_patches, reduction='none').mean(dim=-1)  # [B, N-1]
+        # 计算patch级余弦距离（与原版cal_anomaly_map一致）
+        en_norm = F.normalize(en_patches, dim=-1)
+        de_norm = F.normalize(de_patches, dim=-1)
+        cos_sim = (en_norm * de_norm).sum(dim=-1)  # [B, N]
+        error_patches = 1 - cos_sim  # [B, N]
         error_map = error_patches.reshape(B, 1, H, W)
         
         # 上采样到原图大小
@@ -401,20 +440,16 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data',
             img_aug = torch.stack([cut_paste(i) if np.random.random() < 0.5 else i for i in img])
             en, de = model(img, img_aug)
 
-            # 计算损失 - 适配ViT特征形状
-            loss = 0
-            for e, d in zip(en, de):
-                if len(e.shape) == 3:  # [B, N, C]
-                    # 计算token级的cosine误差
-                    e_norm = F.normalize(e, dim=-1)
-                    d_norm = F.normalize(d, dim=-1)
-                    cos_sim = (e_norm * d_norm).sum(dim=-1)  # [B, N]
-                    loss += (1 - cos_sim.mean())
-                else:
-                    # [B, C, H, W]
-                    loss += F.mse_loss(e, d)
-            
-            loss = loss / len(en)
+            # 交叉重建损失（与原版ReContrast一致）
+            # en = [freeze_0, freeze_1, freeze_2, freeze_3, train_0, train_1, train_2, train_3]
+            # de = [train_recon_0, train_recon_1, train_recon_2, train_recon_3,
+            #       freeze_recon_0, freeze_recon_1, freeze_recon_2, freeze_recon_3]
+            # 前半: freeze vs train_recon (训练分支预测冻结特征)
+            # 后半: train vs freeze_recon (冻结分支预测训练特征)
+            n = len(en) // 2  # 4
+            alpha = min(-3 + 4 * it / (total_iters * 0.1), 1.0)
+            loss = (global_cosine_hm_tokens(en[:n], de[:n], alpha=alpha) / 2 +
+                    global_cosine_hm_tokens(en[n:], de[n:], alpha=alpha) / 2)
 
             optimizer.zero_grad()
             optimizer2.zero_grad()
