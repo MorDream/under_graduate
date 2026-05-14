@@ -312,7 +312,7 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data',
     setup_seed(111)
 
     total_iters = 1000
-    batch_size = 8  # ViT需要更小的batch size
+    batch_size = 4  # 518x518+DINOv2，12GB显存建议batch_size=4
     image_size = 518  # DINOv2原生尺寸
     crop_size = 518
 
