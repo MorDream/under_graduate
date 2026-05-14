@@ -46,10 +46,10 @@ def imwrite_unicode(path, img):
         return False
 
 def add_scratch(img, 
-                max_scratches=3, 
-                min_len=0.05, max_len=0.3,
-                min_width=1, max_width=4,
-                min_opacity=0.3, max_opacity=0.8):
+                max_scratches=2, 
+                min_len=0.05, max_len=0.25,
+                min_width=1, max_width=2,
+                min_opacity=0.18, max_opacity=0.38):
     """
     添加随机划痕（直线或轻微弯曲）"""
     h, w = img.shape[:2]
@@ -131,9 +131,9 @@ def add_stains(img,
 
 
 def add_spots(img, 
-              max_spots=15,
-              spot_size=3,
-              opacity_range=(0.5, 1.0)):
+              max_spots=6,
+              spot_size=2,
+              opacity_range=(0.15, 0.30)):
     """添加斑点/颗粒"""
     h, w = img.shape[:2]
     result = img.copy()
@@ -160,32 +160,32 @@ def add_spots(img,
 
 
 def add_missing_region(img,
-                       max_regions=2,
-                       min_ratio=0.05, max_ratio=0.20):
-    """添加缺失区域（模拟die缺失）"""
+                       max_regions=1,
+                       min_ratio=0.03, max_ratio=0.10):
+    """添加缺失区域（模拟die缺失，半透明）"""
     h, w = img.shape[:2]
     result = img.copy()
     
-    for _ in range(random.randint(1, max_regions)):
-        overlay = result.copy()
-        region_w = int(w * random.uniform(min_ratio, max_ratio))
-        region_h = int(h * random.uniform(min_ratio, max_ratio))
-        region_w = min(region_w, w // 2)
-        region_h = min(region_h, h // 2)
-        
-        x1 = random.randint(0, w - region_w - 1)
-        y1 = random.randint(0, h - region_h - 1)
-        
-        # 深色区域
-        color = random.randint(30, 90)
-        cv2.rectangle(overlay, (x1, y1), (x1+region_w, y1+region_h),
-                     (color, color, color), -1)
-        
-        # 轻微模糊边缘
-        overlay = cv2.GaussianBlur(overlay, (5, 5), 0)
-        
-        opacity = random.uniform(0.4, 0.8)
-        result = cv2.addWeighted(result, 1 - opacity, overlay, opacity, 0)
+    if random.random() < 0.5:  # 50%概率不添加
+        return result
+    
+    overlay = result.copy()
+    region_w = int(w * random.uniform(min_ratio, max_ratio))
+    region_h = int(h * random.uniform(min_ratio, max_ratio))
+    region_w = min(region_w, w // 4)
+    region_h = min(region_h, h // 4)
+    
+    x1 = random.randint(0, w - region_w - 1)
+    y1 = random.randint(0, h - region_h - 1)
+    
+    color = random.randint(40, 100)
+    cv2.rectangle(overlay, (x1, y1), (x1+region_w, y1+region_h),
+                 (color, color, color), -1)
+    
+    overlay = cv2.GaussianBlur(overlay, (5, 5), 0)
+    
+    opacity = random.uniform(0.18, 0.35)
+    result = cv2.addWeighted(result, 1 - opacity, overlay, opacity, 0)
     
     return result
 
