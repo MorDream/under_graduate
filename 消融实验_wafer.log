@@ -1,0 +1,2197 @@
+nohup: ignoring input
+
+######################################################################
+# 4.2 消融实验
+# 数据集: wafer
+# 品类: ['BGA S5E 16x7', 'ESSD 12x5', 'INAND 19x5']
+# 实验数: 3 × 8 = 24
+# 开始时间: 2026-05-14 17:43:18
+######################################################################
+
+######################################################################
+# 品类: BGA S5E 16x7  |  实验: Baseline（全开）
+######################################################################
+
+======================================================================
+  [17:43:18] Baseline（全开） | BGA S5E 16x7
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "BGA S5E 16x7" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Baseline/BGA_S5E_16x7  --eval_interval 200
+======================================================================
+    cuda:0
+    BGA S5E 16x7
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 322
+    test image number: 52
+    >>> 数据集: wafer, 品类: ['BGA S5E 16x7']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [81/1000], loss:0.9295
+    iter [162/1000], loss:0.5626
+    Sample Auroc:0.891 | Acc:0.846 F1:0.882
+      混淆矩阵: [[TN=14, FP=2], [FN=6, TP=30]]
+      漏检率(FNR):0.1667  误检率(FPR):0.1250
+      >>> 保存最优模型 (AUROC=0.891)
+    iter [243/1000], loss:0.5452
+    iter [324/1000], loss:0.5185
+    Sample Auroc:0.898 | Acc:0.846 F1:0.889
+      混淆矩阵: [[TN=12, FP=4], [FN=4, TP=32]]
+      漏检率(FNR):0.1111  误检率(FPR):0.2500
+      >>> 保存最优模型 (AUROC=0.898)
+    iter [405/1000], loss:0.5041
+    iter [486/1000], loss:0.4950
+    iter [567/1000], loss:0.4922
+    Sample Auroc:0.861 | Acc:0.827 F1:0.889
+      混淆矩阵: [[TN=7, FP=9], [FN=0, TP=36]]
+      漏检率(FNR):0.0000  误检率(FPR):0.5625
+    iter [648/1000], loss:0.4893
+    iter [729/1000], loss:0.4812
+    Sample Auroc:0.931 | Acc:0.904 F1:0.928
+      混淆矩阵: [[TN=15, FP=1], [FN=4, TP=32]]
+      漏检率(FNR):0.1111  误检率(FPR):0.0625
+      >>> 保存最优模型 (AUROC=0.931)
+    iter [810/1000], loss:0.4799
+    iter [891/1000], loss:0.4739
+    iter [972/1000], loss:0.4761
+    Sample Auroc:0.948 | Acc:0.904 F1:0.930
+      混淆矩阵: [[TN=14, FP=2], [FN=3, TP=33]]
+      漏检率(FNR):0.0833  误检率(FPR):0.1250
+      >>> 保存最优模型 (AUROC=0.948)
+    iter [1000/1000], loss:0.4911
+    
+    ============================================================
+      BGA S5E 16x7 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9479
+      Accuracy:     0.9038
+      F1 Score:     0.9296
+      Threshold:    0.3005
+      混淆矩阵:
+        TP=33  FP=2
+        FN=3  TN=14
+        漏检率(FNR): 0.0833  误检率(FPR): 0.1250
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Baseline/BGA_S5E_16x7/BGA_S5E_16x7_ALL/confusion_images/BGA S5E 16x7/
+        TP: 33 张
+        FP: 2 张
+        FN: 3 张
+        TN: 14 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 2 张:
+        KA1TXM265_C8_UP.jpg
+        KA1TXM265_D14_UP.jpg
+      [FN] 共 3 张:
+        KA1TXM4D8_A13_DOWN.jpg
+        KA1TXM4D8_A4_UP.jpg
+        KA1TXM4D8_A6_UP.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      BGA S5E 16x7           0.9479   0.9038   0.9296   0.0833   0.1250
+      平均                     0.9479   0.9038   0.9296   0.0833   0.1250
+  ✅ 完成 (278s) | AUROC=0.891 | F1=0.882
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_174756.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_174756.md
+
+######################################################################
+# 品类: BGA S5E 16x7  |  实验: 无 CutPaste
+######################################################################
+
+======================================================================
+  [17:47:56] 无 CutPaste | BGA S5E 16x7
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "BGA S5E 16x7" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp0/BGA_S5E_16x7 --ablation_no_cutpaste --eval_interval 200
+======================================================================
+    cuda:0
+    BGA S5E 16x7
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 322
+    test image number: 52
+    [ABLATION] CutPaste关闭
+    >>> 数据集: wafer, 品类: ['BGA S5E 16x7']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [81/1000], loss:0.8115
+    iter [162/1000], loss:0.3580
+    Sample Auroc:0.943 | Acc:0.904 F1:0.925
+      混淆矩阵: [[TN=16, FP=0], [FN=5, TP=31]]
+      漏检率(FNR):0.1389  误检率(FPR):0.0000
+      >>> 保存最优模型 (AUROC=0.943)
+    iter [243/1000], loss:0.2908
+    iter [324/1000], loss:0.2606
+    Sample Auroc:0.979 | Acc:0.942 F1:0.958
+      混淆矩阵: [[TN=15, FP=1], [FN=2, TP=34]]
+      漏检率(FNR):0.0556  误检率(FPR):0.0625
+      >>> 保存最优模型 (AUROC=0.979)
+    iter [405/1000], loss:0.2529
+    iter [486/1000], loss:0.2222
+    iter [567/1000], loss:0.2051
+    Sample Auroc:0.967 | Acc:0.923 F1:0.944
+      混淆矩阵: [[TN=14, FP=2], [FN=2, TP=34]]
+      漏检率(FNR):0.0556  误检率(FPR):0.1250
+    iter [648/1000], loss:0.2099
+    iter [729/1000], loss:0.1967
+    Sample Auroc:0.948 | Acc:0.923 F1:0.943
+      混淆矩阵: [[TN=15, FP=1], [FN=3, TP=33]]
+      漏检率(FNR):0.0833  误检率(FPR):0.0625
+    iter [810/1000], loss:0.1829
+    iter [891/1000], loss:0.1917
+    iter [972/1000], loss:0.1824
+    Sample Auroc:0.950 | Acc:0.904 F1:0.930
+      混淆矩阵: [[TN=14, FP=2], [FN=3, TP=33]]
+      漏检率(FNR):0.0833  误检率(FPR):0.1250
+    iter [1000/1000], loss:0.1610
+    
+    ============================================================
+      BGA S5E 16x7 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9792
+      Accuracy:     0.9423
+      F1 Score:     0.9577
+      Threshold:    0.1565
+      混淆矩阵:
+        TP=34  FP=1
+        FN=2  TN=15
+        漏检率(FNR): 0.0556  误检率(FPR): 0.0625
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp0/BGA_S5E_16x7/BGA_S5E_16x7_ALL/confusion_images/BGA S5E 16x7/
+        TP: 34 张
+        FP: 1 张
+        FN: 2 张
+        TN: 15 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 1 张:
+        KA1TXM265_G16_DOWN.jpg
+      [FN] 共 2 张:
+        KA1TXM4D8_A4_UP.jpg
+        KA1TXM4D8_A6_UP.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      BGA S5E 16x7           0.9792   0.9423   0.9577   0.0556   0.0625
+      平均                     0.9792   0.9423   0.9577   0.0556   0.0625
+  ✅ 完成 (259s) | AUROC=0.943 | F1=0.925
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_175215.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_175215.md
+
+######################################################################
+# 品类: BGA S5E 16x7  |  实验: 自重建
+######################################################################
+
+======================================================================
+  [17:52:15] 自重建 | BGA S5E 16x7
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "BGA S5E 16x7" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp1/BGA_S5E_16x7 --ablation_self_recon --eval_interval 200
+======================================================================
+    cuda:0
+    BGA S5E 16x7
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 322
+    test image number: 52
+    [ABLATION] 交叉重建→自重建
+    >>> 数据集: wafer, 品类: ['BGA S5E 16x7']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [81/1000], loss:0.9295
+    iter [162/1000], loss:0.5626
+    Sample Auroc:0.894 | Acc:0.846 F1:0.882
+      混淆矩阵: [[TN=14, FP=2], [FN=6, TP=30]]
+      漏检率(FNR):0.1667  误检率(FPR):0.1250
+      >>> 保存最优模型 (AUROC=0.894)
+    iter [243/1000], loss:0.5454
+    iter [324/1000], loss:0.5185
+    Sample Auroc:0.882 | Acc:0.827 F1:0.870
+      混淆矩阵: [[TN=13, FP=3], [FN=6, TP=30]]
+      漏检率(FNR):0.1667  误检率(FPR):0.1875
+    iter [405/1000], loss:0.5036
+    iter [486/1000], loss:0.4953
+    iter [567/1000], loss:0.4924
+    Sample Auroc:0.861 | Acc:0.808 F1:0.878
+      混淆矩阵: [[TN=6, FP=10], [FN=0, TP=36]]
+      漏检率(FNR):0.0000  误检率(FPR):0.6250
+    iter [648/1000], loss:0.4925
+    iter [729/1000], loss:0.4841
+    Sample Auroc:0.920 | Acc:0.885 F1:0.914
+      混淆矩阵: [[TN=14, FP=2], [FN=4, TP=32]]
+      漏检率(FNR):0.1111  误检率(FPR):0.1250
+      >>> 保存最优模型 (AUROC=0.920)
+    iter [810/1000], loss:0.4780
+    iter [891/1000], loss:0.4715
+    iter [972/1000], loss:0.4712
+    Sample Auroc:0.854 | Acc:0.808 F1:0.868
+      混淆矩阵: [[TN=9, FP=7], [FN=3, TP=33]]
+      漏检率(FNR):0.0833  误检率(FPR):0.4375
+    iter [1000/1000], loss:0.4909
+    
+    ============================================================
+      BGA S5E 16x7 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9201
+      Accuracy:     0.8846
+      F1 Score:     0.9143
+      Threshold:    0.2931
+      混淆矩阵:
+        TP=32  FP=2
+        FN=4  TN=14
+        漏检率(FNR): 0.1111  误检率(FPR): 0.1250
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp1/BGA_S5E_16x7/BGA_S5E_16x7_ALL/confusion_images/BGA S5E 16x7/
+        TP: 32 张
+        FP: 2 张
+        FN: 4 张
+        TN: 14 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 2 张:
+        KA1TXM265_C14_DOWN.jpg
+        KA1TXM4D8_D9_DOWN.jpg
+      [FN] 共 4 张:
+        KA1TXM4D8_A11_DOWN.jpg
+        KA1TXM4D8_A4_UP.jpg
+        KA1TXM4D8_A6_UP.jpg
+        syn_DOWN_MEDIUM_0001_v1_KA1TXM265_A6_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      BGA S5E 16x7           0.9201   0.8846   0.9143   0.1111   0.1250
+      平均                     0.9201   0.8846   0.9143   0.1111   0.1250
+  ✅ 完成 (279s) | AUROC=0.894 | F1=0.882
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_175655.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_175655.md
+
+######################################################################
+# 品类: BGA S5E 16x7  |  实验: 无难例挖掘
+######################################################################
+
+======================================================================
+  [17:56:55] 无难例挖掘 | BGA S5E 16x7
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "BGA S5E 16x7" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp2/BGA_S5E_16x7 --ablation_no_hard_mining --eval_interval 200
+======================================================================
+    cuda:0
+    BGA S5E 16x7
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 322
+    test image number: 52
+    [ABLATION] 难例挖掘关闭
+    >>> 数据集: wafer, 品类: ['BGA S5E 16x7']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [81/1000], loss:0.2312
+    iter [162/1000], loss:0.1121
+    Sample Auroc:0.828 | Acc:0.769 F1:0.850
+      混淆矩阵: [[TN=6, FP=10], [FN=2, TP=34]]
+      漏检率(FNR):0.0556  误检率(FPR):0.6250
+      >>> 保存最优模型 (AUROC=0.828)
+    iter [243/1000], loss:0.0979
+    iter [324/1000], loss:0.0930
+    Sample Auroc:0.913 | Acc:0.885 F1:0.912
+      混淆矩阵: [[TN=15, FP=1], [FN=5, TP=31]]
+      漏检率(FNR):0.1389  误检率(FPR):0.0625
+      >>> 保存最优模型 (AUROC=0.913)
+    iter [405/1000], loss:0.0923
+    iter [486/1000], loss:0.0881
+    iter [567/1000], loss:0.0902
+    Sample Auroc:0.846 | Acc:0.808 F1:0.875
+      混淆矩阵: [[TN=7, FP=9], [FN=1, TP=35]]
+      漏检率(FNR):0.0278  误检率(FPR):0.5625
+    iter [648/1000], loss:0.0907
+    iter [729/1000], loss:0.0881
+    Sample Auroc:0.950 | Acc:0.904 F1:0.925
+      混淆矩阵: [[TN=16, FP=0], [FN=5, TP=31]]
+      漏检率(FNR):0.1389  误检率(FPR):0.0000
+      >>> 保存最优模型 (AUROC=0.950)
+    iter [810/1000], loss:0.0889
+    iter [891/1000], loss:0.0862
+    iter [972/1000], loss:0.0849
+    Sample Auroc:0.892 | Acc:0.865 F1:0.909
+      混淆矩阵: [[TN=10, FP=6], [FN=1, TP=35]]
+      漏检率(FNR):0.0278  误检率(FPR):0.3750
+    iter [1000/1000], loss:0.0883
+    
+    ============================================================
+      BGA S5E 16x7 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9497
+      Accuracy:     0.9038
+      F1 Score:     0.9254
+      Threshold:    0.2664
+      混淆矩阵:
+        TP=31  FP=0
+        FN=5  TN=16
+        漏检率(FNR): 0.1389  误检率(FPR): 0.0000
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp2/BGA_S5E_16x7/BGA_S5E_16x7_ALL/confusion_images/BGA S5E 16x7/
+        TP: 31 张
+        FP: 0 张
+        FN: 5 张
+        TN: 16 张
+    
+      -------- 错误分类图片 --------
+      [FN] 共 5 张:
+        KA1TXM4D8_A11_DOWN.jpg
+        KA1TXM4D8_A13_DOWN.jpg
+        KA1TXM4D8_A4_UP.jpg
+        KA1TXM4D8_A6_UP.jpg
+        syn_DOWN_MEDIUM_0001_v1_KA1TXM265_A6_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      BGA S5E 16x7           0.9497   0.9038   0.9254   0.1389   0.0000
+      平均                     0.9497   0.9038   0.9254   0.1389   0.0000
+  ✅ 完成 (281s) | AUROC=0.828 | F1=0.85
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_180135.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_180135.md
+
+######################################################################
+# 品类: BGA S5E 16x7  |  实验: 随机初始化
+######################################################################
+
+======================================================================
+  [18:01:35] 随机初始化 | BGA S5E 16x7
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "BGA S5E 16x7" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp3/BGA_S5E_16x7 --ablation_no_pretrained --eval_interval 200
+======================================================================
+    cuda:0
+    BGA S5E 16x7
+    [ABLATION] 预训练关闭，使用随机初始化
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 322
+    test image number: 52
+    >>> 数据集: wafer, 品类: ['BGA S5E 16x7']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [81/1000], loss:0.9965
+    iter [162/1000], loss:0.8339
+    Sample Auroc:0.566 | Acc:0.712 F1:0.828
+      混淆矩阵: [[TN=1, FP=15], [FN=0, TP=36]]
+      漏检率(FNR):0.0000  误检率(FPR):0.9375
+      >>> 保存最优模型 (AUROC=0.566)
+    iter [243/1000], loss:0.8403
+    iter [324/1000], loss:0.8274
+    Sample Auroc:0.604 | Acc:0.712 F1:0.828
+      混淆矩阵: [[TN=1, FP=15], [FN=0, TP=36]]
+      漏检率(FNR):0.0000  误检率(FPR):0.9375
+      >>> 保存最优模型 (AUROC=0.604)
+    iter [405/1000], loss:0.8327
+    iter [486/1000], loss:0.8200
+    iter [567/1000], loss:0.8184
+    Sample Auroc:0.642 | Acc:0.712 F1:0.828
+      混淆矩阵: [[TN=1, FP=15], [FN=0, TP=36]]
+      漏检率(FNR):0.0000  误检率(FPR):0.9375
+      >>> 保存最优模型 (AUROC=0.642)
+    iter [648/1000], loss:0.8137
+    iter [729/1000], loss:0.8052
+    Sample Auroc:0.670 | Acc:0.712 F1:0.828
+      混淆矩阵: [[TN=1, FP=15], [FN=0, TP=36]]
+      漏检率(FNR):0.0000  误检率(FPR):0.9375
+      >>> 保存最优模型 (AUROC=0.670)
+    iter [810/1000], loss:0.8379
+    iter [891/1000], loss:0.7950
+    iter [972/1000], loss:0.7838
+    Sample Auroc:0.618 | Acc:0.712 F1:0.828
+      混淆矩阵: [[TN=1, FP=15], [FN=0, TP=36]]
+      漏检率(FNR):0.0000  误检率(FPR):0.9375
+    iter [1000/1000], loss:0.7712
+    
+    ============================================================
+      BGA S5E 16x7 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.6701
+      Accuracy:     0.7115
+      F1 Score:     0.8276
+      Threshold:    0.3875
+      混淆矩阵:
+        TP=36  FP=15
+        FN=0  TN=1
+        漏检率(FNR): 0.0000  误检率(FPR): 0.9375
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp3/BGA_S5E_16x7/BGA_S5E_16x7_ALL/confusion_images/BGA S5E 16x7/
+        TP: 36 张
+        FP: 15 张
+        FN: 0 张
+        TN: 1 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 15 张:
+        KA1TXM265_A6_DOWN.jpg
+        KA1TXM265_C14_DOWN.jpg
+        KA1TXM265_C1_UP.jpg
+        KA1TXM265_C4_UP.jpg
+        KA1TXM265_C8_UP.jpg
+        KA1TXM265_D10_DOWN.jpg
+        KA1TXM265_D14_UP.jpg
+        KA1TXM265_E3_UP.jpg
+        KA1TXM265_F1_DOWN.jpg
+        KA1TXM265_G16_DOWN.jpg
+        KA1TXM4D8_A13_UP.jpg
+        KA1TXM4D8_A2_DOWN.jpg
+        KA1TXM4D8_D13_UP.jpg
+        KA1TXM4D8_D9_DOWN.jpg
+        KA1TXM4D8_E16_UP.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      BGA S5E 16x7           0.6701   0.7115   0.8276   0.0000   0.9375
+      平均                     0.6701   0.7115   0.8276   0.0000   0.9375
+  ✅ 完成 (278s) | AUROC=0.566 | F1=0.828
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_180613.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_180613.md
+
+######################################################################
+# 品类: BGA S5E 16x7  |  实验: 224分辨率
+######################################################################
+
+======================================================================
+  [18:06:13] 224分辨率 | BGA S5E 16x7
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "BGA S5E 16x7" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp4/BGA_S5E_16x7 --ablation_image_size 224 --eval_interval 200
+======================================================================
+    cuda:0
+    BGA S5E 16x7
+    [ABLATION] 输入分辨率: 224x224
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 322
+    test image number: 52
+    >>> 数据集: wafer, 品类: ['BGA S5E 16x7']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    Traceback (most recent call last):
+      File "/data/coding/under_graduate/recontrast_vit_wafer.py", line 669, in <module>
+        auroc_px_best, auroc_sp_best, aupro_px_best, acc, f1, fnr, fpr = train(
+                                                                         ^^^^^^
+      File "/data/coding/under_graduate/recontrast_vit_wafer.py", line 473, in train
+        en, de = model(img, img_aug)
+                 ^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+        return self._call_impl(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+        return forward_call(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/coding/under_graduate/recontrast/models/recontrast_vit.py", line 117, in forward
+        en_train = self.encoder(en_train_input, return_all_layers=True)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+        return self._call_impl(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+        return forward_call(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/coding/under_graduate/recontrast/models/recontrast_vit.py", line 234, in new_forward
+        layers_out = encoder.get_intermediate_layers(x, n=n_intermediate_layers, return_prefix_tokens=True)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/timm/models/vision_transformer.py", line 1222, in get_intermediate_layers
+        return self.forward_intermediates(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/timm/models/vision_transformer.py", line 1114, in forward_intermediates
+        x = self.patch_embed(x)
+            ^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+        return self._call_impl(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+        return forward_call(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/timm/layers/patch_embed.py", line 121, in forward
+        _assert(H == self.img_size[0], f"Input height ({H}) doesn't match model ({self.img_size[0]}).")
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/__init__.py", line 2228, in _assert
+        assert condition, message
+               ^^^^^^^^^
+    AssertionError: Input height (224) doesn't match model (518).
+  ❌ 退出码=1
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_180628.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_180628.md
+
+######################################################################
+# 品类: BGA S5E 16x7  |  实验: n=2层
+######################################################################
+
+======================================================================
+  [18:06:28] n=2层 | BGA S5E 16x7
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "BGA S5E 16x7" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n2/BGA_S5E_16x7 --ablation_n_layers 2 --eval_interval 200
+======================================================================
+    cuda:0
+    BGA S5E 16x7
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 322
+    test image number: 52
+    >>> 数据集: wafer, 品类: ['BGA S5E 16x7']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [81/1000], loss:0.4697
+    iter [162/1000], loss:0.3074
+    Sample Auroc:0.898 | Acc:0.827 F1:0.883
+      混淆矩阵: [[TN=9, FP=7], [FN=2, TP=34]]
+      漏检率(FNR):0.0556  误检率(FPR):0.4375
+      >>> 保存最优模型 (AUROC=0.898)
+    iter [243/1000], loss:0.2861
+    iter [324/1000], loss:0.2701
+    Sample Auroc:0.873 | Acc:0.846 F1:0.879
+      混淆矩阵: [[TN=15, FP=1], [FN=7, TP=29]]
+      漏检率(FNR):0.1944  误检率(FPR):0.0625
+    iter [405/1000], loss:0.2550
+    iter [486/1000], loss:0.2500
+    iter [567/1000], loss:0.2465
+    Sample Auroc:0.811 | Acc:0.769 F1:0.857
+      混淆矩阵: [[TN=4, FP=12], [FN=0, TP=36]]
+      漏检率(FNR):0.0000  误检率(FPR):0.7500
+    iter [648/1000], loss:0.2475
+    iter [729/1000], loss:0.2422
+    Sample Auroc:0.960 | Acc:0.923 F1:0.946
+      混淆矩阵: [[TN=13, FP=3], [FN=1, TP=35]]
+      漏检率(FNR):0.0278  误检率(FPR):0.1875
+      >>> 保存最优模型 (AUROC=0.960)
+    iter [810/1000], loss:0.2373
+    iter [891/1000], loss:0.2337
+    iter [972/1000], loss:0.2375
+    Sample Auroc:0.891 | Acc:0.846 F1:0.895
+      混淆矩阵: [[TN=10, FP=6], [FN=2, TP=34]]
+      漏检率(FNR):0.0556  误检率(FPR):0.3750
+    iter [1000/1000], loss:0.2425
+    
+    ============================================================
+      BGA S5E 16x7 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9601
+      Accuracy:     0.9231
+      F1 Score:     0.9459
+      Threshold:    0.2744
+      混淆矩阵:
+        TP=35  FP=3
+        FN=1  TN=13
+        漏检率(FNR): 0.0278  误检率(FPR): 0.1875
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n2/BGA_S5E_16x7/BGA_S5E_16x7_ALL/confusion_images/BGA S5E 16x7/
+        TP: 35 张
+        FP: 3 张
+        FN: 1 张
+        TN: 13 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 3 张:
+        KA1TXM265_D10_DOWN.jpg
+        KA1TXM265_F1_DOWN.jpg
+        KA1TXM4D8_A2_DOWN.jpg
+      [FN] 共 1 张:
+        KA1TXM4D8_A6_UP.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      BGA S5E 16x7           0.9601   0.9231   0.9459   0.0278   0.1875
+      平均                     0.9601   0.9231   0.9459   0.0278   0.1875
+  ✅ 完成 (258s) | AUROC=0.898 | F1=0.883
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_181046.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_181046.md
+
+######################################################################
+# 品类: BGA S5E 16x7  |  实验: n=6层
+######################################################################
+
+======================================================================
+  [18:10:46] n=6层 | BGA S5E 16x7
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "BGA S5E 16x7" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n6/BGA_S5E_16x7 --ablation_n_layers 6 --eval_interval 200
+======================================================================
+    cuda:0
+    BGA S5E 16x7
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 322
+    test image number: 52
+    >>> 数据集: wafer, 品类: ['BGA S5E 16x7']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [81/1000], loss:1.5031
+    iter [162/1000], loss:0.9010
+    Sample Auroc:0.931 | Acc:0.885 F1:0.917
+      混淆矩阵: [[TN=13, FP=3], [FN=3, TP=33]]
+      漏检率(FNR):0.0833  误检率(FPR):0.1875
+      >>> 保存最优模型 (AUROC=0.931)
+    iter [243/1000], loss:0.8468
+    iter [324/1000], loss:0.7998
+    Sample Auroc:0.913 | Acc:0.885 F1:0.917
+      混淆矩阵: [[TN=13, FP=3], [FN=3, TP=33]]
+      漏检率(FNR):0.0833  误检率(FPR):0.1875
+    iter [405/1000], loss:0.7742
+    iter [486/1000], loss:0.7609
+    iter [567/1000], loss:0.7703
+    Sample Auroc:0.884 | Acc:0.808 F1:0.878
+      混淆矩阵: [[TN=6, FP=10], [FN=0, TP=36]]
+      漏检率(FNR):0.0000  误检率(FPR):0.6250
+    iter [648/1000], loss:0.7657
+    iter [729/1000], loss:0.7446
+    Sample Auroc:0.918 | Acc:0.885 F1:0.909
+      混淆矩阵: [[TN=16, FP=0], [FN=6, TP=30]]
+      漏检率(FNR):0.1667  误检率(FPR):0.0000
+    iter [810/1000], loss:0.7378
+    iter [891/1000], loss:0.7223
+    iter [972/1000], loss:0.7270
+    Sample Auroc:0.931 | Acc:0.885 F1:0.921
+      混淆矩阵: [[TN=11, FP=5], [FN=1, TP=35]]
+      漏检率(FNR):0.0278  误检率(FPR):0.3125
+      >>> 保存最优模型 (AUROC=0.931)
+    iter [1000/1000], loss:0.7361
+    
+    ============================================================
+      BGA S5E 16x7 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9306
+      Accuracy:     0.8846
+      F1 Score:     0.9211
+      Threshold:    0.2847
+      混淆矩阵:
+        TP=35  FP=5
+        FN=1  TN=11
+        漏检率(FNR): 0.0278  误检率(FPR): 0.3125
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n6/BGA_S5E_16x7/BGA_S5E_16x7_ALL/confusion_images/BGA S5E 16x7/
+        TP: 35 张
+        FP: 5 张
+        FN: 1 张
+        TN: 11 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 5 张:
+        KA1TXM265_C4_UP.jpg
+        KA1TXM265_C8_UP.jpg
+        KA1TXM265_F1_DOWN.jpg
+        KA1TXM4D8_A13_UP.jpg
+        KA1TXM4D8_D9_DOWN.jpg
+      [FN] 共 1 张:
+        KA1TXM4D8_A4_UP.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      BGA S5E 16x7           0.9306   0.8846   0.9211   0.0278   0.3125
+      平均                     0.9306   0.8846   0.9211   0.0278   0.3125
+  ✅ 完成 (299s) | AUROC=0.931 | F1=0.917
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_181545.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_181545.md
+
+######################################################################
+# 品类: ESSD 12x5  |  实验: Baseline（全开）
+######################################################################
+
+======================================================================
+  [18:15:45] Baseline（全开） | ESSD 12x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "ESSD 12x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Baseline/ESSD_12x5  --eval_interval 200
+======================================================================
+    cuda:0
+    ESSD 12x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 469
+    test image number: 32
+    >>> 数据集: wafer, 品类: ['ESSD 12x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [118/1000], loss:1.0686
+    Sample Auroc:0.884 | Acc:0.844 F1:0.902
+      混淆矩阵: [[TN=4, FP=5], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.5556
+      >>> 保存最优模型 (AUROC=0.884)
+    iter [236/1000], loss:0.7488
+    iter [354/1000], loss:0.7018
+    Sample Auroc:0.850 | Acc:0.781 F1:0.868
+      混淆矩阵: [[TN=2, FP=7], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.7778
+    iter [472/1000], loss:0.6880
+    iter [590/1000], loss:0.6615
+    Sample Auroc:0.783 | Acc:0.781 F1:0.868
+      混淆矩阵: [[TN=2, FP=7], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.7778
+    iter [708/1000], loss:0.6315
+    Sample Auroc:0.787 | Acc:0.781 F1:0.863
+      混淆矩阵: [[TN=3, FP=6], [FN=1, TP=22]]
+      漏检率(FNR):0.0435  误检率(FPR):0.6667
+    iter [826/1000], loss:0.6234
+    iter [944/1000], loss:0.6248
+    Sample Auroc:0.792 | Acc:0.781 F1:0.868
+      混淆矩阵: [[TN=2, FP=7], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.7778
+    iter [1000/1000], loss:0.5993
+    
+    ============================================================
+      ESSD 12x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.8841
+      Accuracy:     0.8438
+      F1 Score:     0.9020
+      Threshold:    0.3148
+      混淆矩阵:
+        TP=23  FP=5
+        FN=0  TN=4
+        漏检率(FNR): 0.0000  误检率(FPR): 0.5556
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Baseline/ESSD_12x5/ESSD_12x5_ALL/confusion_images/ESSD 12x5/
+        TP: 23 张
+        FP: 5 张
+        FN: 0 张
+        TN: 4 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 5 张:
+        KA1UUR2A9_C1_DOWN.jpg
+        S58V47222_A10_DOWN.jpg
+        S58V47222_A11_DOWN.jpg
+        S58V47222_A11_UP.jpg
+        S58V47222_A7_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      ESSD 12x5              0.8841   0.8438   0.9020   0.0000   0.5556
+      平均                     0.8841   0.8438   0.9020   0.0000   0.5556
+  ✅ 完成 (275s) | AUROC=0.884 | F1=0.902
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_182020.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_182020.md
+
+######################################################################
+# 品类: ESSD 12x5  |  实验: 无 CutPaste
+######################################################################
+
+======================================================================
+  [18:20:20] 无 CutPaste | ESSD 12x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "ESSD 12x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp0/ESSD_12x5 --ablation_no_cutpaste --eval_interval 200
+======================================================================
+    cuda:0
+    ESSD 12x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 469
+    test image number: 32
+    [ABLATION] CutPaste关闭
+    >>> 数据集: wafer, 品类: ['ESSD 12x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [118/1000], loss:0.9033
+    Sample Auroc:0.927 | Acc:0.875 F1:0.917
+      混淆矩阵: [[TN=6, FP=3], [FN=1, TP=22]]
+      漏检率(FNR):0.0435  误检率(FPR):0.3333
+      >>> 保存最优模型 (AUROC=0.927)
+    iter [236/1000], loss:0.5165
+    iter [354/1000], loss:0.4430
+    Sample Auroc:0.918 | Acc:0.875 F1:0.913
+      混淆矩阵: [[TN=7, FP=2], [FN=2, TP=21]]
+      漏检率(FNR):0.0870  误检率(FPR):0.2222
+    iter [472/1000], loss:0.3765
+    iter [590/1000], loss:0.3540
+    Sample Auroc:0.932 | Acc:0.875 F1:0.913
+      混淆矩阵: [[TN=7, FP=2], [FN=2, TP=21]]
+      漏检率(FNR):0.0870  误检率(FPR):0.2222
+      >>> 保存最优模型 (AUROC=0.932)
+    iter [708/1000], loss:0.3102
+    Sample Auroc:0.947 | Acc:0.938 F1:0.957
+      混淆矩阵: [[TN=8, FP=1], [FN=1, TP=22]]
+      漏检率(FNR):0.0435  误检率(FPR):0.1111
+      >>> 保存最优模型 (AUROC=0.947)
+    iter [826/1000], loss:0.2974
+    iter [944/1000], loss:0.2591
+    Sample Auroc:0.773 | Acc:0.812 F1:0.870
+      混淆矩阵: [[TN=6, FP=3], [FN=3, TP=20]]
+      漏检率(FNR):0.1304  误检率(FPR):0.3333
+    iter [1000/1000], loss:0.2644
+    
+    ============================================================
+      ESSD 12x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9469
+      Accuracy:     0.9375
+      F1 Score:     0.9565
+      Threshold:    0.1476
+      混淆矩阵:
+        TP=22  FP=1
+        FN=1  TN=8
+        漏检率(FNR): 0.0435  误检率(FPR): 0.1111
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp0/ESSD_12x5/ESSD_12x5_ALL/confusion_images/ESSD 12x5/
+        TP: 22 张
+        FP: 1 张
+        FN: 1 张
+        TN: 8 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 1 张:
+        KA1UUR2A9_C1_DOWN.jpg
+      [FN] 共 1 张:
+        syn_DOWN_MEDIUM_0007_v0_S58V47222_E10_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      ESSD 12x5              0.9469   0.9375   0.9565   0.0435   0.1111
+      平均                     0.9469   0.9375   0.9565   0.0435   0.1111
+  ✅ 完成 (251s) | AUROC=0.927 | F1=0.917
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_182431.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_182431.md
+
+######################################################################
+# 品类: ESSD 12x5  |  实验: 自重建
+######################################################################
+
+======================================================================
+  [18:24:31] 自重建 | ESSD 12x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "ESSD 12x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp1/ESSD_12x5 --ablation_self_recon --eval_interval 200
+======================================================================
+    cuda:0
+    ESSD 12x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 469
+    test image number: 32
+    [ABLATION] 交叉重建→自重建
+    >>> 数据集: wafer, 品类: ['ESSD 12x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [118/1000], loss:1.0686
+    Sample Auroc:0.884 | Acc:0.844 F1:0.902
+      混淆矩阵: [[TN=4, FP=5], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.5556
+      >>> 保存最优模型 (AUROC=0.884)
+    iter [236/1000], loss:0.7488
+    iter [354/1000], loss:0.7018
+    Sample Auroc:0.831 | Acc:0.781 F1:0.863
+      混淆矩阵: [[TN=3, FP=6], [FN=1, TP=22]]
+      漏检率(FNR):0.0435  误检率(FPR):0.6667
+    iter [472/1000], loss:0.6880
+    iter [590/1000], loss:0.6628
+    Sample Auroc:0.826 | Acc:0.781 F1:0.868
+      混淆矩阵: [[TN=2, FP=7], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.7778
+    iter [708/1000], loss:0.6330
+    Sample Auroc:0.841 | Acc:0.875 F1:0.913
+      混淆矩阵: [[TN=7, FP=2], [FN=2, TP=21]]
+      漏检率(FNR):0.0870  误检率(FPR):0.2222
+    iter [826/1000], loss:0.6221
+    iter [944/1000], loss:0.6192
+    Sample Auroc:0.845 | Acc:0.875 F1:0.920
+      混淆矩阵: [[TN=5, FP=4], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.4444
+    iter [1000/1000], loss:0.5965
+    
+    ============================================================
+      ESSD 12x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.8841
+      Accuracy:     0.8438
+      F1 Score:     0.9020
+      Threshold:    0.3137
+      混淆矩阵:
+        TP=23  FP=5
+        FN=0  TN=4
+        漏检率(FNR): 0.0000  误检率(FPR): 0.5556
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp1/ESSD_12x5/ESSD_12x5_ALL/confusion_images/ESSD 12x5/
+        TP: 23 张
+        FP: 5 张
+        FN: 0 张
+        TN: 4 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 5 张:
+        KA1UUR2A9_C1_DOWN.jpg
+        S58V47222_A10_DOWN.jpg
+        S58V47222_A11_DOWN.jpg
+        S58V47222_A11_UP.jpg
+        S58V47222_A7_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      ESSD 12x5              0.8841   0.8438   0.9020   0.0000   0.5556
+      平均                     0.8841   0.8438   0.9020   0.0000   0.5556
+  ✅ 完成 (276s) | AUROC=0.884 | F1=0.902
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_182907.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_182907.md
+
+######################################################################
+# 品类: ESSD 12x5  |  实验: 无难例挖掘
+######################################################################
+
+======================================================================
+  [18:29:07] 无难例挖掘 | ESSD 12x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "ESSD 12x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp2/ESSD_12x5 --ablation_no_hard_mining --eval_interval 200
+======================================================================
+    cuda:0
+    ESSD 12x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 469
+    test image number: 32
+    [ABLATION] 难例挖掘关闭
+    >>> 数据集: wafer, 品类: ['ESSD 12x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [118/1000], loss:0.2598
+    Sample Auroc:0.768 | Acc:0.781 F1:0.868
+      混淆矩阵: [[TN=2, FP=7], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.7778
+      >>> 保存最优模型 (AUROC=0.768)
+    iter [236/1000], loss:0.1539
+    iter [354/1000], loss:0.1367
+    Sample Auroc:0.831 | Acc:0.812 F1:0.880
+      混淆矩阵: [[TN=4, FP=5], [FN=1, TP=22]]
+      漏检率(FNR):0.0435  误检率(FPR):0.5556
+      >>> 保存最优模型 (AUROC=0.831)
+    iter [472/1000], loss:0.1258
+    iter [590/1000], loss:0.1236
+    Sample Auroc:0.763 | Acc:0.781 F1:0.868
+      混淆矩阵: [[TN=2, FP=7], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.7778
+    iter [708/1000], loss:0.1132
+    Sample Auroc:0.667 | Acc:0.750 F1:0.852
+      混淆矩阵: [[TN=1, FP=8], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.8889
+    iter [826/1000], loss:0.1151
+    iter [944/1000], loss:0.1073
+    Sample Auroc:0.865 | Acc:0.875 F1:0.913
+      混淆矩阵: [[TN=7, FP=2], [FN=2, TP=21]]
+      漏检率(FNR):0.0870  误检率(FPR):0.2222
+      >>> 保存最优模型 (AUROC=0.865)
+    iter [1000/1000], loss:0.1070
+    
+    ============================================================
+      ESSD 12x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.8647
+      Accuracy:     0.8750
+      F1 Score:     0.9130
+      Threshold:    0.2498
+      混淆矩阵:
+        TP=21  FP=2
+        FN=2  TN=7
+        漏检率(FNR): 0.0870  误检率(FPR): 0.2222
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp2/ESSD_12x5/ESSD_12x5_ALL/confusion_images/ESSD 12x5/
+        TP: 21 张
+        FP: 2 张
+        FN: 2 张
+        TN: 7 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 2 张:
+        KA1UUR2A9_C1_DOWN.jpg
+        S58V47222_A11_UP.jpg
+      [FN] 共 2 张:
+        syn_DOWN_MEDIUM_0007_v0_S58V47222_E10_DOWN.jpg
+        syn_DOWN_MEDIUM_0007_v1_S58V47222_E10_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      ESSD 12x5              0.8647   0.8750   0.9130   0.0870   0.2222
+      平均                     0.8647   0.8750   0.9130   0.0870   0.2222
+  ✅ 完成 (275s) | AUROC=0.768 | F1=0.868
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_183343.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_183343.md
+
+######################################################################
+# 品类: ESSD 12x5  |  实验: 随机初始化
+######################################################################
+
+======================================================================
+  [18:33:43] 随机初始化 | ESSD 12x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "ESSD 12x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp3/ESSD_12x5 --ablation_no_pretrained --eval_interval 200
+======================================================================
+    cuda:0
+    ESSD 12x5
+    [ABLATION] 预训练关闭，使用随机初始化
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 469
+    test image number: 32
+    >>> 数据集: wafer, 品类: ['ESSD 12x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [118/1000], loss:1.4607
+    Sample Auroc:0.319 | Acc:0.719 F1:0.836
+      混淆矩阵: [[TN=0, FP=9], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):1.0000
+      >>> 保存最优模型 (AUROC=0.319)
+    iter [236/1000], loss:1.2666
+    iter [354/1000], loss:1.1510
+    Sample Auroc:0.271 | Acc:0.719 F1:0.836
+      混淆矩阵: [[TN=0, FP=9], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):1.0000
+    iter [472/1000], loss:1.0999
+    iter [590/1000], loss:1.0560
+    Sample Auroc:0.295 | Acc:0.719 F1:0.836
+      混淆矩阵: [[TN=0, FP=9], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):1.0000
+    iter [708/1000], loss:1.0466
+    Sample Auroc:0.338 | Acc:0.719 F1:0.836
+      混淆矩阵: [[TN=0, FP=9], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):1.0000
+      >>> 保存最优模型 (AUROC=0.338)
+    iter [826/1000], loss:1.0061
+    iter [944/1000], loss:0.9879
+    Sample Auroc:0.324 | Acc:0.719 F1:0.836
+      混淆矩阵: [[TN=0, FP=9], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):1.0000
+    iter [1000/1000], loss:0.9539
+    
+    ============================================================
+      ESSD 12x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.3382
+      Accuracy:     0.7188
+      F1 Score:     0.8364
+      Threshold:    0.4965
+      混淆矩阵:
+        TP=23  FP=9
+        FN=0  TN=0
+        漏检率(FNR): 0.0000  误检率(FPR): 1.0000
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp3/ESSD_12x5/ESSD_12x5_ALL/confusion_images/ESSD 12x5/
+        TP: 23 张
+        FP: 9 张
+        FN: 0 张
+        TN: 0 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 9 张:
+        KA1UUR2A9_C1_DOWN.jpg
+        S58V47222_A10_DOWN.jpg
+        S58V47222_A10_UP.jpg
+        S58V47222_A11_DOWN.jpg
+        S58V47222_A11_UP.jpg
+        S58V47222_A7_DOWN.jpg
+        S58V47222_C6_UP.jpg
+        S58V47222_E10_DOWN.jpg
+        S58V47222_E5_UP.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      ESSD 12x5              0.3382   0.7188   0.8364   0.0000   1.0000
+      平均                     0.3382   0.7188   0.8364   0.0000   1.0000
+  ✅ 完成 (273s) | AUROC=0.319 | F1=0.836
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_183816.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_183816.md
+
+######################################################################
+# 品类: ESSD 12x5  |  实验: 224分辨率
+######################################################################
+
+======================================================================
+  [18:38:16] 224分辨率 | ESSD 12x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "ESSD 12x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp4/ESSD_12x5 --ablation_image_size 224 --eval_interval 200
+======================================================================
+    cuda:0
+    ESSD 12x5
+    [ABLATION] 输入分辨率: 224x224
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 469
+    test image number: 32
+    >>> 数据集: wafer, 品类: ['ESSD 12x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    Traceback (most recent call last):
+      File "/data/coding/under_graduate/recontrast_vit_wafer.py", line 669, in <module>
+        auroc_px_best, auroc_sp_best, aupro_px_best, acc, f1, fnr, fpr = train(
+                                                                         ^^^^^^
+      File "/data/coding/under_graduate/recontrast_vit_wafer.py", line 473, in train
+        en, de = model(img, img_aug)
+                 ^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+        return self._call_impl(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+        return forward_call(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/coding/under_graduate/recontrast/models/recontrast_vit.py", line 117, in forward
+        en_train = self.encoder(en_train_input, return_all_layers=True)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+        return self._call_impl(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+        return forward_call(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/coding/under_graduate/recontrast/models/recontrast_vit.py", line 234, in new_forward
+        layers_out = encoder.get_intermediate_layers(x, n=n_intermediate_layers, return_prefix_tokens=True)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/timm/models/vision_transformer.py", line 1222, in get_intermediate_layers
+        return self.forward_intermediates(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/timm/models/vision_transformer.py", line 1114, in forward_intermediates
+        x = self.patch_embed(x)
+            ^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+        return self._call_impl(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+        return forward_call(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/timm/layers/patch_embed.py", line 121, in forward
+        _assert(H == self.img_size[0], f"Input height ({H}) doesn't match model ({self.img_size[0]}).")
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/__init__.py", line 2228, in _assert
+        assert condition, message
+               ^^^^^^^^^
+    AssertionError: Input height (224) doesn't match model (518).
+  ❌ 退出码=1
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_183830.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_183830.md
+
+######################################################################
+# 品类: ESSD 12x5  |  实验: n=2层
+######################################################################
+
+======================================================================
+  [18:38:30] n=2层 | ESSD 12x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "ESSD 12x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n2/ESSD_12x5 --ablation_n_layers 2 --eval_interval 200
+======================================================================
+    cuda:0
+    ESSD 12x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 469
+    test image number: 32
+    >>> 数据集: wafer, 品类: ['ESSD 12x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [118/1000], loss:0.4953
+    Sample Auroc:0.908 | Acc:0.906 F1:0.939
+      混淆矩阵: [[TN=6, FP=3], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.3333
+      >>> 保存最优模型 (AUROC=0.908)
+    iter [236/1000], loss:0.3657
+    iter [354/1000], loss:0.3363
+    Sample Auroc:0.831 | Acc:0.844 F1:0.902
+      混淆矩阵: [[TN=4, FP=5], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.5556
+    iter [472/1000], loss:0.3265
+    iter [590/1000], loss:0.3147
+    Sample Auroc:0.860 | Acc:0.844 F1:0.878
+      混淆矩阵: [[TN=9, FP=0], [FN=5, TP=18]]
+      漏检率(FNR):0.2174  误检率(FPR):0.0000
+    iter [708/1000], loss:0.3016
+    Sample Auroc:0.845 | Acc:0.906 F1:0.939
+      混淆矩阵: [[TN=6, FP=3], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.3333
+    iter [826/1000], loss:0.2980
+    iter [944/1000], loss:0.2946
+    Sample Auroc:0.865 | Acc:0.906 F1:0.939
+      混淆矩阵: [[TN=6, FP=3], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.3333
+    iter [1000/1000], loss:0.2918
+    
+    ============================================================
+      ESSD 12x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9082
+      Accuracy:     0.9062
+      F1 Score:     0.9388
+      Threshold:    0.3906
+      混淆矩阵:
+        TP=23  FP=3
+        FN=0  TN=6
+        漏检率(FNR): 0.0000  误检率(FPR): 0.3333
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n2/ESSD_12x5/ESSD_12x5_ALL/confusion_images/ESSD 12x5/
+        TP: 23 张
+        FP: 3 张
+        FN: 0 张
+        TN: 6 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 3 张:
+        KA1UUR2A9_C1_DOWN.jpg
+        S58V47222_A11_DOWN.jpg
+        S58V47222_A7_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      ESSD 12x5              0.9082   0.9062   0.9388   0.0000   0.3333
+      平均                     0.9082   0.9062   0.9388   0.0000   0.3333
+  ✅ 完成 (254s) | AUROC=0.908 | F1=0.939
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_184244.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_184244.md
+
+######################################################################
+# 品类: ESSD 12x5  |  实验: n=6层
+######################################################################
+
+======================================================================
+  [18:42:44] n=6层 | ESSD 12x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "ESSD 12x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n6/ESSD_12x5 --ablation_n_layers 6 --eval_interval 200
+======================================================================
+    cuda:0
+    ESSD 12x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 469
+    test image number: 32
+    >>> 数据集: wafer, 品类: ['ESSD 12x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [118/1000], loss:1.6362
+    Sample Auroc:0.855 | Acc:0.875 F1:0.920
+      混淆矩阵: [[TN=5, FP=4], [FN=0, TP=23]]
+      漏检率(FNR):0.0000  误检率(FPR):0.4444
+      >>> 保存最优模型 (AUROC=0.855)
+    iter [236/1000], loss:1.1706
+    iter [354/1000], loss:1.0956
+    Sample Auroc:0.874 | Acc:0.812 F1:0.880
+      混淆矩阵: [[TN=4, FP=5], [FN=1, TP=22]]
+      漏检率(FNR):0.0435  误检率(FPR):0.5556
+      >>> 保存最优模型 (AUROC=0.874)
+    iter [472/1000], loss:1.0654
+    iter [590/1000], loss:1.0357
+    Sample Auroc:0.802 | Acc:0.750 F1:0.846
+      混淆矩阵: [[TN=2, FP=7], [FN=1, TP=22]]
+      漏检率(FNR):0.0435  误检率(FPR):0.7778
+    iter [708/1000], loss:0.9957
+    Sample Auroc:0.845 | Acc:0.844 F1:0.898
+      混淆矩阵: [[TN=5, FP=4], [FN=1, TP=22]]
+      漏检率(FNR):0.0435  误检率(FPR):0.4444
+    iter [826/1000], loss:0.9794
+    iter [944/1000], loss:0.9653
+    Sample Auroc:0.874 | Acc:0.844 F1:0.884
+      混淆矩阵: [[TN=8, FP=1], [FN=4, TP=19]]
+      漏检率(FNR):0.1739  误检率(FPR):0.1111
+      >>> 保存最优模型 (AUROC=0.874)
+    iter [1000/1000], loss:0.9448
+    
+    ============================================================
+      ESSD 12x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.8744
+      Accuracy:     0.8438
+      F1 Score:     0.8837
+      Threshold:    0.3111
+      混淆矩阵:
+        TP=19  FP=1
+        FN=4  TN=8
+        漏检率(FNR): 0.1739  误检率(FPR): 0.1111
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n6/ESSD_12x5/ESSD_12x5_ALL/confusion_images/ESSD 12x5/
+        TP: 19 张
+        FP: 1 张
+        FN: 4 张
+        TN: 8 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 1 张:
+        KA1UUR2A9_C1_DOWN.jpg
+      [FN] 共 4 张:
+        syn_DOWN_MEDIUM_0005_v0_S58V47222_A7_DOWN.jpg
+        syn_DOWN_MEDIUM_0005_v1_S58V47222_A7_DOWN.jpg
+        syn_DOWN_MEDIUM_0007_v0_S58V47222_E10_DOWN.jpg
+        syn_DOWN_MEDIUM_0007_v1_S58V47222_E10_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      ESSD 12x5              0.8744   0.8438   0.8837   0.1739   0.1111
+      平均                     0.8744   0.8438   0.8837   0.1739   0.1111
+  ✅ 完成 (296s) | AUROC=0.855 | F1=0.92
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_184740.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_184740.md
+
+######################################################################
+# 品类: INAND 19x5  |  实验: Baseline（全开）
+######################################################################
+
+======================================================================
+  [18:47:40] Baseline（全开） | INAND 19x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "INAND 19x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Baseline/INAND_19x5  --eval_interval 200
+======================================================================
+    cuda:0
+    INAND 19x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 168
+    test image number: 61
+    >>> 数据集: wafer, 品类: ['INAND 19x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [42/1000], loss:1.4330
+    iter [84/1000], loss:0.8595
+    iter [126/1000], loss:0.7621
+    iter [168/1000], loss:0.7494
+    Sample Auroc:0.944 | Acc:0.885 F1:0.928
+      混淆矩阵: [[TN=9, FP=7], [FN=0, TP=45]]
+      漏检率(FNR):0.0000  误检率(FPR):0.4375
+      >>> 保存最优模型 (AUROC=0.944)
+    iter [210/1000], loss:0.7099
+    iter [252/1000], loss:0.6839
+    iter [294/1000], loss:0.6610
+    iter [336/1000], loss:0.6476
+    iter [378/1000], loss:0.6374
+    Sample Auroc:0.796 | Acc:0.787 F1:0.871
+      混淆矩阵: [[TN=4, FP=12], [FN=1, TP=44]]
+      漏检率(FNR):0.0222  误检率(FPR):0.7500
+    iter [420/1000], loss:0.6254
+    iter [462/1000], loss:0.6174
+    iter [504/1000], loss:0.6201
+    iter [546/1000], loss:0.6150
+    iter [588/1000], loss:0.6045
+    Sample Auroc:0.838 | Acc:0.770 F1:0.865
+      混淆矩阵: [[TN=2, FP=14], [FN=0, TP=45]]
+      漏检率(FNR):0.0000  误检率(FPR):0.8750
+    iter [630/1000], loss:0.6126
+    iter [672/1000], loss:0.5988
+    iter [714/1000], loss:0.5852
+    iter [756/1000], loss:0.5957
+    iter [798/1000], loss:0.6068
+    Sample Auroc:0.900 | Acc:0.885 F1:0.925
+      混淆矩阵: [[TN=11, FP=5], [FN=2, TP=43]]
+      漏检率(FNR):0.0444  误检率(FPR):0.3125
+    iter [840/1000], loss:0.5828
+    iter [882/1000], loss:0.5859
+    iter [924/1000], loss:0.5868
+    iter [966/1000], loss:0.5912
+    Sample Auroc:0.922 | Acc:0.869 F1:0.918
+      混淆矩阵: [[TN=8, FP=8], [FN=0, TP=45]]
+      漏检率(FNR):0.0000  误检率(FPR):0.5000
+    iter [1000/1000], loss:0.5809
+    
+    ============================================================
+      INAND 19x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9444
+      Accuracy:     0.8852
+      F1 Score:     0.9278
+      Threshold:    0.3175
+      混淆矩阵:
+        TP=45  FP=7
+        FN=0  TN=9
+        漏检率(FNR): 0.0000  误检率(FPR): 0.4375
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Baseline/INAND_19x5/INAND_19x5_ALL/confusion_images/INAND 19x5/
+        TP: 45 张
+        FP: 7 张
+        FN: 0 张
+        TN: 9 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 7 张:
+        KA1X01573_A10_DOWN.jpg
+        KA1X01573_A11_DOWN.jpg
+        KA1X01573_A12_DOWN.jpg
+        KA1X01573_A13_DOWN.jpg
+        KA1X01573_A15_DOWN.jpg
+        KA1X01573_A19_DOWN.jpg
+        KA1X01573_C7_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      INAND 19x5             0.9444   0.8852   0.9278   0.0000   0.4375
+      平均                     0.9444   0.8852   0.9278   0.0000   0.4375
+  ✅ 完成 (284s) | AUROC=0.944 | F1=0.928
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_185224.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_185224.md
+
+######################################################################
+# 品类: INAND 19x5  |  实验: 无 CutPaste
+######################################################################
+
+======================================================================
+  [18:52:24] 无 CutPaste | INAND 19x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "INAND 19x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp0/INAND_19x5 --ablation_no_cutpaste --eval_interval 200
+======================================================================
+    cuda:0
+    INAND 19x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 168
+    test image number: 61
+    [ABLATION] CutPaste关闭
+    >>> 数据集: wafer, 品类: ['INAND 19x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [42/1000], loss:1.3012
+    iter [84/1000], loss:0.6228
+    iter [126/1000], loss:0.5057
+    iter [168/1000], loss:0.4663
+    Sample Auroc:0.953 | Acc:0.918 F1:0.943
+      混淆矩阵: [[TN=15, FP=1], [FN=4, TP=41]]
+      漏检率(FNR):0.0889  误检率(FPR):0.0625
+      >>> 保存最优模型 (AUROC=0.953)
+    iter [210/1000], loss:0.4182
+    iter [252/1000], loss:0.3819
+    iter [294/1000], loss:0.3611
+    iter [336/1000], loss:0.3611
+    iter [378/1000], loss:0.3565
+    Sample Auroc:0.928 | Acc:0.885 F1:0.921
+      混淆矩阵: [[TN=13, FP=3], [FN=4, TP=41]]
+      漏检率(FNR):0.0889  误检率(FPR):0.1875
+    iter [420/1000], loss:0.3234
+    iter [462/1000], loss:0.2985
+    iter [504/1000], loss:0.2909
+    iter [546/1000], loss:0.2841
+    iter [588/1000], loss:0.2696
+    Sample Auroc:0.958 | Acc:0.918 F1:0.944
+      混淆矩阵: [[TN=14, FP=2], [FN=3, TP=42]]
+      漏检率(FNR):0.0667  误检率(FPR):0.1250
+      >>> 保存最优模型 (AUROC=0.958)
+    iter [630/1000], loss:0.2456
+    iter [672/1000], loss:0.2439
+    iter [714/1000], loss:0.2528
+    iter [756/1000], loss:0.2729
+    iter [798/1000], loss:0.2538
+    Sample Auroc:0.953 | Acc:0.902 F1:0.935
+      混淆矩阵: [[TN=12, FP=4], [FN=2, TP=43]]
+      漏检率(FNR):0.0444  误检率(FPR):0.2500
+    iter [840/1000], loss:0.2275
+    iter [882/1000], loss:0.2168
+    iter [924/1000], loss:0.2269
+    iter [966/1000], loss:0.2032
+    Sample Auroc:0.969 | Acc:0.934 F1:0.953
+      混淆矩阵: [[TN=16, FP=0], [FN=4, TP=41]]
+      漏检率(FNR):0.0889  误检率(FPR):0.0000
+      >>> 保存最优模型 (AUROC=0.969)
+    iter [1000/1000], loss:0.1888
+    
+    ============================================================
+      INAND 19x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9694
+      Accuracy:     0.9344
+      F1 Score:     0.9535
+      Threshold:    0.1153
+      混淆矩阵:
+        TP=41  FP=0
+        FN=4  TN=16
+        漏检率(FNR): 0.0889  误检率(FPR): 0.0000
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp0/INAND_19x5/INAND_19x5_ALL/confusion_images/INAND 19x5/
+        TP: 41 张
+        FP: 0 张
+        FN: 4 张
+        TN: 16 张
+    
+      -------- 错误分类图片 --------
+      [FN] 共 4 张:
+        syn_DOWN_MEDIUM_0000_v0_KA1X01573_A10_DOWN.jpg
+        syn_DOWN_MEDIUM_0000_v1_KA1X01573_A10_DOWN.jpg
+        syn_DOWN_MEDIUM_0004_v0_KA1X01573_A12_DOWN.jpg
+        syn_DOWN_MEDIUM_0004_v1_KA1X01573_A12_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      INAND 19x5             0.9694   0.9344   0.9535   0.0889   0.0000
+      平均                     0.9694   0.9344   0.9535   0.0889   0.0000
+  ✅ 完成 (263s) | AUROC=0.953 | F1=0.943
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_185647.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_185647.md
+
+######################################################################
+# 品类: INAND 19x5  |  实验: 自重建
+######################################################################
+
+======================================================================
+  [18:56:47] 自重建 | INAND 19x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "INAND 19x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp1/INAND_19x5 --ablation_self_recon --eval_interval 200
+======================================================================
+    cuda:0
+    INAND 19x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 168
+    test image number: 61
+    [ABLATION] 交叉重建→自重建
+    >>> 数据集: wafer, 品类: ['INAND 19x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [42/1000], loss:1.4330
+    iter [84/1000], loss:0.8594
+    iter [126/1000], loss:0.7620
+    iter [168/1000], loss:0.7494
+    Sample Auroc:0.946 | Acc:0.885 F1:0.921
+      混淆矩阵: [[TN=13, FP=3], [FN=4, TP=41]]
+      漏检率(FNR):0.0889  误检率(FPR):0.1875
+      >>> 保存最优模型 (AUROC=0.946)
+    iter [210/1000], loss:0.7099
+    iter [252/1000], loss:0.6839
+    iter [294/1000], loss:0.6610
+    iter [336/1000], loss:0.6478
+    iter [378/1000], loss:0.6367
+    Sample Auroc:0.857 | Acc:0.820 F1:0.889
+      混淆矩阵: [[TN=6, FP=10], [FN=1, TP=44]]
+      漏检率(FNR):0.0222  误检率(FPR):0.6250
+    iter [420/1000], loss:0.6254
+    iter [462/1000], loss:0.6176
+    iter [504/1000], loss:0.6204
+    iter [546/1000], loss:0.6157
+    iter [588/1000], loss:0.6049
+    Sample Auroc:0.810 | Acc:0.787 F1:0.874
+      混淆矩阵: [[TN=3, FP=13], [FN=0, TP=45]]
+      漏检率(FNR):0.0000  误检率(FPR):0.8125
+    iter [630/1000], loss:0.6146
+    iter [672/1000], loss:0.5998
+    iter [714/1000], loss:0.5855
+    iter [756/1000], loss:0.5955
+    iter [798/1000], loss:0.6063
+    Sample Auroc:0.899 | Acc:0.869 F1:0.911
+      混淆矩阵: [[TN=12, FP=4], [FN=4, TP=41]]
+      漏检率(FNR):0.0889  误检率(FPR):0.2500
+    iter [840/1000], loss:0.5823
+    iter [882/1000], loss:0.5865
+    iter [924/1000], loss:0.5869
+    iter [966/1000], loss:0.5892
+    Sample Auroc:0.933 | Acc:0.885 F1:0.920
+      混淆矩阵: [[TN=14, FP=2], [FN=5, TP=40]]
+      漏检率(FNR):0.1111  误检率(FPR):0.1250
+    iter [1000/1000], loss:0.5761
+    
+    ============================================================
+      INAND 19x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9458
+      Accuracy:     0.8852
+      F1 Score:     0.9213
+      Threshold:    0.3298
+      混淆矩阵:
+        TP=41  FP=3
+        FN=4  TN=13
+        漏检率(FNR): 0.0889  误检率(FPR): 0.1875
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp1/INAND_19x5/INAND_19x5_ALL/confusion_images/INAND 19x5/
+        TP: 41 张
+        FP: 3 张
+        FN: 4 张
+        TN: 13 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 3 张:
+        KA1X01573_A11_DOWN.jpg
+        KA1X01573_A15_DOWN.jpg
+        KA1X01573_A19_DOWN.jpg
+      [FN] 共 4 张:
+        S55V72083_D16_DOWN.jpg
+        syn_DOWN_MEDIUM_0000_v0_KA1X01573_A10_DOWN.jpg
+        syn_DOWN_MEDIUM_0000_v1_KA1X01573_A10_DOWN.jpg
+        syn_DOWN_MEDIUM_0004_v1_KA1X01573_A12_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      INAND 19x5             0.9458   0.8852   0.9213   0.0889   0.1875
+      平均                     0.9458   0.8852   0.9213   0.0889   0.1875
+  ✅ 完成 (283s) | AUROC=0.946 | F1=0.921
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_190130.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_190130.md
+
+######################################################################
+# 品类: INAND 19x5  |  实验: 无难例挖掘
+######################################################################
+
+======================================================================
+  [19:01:30] 无难例挖掘 | INAND 19x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "INAND 19x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp2/INAND_19x5 --ablation_no_hard_mining --eval_interval 200
+======================================================================
+    cuda:0
+    INAND 19x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 168
+    test image number: 61
+    [ABLATION] 难例挖掘关闭
+    >>> 数据集: wafer, 品类: ['INAND 19x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [42/1000], loss:0.3581
+    iter [84/1000], loss:0.2105
+    iter [126/1000], loss:0.1633
+    iter [168/1000], loss:0.1486
+    Sample Auroc:0.818 | Acc:0.852 F1:0.907
+      混淆矩阵: [[TN=8, FP=8], [FN=1, TP=44]]
+      漏检率(FNR):0.0222  误检率(FPR):0.5000
+      >>> 保存最优模型 (AUROC=0.818)
+    iter [210/1000], loss:0.1383
+    iter [252/1000], loss:0.1359
+    iter [294/1000], loss:0.1276
+    iter [336/1000], loss:0.1252
+    iter [378/1000], loss:0.1208
+    Sample Auroc:0.836 | Acc:0.820 F1:0.867
+      混淆矩阵: [[TN=14, FP=2], [FN=9, TP=36]]
+      漏检率(FNR):0.2000  误检率(FPR):0.1250
+      >>> 保存最优模型 (AUROC=0.836)
+    iter [420/1000], loss:0.1213
+    iter [462/1000], loss:0.1178
+    iter [504/1000], loss:0.1205
+    iter [546/1000], loss:0.1190
+    iter [588/1000], loss:0.1149
+    Sample Auroc:0.804 | Acc:0.836 F1:0.898
+      混淆矩阵: [[TN=7, FP=9], [FN=1, TP=44]]
+      漏检率(FNR):0.0222  误检率(FPR):0.5625
+    iter [630/1000], loss:0.1144
+    iter [672/1000], loss:0.1104
+    iter [714/1000], loss:0.1049
+    iter [756/1000], loss:0.1087
+    iter [798/1000], loss:0.1094
+    Sample Auroc:0.842 | Acc:0.787 F1:0.869
+      混淆矩阵: [[TN=5, FP=11], [FN=2, TP=43]]
+      漏检率(FNR):0.0444  误检率(FPR):0.6875
+      >>> 保存最优模型 (AUROC=0.842)
+    iter [840/1000], loss:0.1050
+    iter [882/1000], loss:0.1072
+    iter [924/1000], loss:0.1032
+    iter [966/1000], loss:0.0997
+    Sample Auroc:0.747 | Acc:0.754 F1:0.851
+      混淆矩阵: [[TN=3, FP=13], [FN=2, TP=43]]
+      漏检率(FNR):0.0444  误检率(FPR):0.8125
+    iter [1000/1000], loss:0.1046
+    
+    ============================================================
+      INAND 19x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.8417
+      Accuracy:     0.7869
+      F1 Score:     0.8687
+      Threshold:    0.2228
+      混淆矩阵:
+        TP=43  FP=11
+        FN=2  TN=5
+        漏检率(FNR): 0.0444  误检率(FPR): 0.6875
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp2/INAND_19x5/INAND_19x5_ALL/confusion_images/INAND 19x5/
+        TP: 43 张
+        FP: 11 张
+        FN: 2 张
+        TN: 5 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 11 张:
+        KA1X01573_A10_DOWN.jpg
+        KA1X01573_A10_UP.jpg
+        KA1X01573_A11_UP.jpg
+        KA1X01573_A12_UP.jpg
+        KA1X01573_A13_UP.jpg
+        KA1X01573_A14_DOWN.jpg
+        KA1X01573_A14_UP.jpg
+        KA1X01573_A15_DOWN.jpg
+        KA1X01573_A15_UP.jpg
+        KA1X01573_A19_DOWN.jpg
+        KA1X01573_A19_UP.jpg
+      [FN] 共 2 张:
+        S57C76328_C2_DOWN.jpg
+        S59962415_B1_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      INAND 19x5             0.8417   0.7869   0.8687   0.0444   0.6875
+      平均                     0.8417   0.7869   0.8687   0.0444   0.6875
+  ✅ 完成 (284s) | AUROC=0.818 | F1=0.907
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_190614.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_190614.md
+
+######################################################################
+# 品类: INAND 19x5  |  实验: 随机初始化
+######################################################################
+
+======================================================================
+  [19:06:14] 随机初始化 | INAND 19x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "INAND 19x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp3/INAND_19x5 --ablation_no_pretrained --eval_interval 200
+======================================================================
+    cuda:0
+    INAND 19x5
+    [ABLATION] 预训练关闭，使用随机初始化
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 168
+    test image number: 61
+    >>> 数据集: wafer, 品类: ['INAND 19x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [42/1000], loss:1.1719
+    iter [84/1000], loss:0.9124
+    iter [126/1000], loss:0.8989
+    iter [168/1000], loss:0.9026
+    Sample Auroc:0.672 | Acc:0.820 F1:0.887
+      混淆矩阵: [[TN=7, FP=9], [FN=2, TP=43]]
+      漏检率(FNR):0.0444  误检率(FPR):0.5625
+      >>> 保存最优模型 (AUROC=0.672)
+    iter [210/1000], loss:0.9026
+    iter [252/1000], loss:0.8992
+    iter [294/1000], loss:0.8785
+    iter [336/1000], loss:0.8832
+    iter [378/1000], loss:0.8678
+    Sample Auroc:0.686 | Acc:0.836 F1:0.898
+      混淆矩阵: [[TN=7, FP=9], [FN=1, TP=44]]
+      漏检率(FNR):0.0222  误检率(FPR):0.5625
+      >>> 保存最优模型 (AUROC=0.686)
+    iter [420/1000], loss:0.8571
+    iter [462/1000], loss:0.8745
+    iter [504/1000], loss:0.8366
+    iter [546/1000], loss:0.8483
+    iter [588/1000], loss:0.8169
+    Sample Auroc:0.713 | Acc:0.836 F1:0.898
+      混淆矩阵: [[TN=7, FP=9], [FN=1, TP=44]]
+      漏检率(FNR):0.0222  误检率(FPR):0.5625
+      >>> 保存最优模型 (AUROC=0.713)
+    iter [630/1000], loss:0.8258
+    iter [672/1000], loss:0.8148
+    iter [714/1000], loss:0.8190
+    iter [756/1000], loss:0.7954
+    iter [798/1000], loss:0.8387
+    Sample Auroc:0.714 | Acc:0.836 F1:0.898
+      混淆矩阵: [[TN=7, FP=9], [FN=1, TP=44]]
+      漏检率(FNR):0.0222  误检率(FPR):0.5625
+      >>> 保存最优模型 (AUROC=0.714)
+    iter [840/1000], loss:0.8306
+    iter [882/1000], loss:0.8032
+    iter [924/1000], loss:0.7960
+    iter [966/1000], loss:0.7738
+    Sample Auroc:0.697 | Acc:0.820 F1:0.889
+      混淆矩阵: [[TN=6, FP=10], [FN=1, TP=44]]
+      漏检率(FNR):0.0222  误检率(FPR):0.6250
+    iter [1000/1000], loss:0.7753
+    
+    ============================================================
+      INAND 19x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.7139
+      Accuracy:     0.8361
+      F1 Score:     0.8980
+      Threshold:    0.3737
+      混淆矩阵:
+        TP=44  FP=9
+        FN=1  TN=7
+        漏检率(FNR): 0.0222  误检率(FPR): 0.5625
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp3/INAND_19x5/INAND_19x5_ALL/confusion_images/INAND 19x5/
+        TP: 44 张
+        FP: 9 张
+        FN: 1 张
+        TN: 7 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 9 张:
+        KA1X01573_A10_DOWN.jpg
+        KA1X01573_A11_DOWN.jpg
+        KA1X01573_A12_DOWN.jpg
+        KA1X01573_A13_DOWN.jpg
+        KA1X01573_A14_DOWN.jpg
+        KA1X01573_A15_DOWN.jpg
+        KA1X01573_A19_DOWN.jpg
+        KA1X01573_B13_DOWN.jpg
+        KA1X01573_C7_DOWN.jpg
+      [FN] 共 1 张:
+        syn_UP_HEAVY_0007_v0_KA1X01573_A13_UP.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      INAND 19x5             0.7139   0.8361   0.8980   0.0222   0.5625
+      平均                     0.7139   0.8361   0.8980   0.0222   0.5625
+  ✅ 完成 (282s) | AUROC=0.672 | F1=0.887
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_191055.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_191055.md
+
+######################################################################
+# 品类: INAND 19x5  |  实验: 224分辨率
+######################################################################
+
+======================================================================
+  [19:10:55] 224分辨率 | INAND 19x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "INAND 19x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp4/INAND_19x5 --ablation_image_size 224 --eval_interval 200
+======================================================================
+    cuda:0
+    INAND 19x5
+    [ABLATION] 输入分辨率: 224x224
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 168
+    test image number: 61
+    >>> 数据集: wafer, 品类: ['INAND 19x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    Traceback (most recent call last):
+      File "/data/coding/under_graduate/recontrast_vit_wafer.py", line 669, in <module>
+        auroc_px_best, auroc_sp_best, aupro_px_best, acc, f1, fnr, fpr = train(
+                                                                         ^^^^^^
+      File "/data/coding/under_graduate/recontrast_vit_wafer.py", line 473, in train
+        en, de = model(img, img_aug)
+                 ^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+        return self._call_impl(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+        return forward_call(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/coding/under_graduate/recontrast/models/recontrast_vit.py", line 117, in forward
+        en_train = self.encoder(en_train_input, return_all_layers=True)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+        return self._call_impl(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+        return forward_call(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/coding/under_graduate/recontrast/models/recontrast_vit.py", line 234, in new_forward
+        layers_out = encoder.get_intermediate_layers(x, n=n_intermediate_layers, return_prefix_tokens=True)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/timm/models/vision_transformer.py", line 1222, in get_intermediate_layers
+        return self.forward_intermediates(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/timm/models/vision_transformer.py", line 1114, in forward_intermediates
+        x = self.patch_embed(x)
+            ^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+        return self._call_impl(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+        return forward_call(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/timm/layers/patch_embed.py", line 121, in forward
+        _assert(H == self.img_size[0], f"Input height ({H}) doesn't match model ({self.img_size[0]}).")
+      File "/data/miniconda/envs/torch/lib/python3.12/site-packages/torch/__init__.py", line 2228, in _assert
+        assert condition, message
+               ^^^^^^^^^
+    AssertionError: Input height (224) doesn't match model (518).
+  ❌ 退出码=1
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_191109.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_191109.md
+
+######################################################################
+# 品类: INAND 19x5  |  实验: n=2层
+######################################################################
+
+======================================================================
+  [19:11:09] n=2层 | INAND 19x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "INAND 19x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n2/INAND_19x5 --ablation_n_layers 2 --eval_interval 200
+======================================================================
+    cuda:0
+    INAND 19x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 168
+    test image number: 61
+    >>> 数据集: wafer, 品类: ['INAND 19x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [42/1000], loss:0.7093
+    iter [84/1000], loss:0.3962
+    iter [126/1000], loss:0.3793
+    iter [168/1000], loss:0.3697
+    Sample Auroc:0.914 | Acc:0.902 F1:0.938
+      混淆矩阵: [[TN=10, FP=6], [FN=0, TP=45]]
+      漏检率(FNR):0.0000  误检率(FPR):0.3750
+      >>> 保存最优模型 (AUROC=0.914)
+    iter [210/1000], loss:0.3524
+    iter [252/1000], loss:0.3327
+    iter [294/1000], loss:0.3171
+    iter [336/1000], loss:0.3116
+    iter [378/1000], loss:0.3008
+    Sample Auroc:0.912 | Acc:0.869 F1:0.909
+      混淆矩阵: [[TN=13, FP=3], [FN=5, TP=40]]
+      漏检率(FNR):0.1111  误检率(FPR):0.1875
+    iter [420/1000], loss:0.2994
+    iter [462/1000], loss:0.2927
+    iter [504/1000], loss:0.2984
+    iter [546/1000], loss:0.2988
+    iter [588/1000], loss:0.2935
+    Sample Auroc:0.782 | Acc:0.770 F1:0.860
+      混淆矩阵: [[TN=4, FP=12], [FN=2, TP=43]]
+      漏检率(FNR):0.0444  误检率(FPR):0.7500
+    iter [630/1000], loss:0.2896
+    iter [672/1000], loss:0.2870
+    iter [714/1000], loss:0.2853
+    iter [756/1000], loss:0.2904
+    iter [798/1000], loss:0.3029
+    Sample Auroc:0.786 | Acc:0.770 F1:0.863
+      混淆矩阵: [[TN=3, FP=13], [FN=1, TP=44]]
+      漏检率(FNR):0.0222  误检率(FPR):0.8125
+    iter [840/1000], loss:0.2908
+    iter [882/1000], loss:0.2888
+    iter [924/1000], loss:0.2934
+    iter [966/1000], loss:0.2981
+    Sample Auroc:0.849 | Acc:0.836 F1:0.896
+      混淆矩阵: [[TN=8, FP=8], [FN=2, TP=43]]
+      漏检率(FNR):0.0444  误检率(FPR):0.5000
+    iter [1000/1000], loss:0.2912
+    
+    ============================================================
+      INAND 19x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9139
+      Accuracy:     0.9016
+      F1 Score:     0.9375
+      Threshold:    0.3788
+      混淆矩阵:
+        TP=45  FP=6
+        FN=0  TN=10
+        漏检率(FNR): 0.0000  误检率(FPR): 0.3750
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n2/INAND_19x5/INAND_19x5_ALL/confusion_images/INAND 19x5/
+        TP: 45 张
+        FP: 6 张
+        FN: 0 张
+        TN: 10 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 6 张:
+        KA1X01573_A10_DOWN.jpg
+        KA1X01573_A12_DOWN.jpg
+        KA1X01573_A14_DOWN.jpg
+        KA1X01573_A15_DOWN.jpg
+        KA1X01573_A19_DOWN.jpg
+        KA1X01573_B13_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      INAND 19x5             0.9139   0.9016   0.9375   0.0000   0.3750
+      平均                     0.9139   0.9016   0.9375   0.0000   0.3750
+  ✅ 完成 (261s) | AUROC=0.914 | F1=0.938
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_191530.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_191530.md
+
+######################################################################
+# 品类: INAND 19x5  |  实验: n=6层
+######################################################################
+
+======================================================================
+  [19:15:30] n=6层 | INAND 19x5
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories "INAND 19x5" --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n6/INAND_19x5 --ablation_n_layers 6 --eval_interval 200
+======================================================================
+    cuda:0
+    INAND 19x5
+    [INFO] 使用DINOv2模型: vit_small_patch14_dinov2.lvd142m
+    train image number: 168
+    test image number: 61
+    >>> 数据集: wafer, 品类: ['INAND 19x5']
+    >>> 视图: ALL
+    >>> 使用模型: vit_small_patch14_dinov2.lvd142m
+    [INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    [INFO] Loaded pretrained weights from local file: dinov2_vits14_pretrain.pth
+    [INFO] Loaded DINOv2 encoder: vit_small_patch14_dinov2.lvd142m, embed_dim=384
+    iter [42/1000], loss:2.3649
+    iter [84/1000], loss:1.3784
+    iter [126/1000], loss:1.2243
+    iter [168/1000], loss:1.2074
+    Sample Auroc:0.963 | Acc:0.918 F1:0.944
+      混淆矩阵: [[TN=14, FP=2], [FN=3, TP=42]]
+      漏检率(FNR):0.0667  误检率(FPR):0.1250
+      >>> 保存最优模型 (AUROC=0.963)
+    iter [210/1000], loss:1.1452
+    iter [252/1000], loss:1.1020
+    iter [294/1000], loss:1.0555
+    iter [336/1000], loss:1.0262
+    iter [378/1000], loss:1.0049
+    Sample Auroc:0.896 | Acc:0.836 F1:0.891
+      混淆矩阵: [[TN=10, FP=6], [FN=4, TP=41]]
+      漏检率(FNR):0.0889  误检率(FPR):0.3750
+    iter [420/1000], loss:0.9949
+    iter [462/1000], loss:0.9757
+    iter [504/1000], loss:0.9856
+    iter [546/1000], loss:0.9687
+    iter [588/1000], loss:0.9535
+    Sample Auroc:0.799 | Acc:0.787 F1:0.874
+      混淆矩阵: [[TN=3, FP=13], [FN=0, TP=45]]
+      漏检率(FNR):0.0000  误检率(FPR):0.8125
+    iter [630/1000], loss:0.9538
+    iter [672/1000], loss:0.9463
+    iter [714/1000], loss:0.9303
+    iter [756/1000], loss:0.9470
+    iter [798/1000], loss:0.9604
+    Sample Auroc:0.808 | Acc:0.803 F1:0.882
+      混淆矩阵: [[TN=4, FP=12], [FN=0, TP=45]]
+      漏检率(FNR):0.0000  误检率(FPR):0.7500
+    iter [840/1000], loss:0.9227
+    iter [882/1000], loss:0.9218
+    iter [924/1000], loss:0.9219
+    iter [966/1000], loss:0.9156
+    Sample Auroc:0.896 | Acc:0.852 F1:0.892
+      混淆矩阵: [[TN=15, FP=1], [FN=8, TP=37]]
+      漏检率(FNR):0.1778  误检率(FPR):0.0625
+    iter [1000/1000], loss:0.9199
+    
+    ============================================================
+      INAND 19x5 最终结果 (最优模型)
+    ============================================================
+      Sample AUROC: 0.9625
+      Accuracy:     0.9180
+      F1 Score:     0.9438
+      Threshold:    0.3160
+      混淆矩阵:
+        TP=42  FP=2
+        FN=3  TN=14
+        漏检率(FNR): 0.0667  误检率(FPR): 0.1250
+      混淆矩阵图片已保存至: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp5_n6/INAND_19x5/INAND_19x5_ALL/confusion_images/INAND 19x5/
+        TP: 42 张
+        FP: 2 张
+        FN: 3 张
+        TN: 14 张
+    
+      -------- 错误分类图片 --------
+      [FP] 共 2 张:
+        KA1X01573_A13_DOWN.jpg
+        KA1X01573_A15_DOWN.jpg
+      [FN] 共 3 张:
+        syn_DOWN_MEDIUM_0000_v0_KA1X01573_A10_DOWN.jpg
+        syn_DOWN_MEDIUM_0000_v1_KA1X01573_A10_DOWN.jpg
+        syn_DOWN_MEDIUM_0012_v0_KA1X01573_A19_DOWN.jpg
+    
+    ============================================================
+      汇总结果
+    ============================================================
+      品类               Sample AUROC      Acc       F1      FPR      FNR
+      INAND 19x5             0.9625   0.9180   0.9438   0.0667   0.1250
+      平均                     0.9625   0.9180   0.9438   0.0667   0.1250
+  ✅ 完成 (304s) | AUROC=0.963 | F1=0.944
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_192034.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_192034.md
+
+======================================================================
+  消融实验全部完成！
+======================================================================
+
+  📦 BGA S5E 16x7:
+     ✅ Baseline（全开）     AUROC=0.8910  (278s)
+     ✅ 无 CutPaste       AUROC=0.9430  (259s)
+     ✅ 自重建              AUROC=0.8940  (279s)
+     ✅ 无难例挖掘            AUROC=0.8280  (281s)
+     ✅ 随机初始化            AUROC=0.5660  (278s)
+     ❌ 224分辨率           AUROC=—  (15s)
+     ✅ n=2层             AUROC=0.8980  (258s)
+     ✅ n=6层             AUROC=0.9310  (299s)
+
+  📦 ESSD 12x5:
+     ✅ Baseline（全开）     AUROC=0.8840  (275s)
+     ✅ 无 CutPaste       AUROC=0.9270  (251s)
+     ✅ 自重建              AUROC=0.8840  (276s)
+     ✅ 无难例挖掘            AUROC=0.7680  (275s)
+     ✅ 随机初始化            AUROC=0.3190  (273s)
+     ❌ 224分辨率           AUROC=—  (14s)
+     ✅ n=2层             AUROC=0.9080  (254s)
+     ✅ n=6层             AUROC=0.8550  (296s)
+
+  📦 INAND 19x5:
+     ✅ Baseline（全开）     AUROC=0.9440  (284s)
+     ✅ 无 CutPaste       AUROC=0.9530  (263s)
+     ✅ 自重建              AUROC=0.9460  (283s)
+     ✅ 无难例挖掘            AUROC=0.8180  (284s)
+     ✅ 随机初始化            AUROC=0.6720  (282s)
+     ❌ 224分辨率           AUROC=—  (14s)
+     ✅ n=2层             AUROC=0.9140  (261s)
+     ✅ n=6层             AUROC=0.9630  (304s)

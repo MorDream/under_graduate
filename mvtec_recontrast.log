@@ -1,0 +1,334 @@
+nohup: ignoring input
+cuda:0
+bottle
+train image number: 209
+test image number: 83
+>>> 数据集: mvtec, 品类: ['bottle', 'capsule', 'carpet']
+[INFO] 使用 CUDA: NVIDIA GeForce RTX 4070
+iter [14/1000], loss:1.2865
+iter [28/1000], loss:0.6817
+iter [42/1000], loss:0.5558
+iter [56/1000], loss:0.4687
+iter [70/1000], loss:0.4060
+iter [84/1000], loss:0.3705
+iter [98/1000], loss:0.3593
+iter [112/1000], loss:0.3572
+iter [126/1000], loss:0.3536
+iter [140/1000], loss:0.3479
+iter [154/1000], loss:0.3432
+iter [168/1000], loss:0.3355
+iter [182/1000], loss:0.3303
+iter [196/1000], loss:0.3242
+iter [210/1000], loss:0.3193
+iter [224/1000], loss:0.3145
+iter [238/1000], loss:0.3150
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=20, FP=0], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [252/1000], loss:0.3086
+iter [266/1000], loss:0.3094
+iter [280/1000], loss:0.2990
+iter [294/1000], loss:0.2904
+iter [308/1000], loss:0.2836
+iter [322/1000], loss:0.2792
+iter [336/1000], loss:0.2756
+iter [350/1000], loss:0.2728
+iter [364/1000], loss:0.2701
+iter [378/1000], loss:0.2655
+iter [392/1000], loss:0.2613
+iter [406/1000], loss:0.2588
+iter [420/1000], loss:0.2562
+iter [434/1000], loss:0.2537
+iter [448/1000], loss:0.2546
+iter [462/1000], loss:0.2526
+iter [476/1000], loss:0.2545
+iter [490/1000], loss:0.2505
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=20, FP=0], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [504/1000], loss:0.2455
+iter [518/1000], loss:0.2422
+iter [532/1000], loss:0.2417
+iter [546/1000], loss:0.2433
+iter [560/1000], loss:0.2433
+iter [574/1000], loss:0.2399
+iter [588/1000], loss:0.2356
+iter [602/1000], loss:0.2316
+iter [616/1000], loss:0.2296
+iter [630/1000], loss:0.2281
+iter [644/1000], loss:0.2273
+iter [658/1000], loss:0.2256
+iter [672/1000], loss:0.2202
+iter [686/1000], loss:0.2447
+iter [700/1000], loss:0.2484
+iter [714/1000], loss:0.2356
+iter [728/1000], loss:0.2227
+iter [742/1000], loss:0.2158
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=20, FP=0], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [756/1000], loss:0.2126
+iter [770/1000], loss:0.2103
+iter [784/1000], loss:0.2085
+iter [798/1000], loss:0.2065
+iter [812/1000], loss:0.2065
+iter [826/1000], loss:0.2050
+iter [840/1000], loss:0.2039
+iter [854/1000], loss:0.2034
+iter [868/1000], loss:0.2029
+iter [882/1000], loss:0.2029
+iter [896/1000], loss:0.2009
+iter [910/1000], loss:0.1981
+iter [924/1000], loss:0.1964
+iter [938/1000], loss:0.1946
+iter [952/1000], loss:0.1921
+iter [966/1000], loss:0.1913
+iter [980/1000], loss:0.1901
+iter [994/1000], loss:0.1910
+Sample Auroc:1.000 | Acc:1.000 F1:1.000
+  混淆矩阵: [[TN=20, FP=0], [FN=0, TP=63]]
+  漏检率(FNR):0.0000  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=1.000)
+iter [1000/1000], loss:0.1917
+
+============================================================
+  bottle 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 1.0000
+  Accuracy:     1.0000
+  F1 Score:     1.0000
+  Threshold:    1.3320
+  混淆矩阵:
+    TP=63  FP=0
+    FN=0  TN=20
+    漏检率(FNR): 0.0000  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_v3_baseline/recontrast/bottle/confusion_images/bottle/
+    TP: 63 张
+    FP: 0 张
+    FN: 0 张
+    TN: 20 张
+
+  -------- 错误分类图片 --------
+capsule
+train image number: 219
+test image number: 132
+iter [14/1000], loss:1.2001
+iter [28/1000], loss:0.5742
+iter [42/1000], loss:0.4715
+iter [56/1000], loss:0.4044
+iter [70/1000], loss:0.3548
+iter [84/1000], loss:0.3301
+iter [98/1000], loss:0.3277
+iter [112/1000], loss:0.3340
+iter [126/1000], loss:0.3329
+iter [140/1000], loss:0.3274
+iter [154/1000], loss:0.3217
+iter [168/1000], loss:0.3162
+iter [182/1000], loss:0.3110
+iter [196/1000], loss:0.3047
+iter [210/1000], loss:0.2967
+iter [224/1000], loss:0.2908
+iter [238/1000], loss:0.2844
+Sample Auroc:0.897 | Acc:0.917 F1:0.950
+  混淆矩阵: [[TN=16, FP=7], [FN=4, TP=105]]
+  漏检率(FNR):0.0367  误检率(FPR):0.3043
+  >>> 保存最优模型 (AUROC=0.897)
+iter [252/1000], loss:0.2773
+iter [266/1000], loss:0.2713
+iter [280/1000], loss:0.2670
+iter [294/1000], loss:0.2610
+iter [308/1000], loss:0.2559
+iter [322/1000], loss:0.2505
+iter [336/1000], loss:0.2456
+iter [350/1000], loss:0.2414
+iter [364/1000], loss:0.2367
+iter [378/1000], loss:0.2318
+iter [392/1000], loss:0.2264
+iter [406/1000], loss:0.2235
+iter [420/1000], loss:0.2194
+iter [434/1000], loss:0.2146
+iter [448/1000], loss:0.2108
+iter [462/1000], loss:0.2080
+iter [476/1000], loss:0.2062
+iter [490/1000], loss:0.2034
+Sample Auroc:0.949 | Acc:0.947 F1:0.969
+  混淆矩阵: [[TN=16, FP=7], [FN=0, TP=109]]
+  漏检率(FNR):0.0000  误检率(FPR):0.3043
+  >>> 保存最优模型 (AUROC=0.949)
+iter [504/1000], loss:0.1999
+iter [518/1000], loss:0.1958
+iter [532/1000], loss:0.1921
+iter [546/1000], loss:0.1892
+iter [560/1000], loss:0.1867
+iter [574/1000], loss:0.1845
+iter [588/1000], loss:0.1821
+iter [602/1000], loss:0.1799
+iter [616/1000], loss:0.1782
+iter [630/1000], loss:0.1785
+iter [644/1000], loss:0.1742
+iter [658/1000], loss:0.1708
+iter [672/1000], loss:0.1689
+iter [686/1000], loss:0.1680
+iter [700/1000], loss:0.1655
+iter [714/1000], loss:0.1632
+iter [728/1000], loss:0.1616
+iter [742/1000], loss:0.1619
+Sample Auroc:0.964 | Acc:0.939 F1:0.965
+  混淆矩阵: [[TN=15, FP=8], [FN=0, TP=109]]
+  漏检率(FNR):0.0000  误检率(FPR):0.3478
+  >>> 保存最优模型 (AUROC=0.964)
+iter [756/1000], loss:0.1612
+iter [770/1000], loss:0.1593
+iter [784/1000], loss:0.1566
+iter [798/1000], loss:0.1539
+iter [812/1000], loss:0.1525
+iter [826/1000], loss:0.1509
+iter [840/1000], loss:0.1492
+iter [854/1000], loss:0.1476
+iter [868/1000], loss:0.1467
+iter [882/1000], loss:0.1452
+iter [896/1000], loss:0.1444
+iter [910/1000], loss:0.1434
+iter [924/1000], loss:0.1430
+iter [938/1000], loss:0.1416
+iter [952/1000], loss:0.1401
+iter [966/1000], loss:0.1389
+iter [980/1000], loss:0.1374
+iter [994/1000], loss:0.1360
+Sample Auroc:0.965 | Acc:0.955 F1:0.973
+  混淆矩阵: [[TN=18, FP=5], [FN=1, TP=108]]
+  漏检率(FNR):0.0092  误检率(FPR):0.2174
+  >>> 保存最优模型 (AUROC=0.965)
+iter [1000/1000], loss:0.1344
+
+============================================================
+  capsule 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 0.9645
+  Accuracy:     0.9545
+  F1 Score:     0.9730
+  Threshold:    0.6807
+  混淆矩阵:
+    TP=108  FP=5
+    FN=1  TN=18
+    漏检率(FNR): 0.0092  误检率(FPR): 0.2174
+  混淆矩阵图片已保存至: checkpoints_v3_baseline/recontrast/capsule/confusion_images/capsule/
+    TP: 108 张
+    FP: 5 张
+    FN: 1 张
+    TN: 18 张
+
+  -------- 错误分类图片 --------
+  [FP] 共 5 张:
+    006.png
+    008.png
+    010.png
+    019.png
+    021.png
+  [FN] 共 1 张:
+    017.png
+carpet
+train image number: 280
+test image number: 117
+iter [18/1000], loss:0.9473
+iter [36/1000], loss:0.4018
+iter [54/1000], loss:0.3624
+iter [72/1000], loss:0.3512
+iter [90/1000], loss:0.3490
+iter [108/1000], loss:0.3516
+iter [126/1000], loss:0.3537
+iter [144/1000], loss:0.3525
+iter [162/1000], loss:0.3503
+iter [180/1000], loss:0.3478
+iter [198/1000], loss:0.3454
+iter [216/1000], loss:0.3435
+iter [234/1000], loss:0.3418
+Sample Auroc:0.999 | Acc:0.991 F1:0.994
+  混淆矩阵: [[TN=28, FP=0], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.0000
+  >>> 保存最优模型 (AUROC=0.999)
+iter [252/1000], loss:0.3406
+iter [270/1000], loss:0.3392
+iter [288/1000], loss:0.3385
+iter [306/1000], loss:0.3376
+iter [324/1000], loss:0.3364
+iter [342/1000], loss:0.3350
+iter [360/1000], loss:0.3339
+iter [378/1000], loss:0.3322
+iter [396/1000], loss:0.3308
+iter [414/1000], loss:0.3288
+iter [432/1000], loss:0.3259
+iter [450/1000], loss:0.3227
+iter [468/1000], loss:0.3196
+iter [486/1000], loss:0.3172
+Sample Auroc:0.993 | Acc:0.983 F1:0.989
+  混淆矩阵: [[TN=27, FP=1], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.0357
+iter [504/1000], loss:0.3143
+iter [522/1000], loss:0.3114
+iter [540/1000], loss:0.3091
+iter [558/1000], loss:0.3065
+iter [576/1000], loss:0.3039
+iter [594/1000], loss:0.3019
+iter [612/1000], loss:0.2996
+iter [630/1000], loss:0.2968
+iter [648/1000], loss:0.2944
+iter [666/1000], loss:0.2913
+iter [684/1000], loss:0.2889
+iter [702/1000], loss:0.2867
+iter [720/1000], loss:0.2854
+iter [738/1000], loss:0.2818
+Sample Auroc:0.993 | Acc:0.983 F1:0.989
+  混淆矩阵: [[TN=27, FP=1], [FN=1, TP=88]]
+  漏检率(FNR):0.0112  误检率(FPR):0.0357
+iter [756/1000], loss:0.2794
+iter [774/1000], loss:0.2767
+iter [792/1000], loss:0.2761
+iter [810/1000], loss:0.2724
+iter [828/1000], loss:0.2698
+iter [846/1000], loss:0.2668
+iter [864/1000], loss:0.2642
+iter [882/1000], loss:0.2619
+iter [900/1000], loss:0.2598
+iter [918/1000], loss:0.2583
+iter [936/1000], loss:0.2555
+iter [954/1000], loss:0.2536
+iter [972/1000], loss:0.2510
+iter [990/1000], loss:0.2490
+Sample Auroc:0.992 | Acc:0.974 F1:0.983
+  混淆矩阵: [[TN=28, FP=0], [FN=3, TP=86]]
+  漏检率(FNR):0.0337  误检率(FPR):0.0000
+iter [1000/1000], loss:0.2478
+
+============================================================
+  carpet 最终结果 (最优模型)
+============================================================
+  Sample AUROC: 0.9988
+  Accuracy:     0.9915
+  F1 Score:     0.9944
+  Threshold:    1.2545
+  混淆矩阵:
+    TP=88  FP=0
+    FN=1  TN=28
+    漏检率(FNR): 0.0112  误检率(FPR): 0.0000
+  混淆矩阵图片已保存至: checkpoints_v3_baseline/recontrast/carpet/confusion_images/carpet/
+    TP: 88 张
+    FP: 0 张
+    FN: 1 张
+    TN: 28 张
+
+  -------- 错误分类图片 --------
+  [FN] 共 1 张:
+    018.png
+
+============================================================
+  汇总结果
+============================================================
+  品类               Sample AUROC      Acc       F1      FPR      FNR
+  bottle                 1.0000   1.0000   1.0000   0.0000   0.0000
+  capsule                0.9645   0.9545   0.9730   0.0092   0.2174
+  carpet                 0.9988   0.9915   0.9944   0.0112   0.0000
+  平均                     0.9878   0.9820   0.9891   0.0068   0.0725

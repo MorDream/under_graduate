@@ -1,0 +1,76 @@
+nohup: ignoring input
+
+######################################################################
+# 4.2 消融实验
+# 数据集: wafer
+# 品类: ['BGA S5E 16x7', 'ESSD 12x5', 'INAND 19x5']
+# 实验数: 3 × 8 = 24
+# 开始时间: 2026-05-14 17:36:38
+######################################################################
+
+######################################################################
+# 品类: BGA S5E 16x7  |  实验: Baseline（全开）
+######################################################################
+
+======================================================================
+  [17:36:38] Baseline（全开） | BGA S5E 16x7
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories BGA S5E 16x7 --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Baseline/BGA_S5E_16x7  --eval_interval 200
+======================================================================
+    usage: recontrast_vit_wafer.py [-h] [--dataset {mvtec,wafer}]
+                                   [--wafer_data_dir WAFER_DATA_DIR]
+                                   [--wafer_category WAFER_CATEGORY]
+                                   [--wafer_view {ALL,UP,DOWN}]
+                                   [--categories CATEGORIES] [--save_dir SAVE_DIR]
+                                   [--save_name SAVE_NAME] [--use_wafer_encoder]
+                                   [--pretrained_model PRETRAINED_MODEL]
+                                   [--eval_interval EVAL_INTERVAL] [--gpu GPU]
+                                   [--ablation_no_cutpaste]
+                                   [--ablation_self_recon]
+                                   [--ablation_no_hard_mining]
+                                   [--ablation_no_pretrained]
+                                   [--ablation_n_layers ABLATION_N_LAYERS]
+                                   [--ablation_image_size ABLATION_IMAGE_SIZE]
+                                   [--ablation_no_cross_recon]
+    recontrast_vit_wafer.py: error: unrecognized arguments: S5E 16x7
+  ❌ 退出码=2
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_173647.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_173647.md
+
+######################################################################
+# 品类: BGA S5E 16x7  |  实验: 无 CutPaste
+######################################################################
+
+======================================================================
+  [17:36:47] 无 CutPaste | BGA S5E 16x7
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories BGA S5E 16x7 --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp0/BGA_S5E_16x7 --ablation_no_cutpaste --eval_interval 200
+======================================================================
+    usage: recontrast_vit_wafer.py [-h] [--dataset {mvtec,wafer}]
+                                   [--wafer_data_dir WAFER_DATA_DIR]
+                                   [--wafer_category WAFER_CATEGORY]
+                                   [--wafer_view {ALL,UP,DOWN}]
+                                   [--categories CATEGORIES] [--save_dir SAVE_DIR]
+                                   [--save_name SAVE_NAME] [--use_wafer_encoder]
+                                   [--pretrained_model PRETRAINED_MODEL]
+                                   [--eval_interval EVAL_INTERVAL] [--gpu GPU]
+                                   [--ablation_no_cutpaste]
+                                   [--ablation_self_recon]
+                                   [--ablation_no_hard_mining]
+                                   [--ablation_no_pretrained]
+                                   [--ablation_n_layers ABLATION_N_LAYERS]
+                                   [--ablation_image_size ABLATION_IMAGE_SIZE]
+                                   [--ablation_no_cross_recon]
+    recontrast_vit_wafer.py: error: unrecognized arguments: S5E 16x7
+  ❌ 退出码=2
+
+📄 结果已保存: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_173655.json
+📄 论文表格: /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/ablation_3cats_wafer_20260514_173655.md
+
+######################################################################
+# 品类: BGA S5E 16x7  |  实验: 自重建
+######################################################################
+
+======================================================================
+  [17:36:55] 自重建 | BGA S5E 16x7
+  CMD: cd /data/coding/under_graduate && python /data/coding/under_graduate/recontrast_vit_wafer.py --dataset wafer --categories BGA S5E 16x7 --wafer_data_dir /data/coding/under_graduate/data --save_dir /data/coding/under_graduate/生成实验数据/4.2_消融实验/output/checkpoints/Exp1/BGA_S5E_16x7 --ablation_self_recon --eval_interval 200
+======================================================================

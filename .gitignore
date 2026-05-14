@@ -18,8 +18,6 @@ baseline/checkpoints/
 baseline/checkpoints_v2/
 
 # ============ 训练日志 ============
-*.log
-nohup.out
 
 # ============ Python缓存 ============
 __pycache__/
