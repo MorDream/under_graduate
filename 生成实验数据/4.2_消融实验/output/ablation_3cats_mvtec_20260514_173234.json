@@ -1,0 +1,29 @@
+{
+  "dataset": "mvtec",
+  "categories": [
+    "carpet",
+    "bottle",
+    "caple"
+  ],
+  "timestamp": "20260514_173234",
+  "results": {
+    "carpet": {
+      "Baseline": {
+        "label": "Baseline（全开）",
+        "type": "baseline",
+        "success": true,
+        "auroc": 0.995,
+        "f1": 0.989,
+        "time_s": 179.0
+      },
+      "Exp0": {
+        "label": "无 CutPaste",
+        "type": "ablated",
+        "success": true,
+        "auroc": 0.999,
+        "f1": 0.994,
+        "time_s": 164.0
+      }
+    }
+  }
+}

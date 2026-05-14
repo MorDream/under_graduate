@@ -1,0 +1,21 @@
+{
+  "dataset": "wafer",
+  "categories": [
+    "BGA_S5E_16x7",
+    "ESSD_12x5",
+    "INAND_19x5"
+  ],
+  "timestamp": "20260514_173647",
+  "results": {
+    "BGA_S5E_16x7": {
+      "Baseline": {
+        "label": "Baseline（全开）",
+        "type": "baseline",
+        "success": false,
+        "auroc": null,
+        "f1": null,
+        "time_s": 9.0
+      }
+    }
+  }
+}

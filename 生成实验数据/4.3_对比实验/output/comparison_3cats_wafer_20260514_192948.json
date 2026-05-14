@@ -1,0 +1,24 @@
+{
+  "dataset": "wafer",
+  "categories": [
+    "BGA_S5E_16x7",
+    "ESSD_12x5",
+    "INAND_19x5"
+  ],
+  "timestamp": "20260514_192948",
+  "results": {
+    "BGA_S5E_16x7": {
+      "vit_recontrast": {
+        "label": "ViT+ReContrast (本文)",
+        "success": true,
+        "auroc": 0.935,
+        "f1": 0.944,
+        "time_s": 274.0,
+        "view_aurocs": {
+          "UP": 0.95,
+          "DOWN": 0.92
+        }
+      }
+    }
+  }
+}

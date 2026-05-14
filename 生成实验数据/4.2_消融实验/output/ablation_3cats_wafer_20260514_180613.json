@@ -1,0 +1,53 @@
+{
+  "dataset": "wafer",
+  "categories": [
+    "BGA_S5E_16x7",
+    "ESSD_12x5",
+    "INAND_19x5"
+  ],
+  "timestamp": "20260514_180613",
+  "results": {
+    "BGA_S5E_16x7": {
+      "Baseline": {
+        "label": "Baseline（全开）",
+        "type": "baseline",
+        "success": true,
+        "auroc": 0.891,
+        "f1": 0.882,
+        "time_s": 278.0
+      },
+      "Exp0": {
+        "label": "无 CutPaste",
+        "type": "ablated",
+        "success": true,
+        "auroc": 0.943,
+        "f1": 0.925,
+        "time_s": 259.0
+      },
+      "Exp1": {
+        "label": "自重建",
+        "type": "ablated",
+        "success": true,
+        "auroc": 0.894,
+        "f1": 0.882,
+        "time_s": 279.0
+      },
+      "Exp2": {
+        "label": "无难例挖掘",
+        "type": "ablated",
+        "success": true,
+        "auroc": 0.828,
+        "f1": 0.85,
+        "time_s": 281.0
+      },
+      "Exp3": {
+        "label": "随机初始化",
+        "type": "ablated",
+        "success": true,
+        "auroc": 0.566,
+        "f1": 0.828,
+        "time_s": 278.0
+      }
+    }
+  }
+}

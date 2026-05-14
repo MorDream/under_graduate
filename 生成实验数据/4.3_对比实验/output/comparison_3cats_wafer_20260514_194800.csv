@@ -1,0 +1,4 @@
+﻿品类,ViT+ReContrast (本文),MoCo v2 (ViT),ReContrast (ResNet)
+BGA S5E 16x7,0.9350,0.5113,
+ESSD 12x5,0.8535,,
+INAND 19x5,,,

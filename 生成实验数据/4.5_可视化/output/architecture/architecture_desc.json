@@ -1,0 +1,42 @@
+{
+  "title": "ViT + ReContrast 架构",
+  "components": [
+    {
+      "name": "Input",
+      "detail": "原始图像 + CutPaste增强图像, 518×518"
+    },
+    {
+      "name": "Teacher Encoder",
+      "detail": "ViT-Small (DINOv2 预训练, ❄冻结)",
+      "output": "多尺度 patch tokens (层2/4/6/8)"
+    },
+    {
+      "name": "Student Encoder",
+      "detail": "ViT-Small (DINOv2 预训练, 🔥可训练)",
+      "output": "多尺度 patch tokens (层2/4/6/8)"
+    },
+    {
+      "name": "BottleneckViT",
+      "detail": "交叉重建 + 难例挖掘, n_layers=4",
+      "detail_cn": "教师→学生交叉特征预测, 反向亦然"
+    },
+    {
+      "name": "DecoderViT",
+      "detail": "MLP重建头, 输出重建后的token特征"
+    },
+    {
+      "name": "Anomaly Detection",
+      "detail": "Token级 CosineDistance → 上采样 → 高斯平滑 → 热力图"
+    }
+  ],
+  "loss_functions": [
+    {
+      "name": "L_cross_recon",
+      "formula": "1 - cos(freeze_feat, de_train_feat) + 1 - cos(train_feat, de_freeze_feat)"
+    },
+    {
+      "name": "L_hard_mining",
+      "formula": "仅保留 distance > mean+α*std 的token梯度, α动态从-3→1"
+    }
+  ]
+}

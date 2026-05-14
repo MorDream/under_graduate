@@ -1,0 +1,75 @@
+{
+  "dataset": "wafer",
+  "categories": [
+    "BGA_S5E_16x7",
+    "ESSD_12x5",
+    "INAND_19x5"
+  ],
+  "timestamp": "20260514_195942",
+  "results": {
+    "BGA_S5E_16x7": {
+      "vit_recontrast": {
+        "label": "ViT+ReContrast (本文)",
+        "success": true,
+        "auroc": 0.935,
+        "f1": 0.944,
+        "time_s": 274.0,
+        "view_aurocs": {
+          "UP": 0.95,
+          "DOWN": 0.92
+        }
+      },
+      "moco": {
+        "label": "MoCo v2 (ViT)",
+        "success": true,
+        "auroc": 0.5113000000000001,
+        "f1": 0.8184,
+        "time_s": 285.0,
+        "view_aurocs": {
+          "UP": 0.4333,
+          "DOWN": 0.5893
+        }
+      },
+      "recontrast_resnet": {
+        "label": "ReContrast (ResNet)",
+        "success": false,
+        "auroc": null,
+        "f1": null,
+        "time_s": 8.0,
+        "view_aurocs": {}
+      }
+    },
+    "ESSD_12x5": {
+      "vit_recontrast": {
+        "label": "ViT+ReContrast (本文)",
+        "success": true,
+        "auroc": 0.8534999999999999,
+        "f1": 0.9410000000000001,
+        "time_s": 271.0,
+        "view_aurocs": {
+          "UP": 1.0,
+          "DOWN": 0.707
+        }
+      },
+      "moco": {
+        "label": "MoCo v2 (ViT)",
+        "success": true,
+        "auroc": 0.5744,
+        "f1": 0.82855,
+        "time_s": 379.0,
+        "view_aurocs": {
+          "UP": 0.4688,
+          "DOWN": 0.68
+        }
+      },
+      "recontrast_resnet": {
+        "label": "ReContrast (ResNet)",
+        "success": false,
+        "auroc": null,
+        "f1": null,
+        "time_s": 8.0,
+        "view_aurocs": {}
+      }
+    }
+  }
+}
