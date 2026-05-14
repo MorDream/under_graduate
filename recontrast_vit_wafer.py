@@ -214,14 +214,22 @@ def vit_features_to_anomaly_map(en_features, de_features, img_size=256):
     if len(last_en.shape) == 3:
         # ViT格式: [B, N, C]
         B, N, C = last_en.shape
-        # 排除CLS token
-        patch_tokens = N - 1
-        H = W = int(np.sqrt(patch_tokens))
+        # 判断是否包含CLS/prefix token（patch tokens数应为平方数）
+        H_patches = int(np.sqrt(N))
+        if H_patches ** 2 == N:
+            # 不包含CLS，直接用所有patch tokens
+            en_patches = last_en
+            de_patches = last_de
+        else:
+            # 包含CLS token，去掉第一个
+            en_patches = last_en[:, 1:, :]
+            de_patches = last_de[:, 1:, :]
+            N = N - 1
+            H_patches = int(np.sqrt(N))
+        
+        H = W = H_patches
         
         # 计算patch级误差
-        en_patches = last_en[:, 1:, :]  # [B, N-1, C]
-        de_patches = last_de[:, 1:, :]
-        
         error_patches = F.mse_loss(en_patches, de_patches, reduction='none').mean(dim=-1)  # [B, N-1]
         error_map = error_patches.reshape(B, 1, H, W)
         
