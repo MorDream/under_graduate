@@ -38,7 +38,7 @@ from scipy.ndimage import gaussian_filter
 warnings.filterwarnings("ignore")
 
 # 导入数据处理
-from recontrast.dataset import get_data_transforms, get_strong_transforms, MVTecDataset
+from recontrast.dataset import get_data_transforms, get_strong_transforms, MVTecDataset, cut_paste
 from recontrast.utils import (
     setup_seed, get_device, evaluation, visualize,
     global_cosine, global_cosine_hm, cal_anomaly_map,
@@ -397,7 +397,9 @@ def train(_class_, dataset='mvtec', wafer_view=None, wafer_data_dir='./data',
         loss_list = []
         for img, label in train_dataloader:
             img = img.to(device)
-            en, de = model(img)
+            # CutPaste增强训练分支：随机对部分图像切块重贴，制造"伪异常"
+            img_aug = torch.stack([cut_paste(i) if np.random.random() < 0.5 else i for i in img])
+            en, de = model(img, img_aug)
 
             # 计算损失 - 适配ViT特征形状
             loss = 0

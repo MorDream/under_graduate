@@ -26,6 +26,75 @@ def get_data_transforms(size, isize, mean_train=None, std_train=None):
     return data_transforms, gt_transforms
 
 
+def cut_paste(image, area_ratio_range=(0.02, 0.15), aspect_ratio_range=(0.3, 3.0)):
+    """
+    CutPaste增强: 从图像中切一块随机区域，粘贴到另一个随机位置
+    参考论文: CutPaste: Self-Supervised Learning for Anomaly Detection and Localization
+    
+    Args:
+        image: [C, H, W] torch.Tensor 或 [H, W, C] np.ndarray (0~1范围)
+        area_ratio_range: 剪切区域面积占原图比例范围
+        aspect_ratio_range: 剪切区域宽高比范围
+    Returns:
+        增强后的图像 (与输入同形状)
+    """
+    import math
+    
+    if isinstance(image, torch.Tensor):
+        is_tensor = True
+        img_np = image.cpu().numpy().transpose(1, 2, 0)  # [C, H, W] -> [H, W, C]
+        img_np = np.clip(img_np, 0, 1)
+    else:
+        is_tensor = False
+        img_np = image.copy()
+        img_np = np.clip(img_np, 0, 1)
+    
+    H, W, C = img_np.shape
+    img_area = H * W
+    
+    # 随机选择剪切区域大小
+    target_area = np.random.uniform(*area_ratio_range) * img_area
+    aspect_ratio = np.random.uniform(*aspect_ratio_range)
+    
+    h = int(round(math.sqrt(target_area * aspect_ratio)))
+    w = int(round(math.sqrt(target_area / aspect_ratio)))
+    h = min(h, H - 1)
+    w = min(w, W - 1)
+    if h < 5 or w < 5:
+        h, w = 10, 10
+    
+    # 随机选择剪切起点
+    y1 = np.random.randint(0, H - h + 1)
+    x1 = np.random.randint(0, W - w + 1)
+    
+    # 剪切patch
+    patch = img_np[y1:y1+h, x1:x1+w, :].copy()
+    
+    # 随机选择粘贴位置
+    y2 = np.random.randint(0, H - h + 1)
+    x2 = np.random.randint(0, W - w + 1)
+    
+    # 粘贴
+    result = img_np.copy()
+    result[y2:y2+h, x2:x2+w, :] = patch
+    
+    if is_tensor:
+        result = torch.from_numpy(result.transpose(2, 0, 1)).to(image.device)
+    
+    return result
+
+
+class CutPasteTransform:
+    """用于训练时对图像应用CutPaste增强的transform包装器"""
+    def __init__(self, p=0.5):
+        self.p = p
+    
+    def __call__(self, img):
+        if isinstance(img, torch.Tensor) and np.random.random() < self.p:
+            return cut_paste(img)
+        return img
+
+
 def get_strong_transforms(size, isize, mean_train=None, std_train=None):
     mean_train = [0.485, 0.456, 0.406] if mean_train is None else mean_train
     std_train = [0.229, 0.224, 0.225] if std_train is None else std_train

@@ -102,16 +102,21 @@ class ReContrastViT(nn.Module):
         self.bottleneck = bottleneck
         self.decoder = decoder
         
-    def forward(self, x):
+    def forward(self, x, x_aug=None):
         """
         前向传播
-        x: [B, 3, H, W] 输入图像
-        返回: en (encoder features), de (decoder reconstructed features)
-        """
-        # 训练分支
-        en_train = self.encoder(x, return_all_layers=True)
         
-        # 冻结分支 (无梯度)
+        Args:
+            x: [B, 3, H, W] 输入图像（clean，给冻结分支）
+            x_aug: [B, 3, H, W] 增强图像（给训练分支），None=评估模式用同一张
+        Returns:
+            en (encoder features), de (decoder reconstructed features)
+        """
+        # 训练分支（接收增强后的图像，若x_aug=None则用clean）
+        en_train_input = x_aug if x_aug is not None else x
+        en_train = self.encoder(en_train_input, return_all_layers=True)
+        
+        # 冻结分支（始终接收clean图像）
         with torch.no_grad():
             en_freeze = self.encoder_freeze(x, return_all_layers=True)
         
