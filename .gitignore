@@ -53,3 +53,6 @@ venv/
 ablation_results/
 saved_results/
 recontrast/checkpoint/
+
+# ============ 论文实验数据输出（不提交） ============
+生成实验数据/*/output/
