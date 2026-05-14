@@ -87,19 +87,21 @@ def run_single_exp(category, exp_name, extra_args, save_subdir, dataset='mvtec',
 
     start = time.time()
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=7200)
+        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT, text=True,
+                                bufsize=1, universal_newlines=True)
+        stdout_lines = []
+        for line in proc.stdout:
+            print(f"    {line.rstrip()}")
+            stdout_lines.append(line)
+        proc.wait(timeout=7200)
         elapsed = time.time() - start
-        stdout = result.stdout
-        stderr = result.stderr
 
+        stdout = ''.join(stdout_lines)
         auroc, f1 = parse_auroc_f1(stdout)
 
-        if result.returncode != 0:
-            print(f"  ❌ 退出码={result.returncode}")
-            if stderr:
-                print(f"  STDERR(最后5行):")
-                for line in stderr.strip().split('\n')[-5:]:
-                    print(f"    {line}")
+        if proc.returncode != 0:
+            print(f"  ❌ 退出码={proc.returncode}")
             return False, auroc, f1, elapsed
 
         print(f"  ✅ 完成 ({elapsed:.0f}s) | AUROC={auroc} | F1={f1}")
