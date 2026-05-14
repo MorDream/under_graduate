@@ -2,6 +2,7 @@
 ReContrast with ViT Encoder + DINOv2 Pretrained Weights
 支持预训练权重加载，保持ViT编码器结构不变
 """
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -184,13 +185,30 @@ def load_dinov2_encoder(model_name='vit_small_patch14_dinov2.lvd142m', pretraine
     if not HAS_TIMM:
         raise ImportError("timm is required for loading DINOv2. Please install: pip install timm")
     
-    # 创建模型
+    # 创建模型（统一pretrained=False，手动处理权重加载）
     encoder = timm.create_model(
         model_name,
-        pretrained=pretrained,
+        pretrained=False,
         features_only=False,  # 我们需要完整的forward
         **kwargs
     )
+    
+    if pretrained:
+        local_path = 'dinov2_vits14_pretrain.pth'
+        if os.path.exists(local_path):
+            # 从本地文件加载权重（解决远程服务器HF下载失败的问题）
+            state_dict = torch.load(local_path, map_location='cpu', weights_only=True)
+            if 'student' in state_dict:
+                state_dict = state_dict['student']
+            encoder.load_state_dict(state_dict, strict=False)
+            print(f"[INFO] Loaded pretrained weights from local file: {local_path}")
+        else:
+            # 回退到timm内置的HF下载
+            from timm.models._hub import load_state_dict_from_hf
+            hf_id = timm.models.get_pretrained_cfg(model_name).hf_hub_id
+            state_dict = load_state_dict_from_hf(hf_id, weights_only=True)
+            encoder.load_state_dict(state_dict, strict=False)
+            print(f"[INFO] Loaded pretrained weights from HuggingFace Hub: {hf_id}")
     
     # 包装以支持多尺度输出和原始ViTEncoder兼容的接口
     encoder.return_all_layers = lambda x: encoder.forward_features(x)
