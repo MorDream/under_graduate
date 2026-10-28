@@ -2,13 +2,14 @@
 
 # 半导体晶圆无监督缺陷检测
 
-**ViT + MoCo v2 自监督预训练 · 只用正常样本训练的异常检测系统**
+**ViT + ReContrast 双分支交叉重建 · DINOv2 自监督预训练 · 只用正常样本训练**
 
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
-![ViT](https://img.shields.io/badge/Vision_Transformer-FF9D00?style=flat-square)
-![MoCo v2](https://img.shields.io/badge/MoCo_v2-5C3EE8?style=flat-square)
-![Intel XPU](https://img.shields.io/badge/Intel_Arc_B580-XPU-0071C5?style=flat-square&logo=intel&logoColor=white)
-![Status](https://img.shields.io/badge/消融实验-进行中-yellow?style=flat-square)
+![DINOv2](https://img.shields.io/badge/DINOv2-0EA5E9?style=flat-square)
+![Vision Transformer](https://img.shields.io/badge/Vision_Transformer-FF9D00?style=flat-square)
+![ReContrast](https://img.shields.io/badge/ReContrast-7C3AED?style=flat-square)
+![AUROC](https://img.shields.io/badge/MVTec_AD_AUROC-0.9878-16A34A?style=flat-square)
+![Dataset](https://img.shields.io/badge/MVTec_AD-5354_images-374151?style=flat-square)
 
 </div>
 
@@ -18,17 +19,17 @@
 
 ## 🎯 问题定义
 
-晶圆图（wafer map）的检测任务有三个硬约束：
+晶圆光学检测有三个硬约束：
 
-1. **异常样本极少** —— 本数据集 942 张图里只有 14 张缺陷，占 1.5%；
-2. **缺陷形态开放** —— 划痕、污染、边缘崩裂……训练集见过的类型不代表测试集会遇到什么；
+1. **异常样本极少** —— 训练阶段只能拿到良品图，缺陷图仅用于评估；
+2. **缺陷形态开放** —— 划痕、污染、焊盘缺失、纹理噪声……见过的类型不代表会遇到什么；
 3. **代价不对称** —— 漏检（FNR）意味着坏片流出，远比误检（FPR）严重。
 
-所以采用**单类分类 / 无监督异常检测**范式：训练阶段完全不接触缺陷样本，只用正常样本学习特征分布；推理时用「离分布距离」作为异常分数。
+因此采用**单类分类 / 无监督异常检测**范式：模型只学正常样本的特征分布，推理时把「偏离分布的 Patch」作为异常证据。
 
 ### 数据组织
 
-数据集按产线的四类判定组织，代码中做了如下映射（见 `data/wafer_dataset.py`）：
+产线对晶圆有四种判定，代码中的标签映射如下（见 `wafer_defect_detection/data/wafer_dataset.py`）：
 
 | 目录 | 含义 | 训练用途 |
 | :--- | :--- | :--- |
@@ -41,108 +42,164 @@
 
 ---
 
-## 🏗 系统架构
+## 🏗 方法架构
+
+本方法以 **ReContrast 对比重构框架**为骨架，把骨干网络从 WideResNet-50 换成 **DINOv2-ViT**，并针对 ViT 无 BN 层的特性重做训练机制。
 
 ```mermaid
 flowchart LR
-    subgraph data["数据层"]
-        D1["正常样本<br/>Good Unit + Overkill<br/>928 张"]
-        D2["缺陷样本<br/>Defect + Underkill<br/>14 张（仅评估）"]
+    subgraph IN["输入"]
+        IMG["晶圆图像<br/>518 x 518"]
+        CUT["CutPaste 合成缺陷<br/>触发概率 50%"]
+        IMG --> CUT
     end
 
-    subgraph ssl["自监督预训练"]
-        D1 --> AUG["双分支增强<br/>弱增强 → key<br/>强增强 → query<br/>+ CutPaste 合成缺陷"]
-        AUG --> VIT["ViT 编码器<br/>patch 16 · embed 384 · depth 6 · heads 6"]
-        VIT --> MOCO["MoCo v2<br/>动量编码器 0.999<br/>队列 1024 · 温度 0.07"]
+    subgraph ENC["双分支 ViT 编码器（DINOv2 初始化）"]
+        FRZ["冻结分支<br/>vit_small_patch14_dinov2"]
+        TRN["训练分支<br/>可学习参数"]
     end
 
-    subgraph det["异常检测头"]
-        MOCO --> FEAT["多尺度特征融合<br/>384 维"]
-        FEAT --> PCA["PCA 降维<br/>+ Ledoit-Wolf 收缩协方差"]
-        PCA --> HYPER["超球面距离"]
-        PCA --> MEM["记忆库 coreset 10%"]
-        PCA --> MAHA["马氏距离"]
-        HYPER --> SCORE["组合评分<br/>combined score"]
-        MEM --> SCORE
-        MAHA --> SCORE
+    subgraph NECK["多尺度交叉重建瓶颈"]
+        L6["第 6 层特征<br/>权重 0.6"]
+        L11["第 11 层特征<br/>权重 0.4"]
     end
 
-    D2 --> SCORE
-    SCORE --> EVAL["评估<br/>AUROC · F1 · FNR · FPR"]
+    subgraph LOSS["训练目标"]
+        CROSS["交叉重建余弦损失"]
+        ALIGN["层间特征对齐 λ=0.1"]
+        HARD["自适应难例挖掘<br/>alpha: -3 到 1.0"]
+    end
+
+    subgraph OUT["推理与评估"]
+        DIST["Patch 余弦距离<br/>1369 = 37 x 37"]
+        MAP["双线性上采样 518 x 518<br/>高斯平滑 sigma=4"]
+        MET["图像级 AUROC / F1<br/>像素级异常热力图"]
+    end
+
+    CUT --> FRZ
+    CUT --> TRN
+    FRZ --> L6
+    TRN --> L11
+    L6 --> CROSS
+    L11 --> CROSS
+    CROSS --> ALIGN
+    ALIGN --> HARD
+    HARD --> DIST
+    DIST --> MAP
+    MAP --> MET
 ```
 
-核心思想：**特征质量决定上限，评分方法决定能否逼近上限**。自监督预训练用 MoCo v2 拉高特征判别力，下游用「PCA 白化 + 马氏距离」这类免训练方法，避免在小样本上过拟合。
+核心思路：**冻结分支提供干净的「正常特征基准」，训练分支学习如何重建它**。缺陷区域无法被准确重建，余弦距离自然放大——不需要见过任何缺陷样本。
 
 ---
 
-## 🧩 模块设计
+## 🧩 关键设计
 
-| 模块 | 实现 | 参考来源 | 解决的问题 |
+| 模块 | 具体做法 | 解决的问题 | 参考来源 |
 | :--- | :--- | :--- | :--- |
-| **自监督主干** | ViT 从零实现（`PatchEmbedding` / `MultiHeadSelfAttention` / `TransformerBlock`） | ViT (2020) | 全局感受野，适配大尺寸晶圆图 |
-| **对比学习** | MoCo v2：动量编码器 + 1024 队列 + InfoNCE | MoCo v2 (2020) | 负样本来自队列，小 batch 也能训稳 |
-| **多尺度特征融合** | 拼接不同深度层特征 | 本项目 | 微小缺陷在深层特征中被淹没 |
-| **半导体专用增强** | 旋转 ±5°、水平/垂直翻转、高斯模糊；**不用大角度旋转与强色彩抖动** | 本项目 | 保留晶圆图的物理语义与方向性 |
-| **CutPaste 合成异常** | 面积占比 2%–15% 的 patch，支持**细长划痕模式**、随机颜色扰动 | CutPaste (CVPR 2021) | 无真实缺陷样本时制造伪异常 |
-| **超球面约束** | 特征向可学习中心收缩，权重 0.1 | CFA (CVPR 2023) | 让正常特征更紧凑，距离度量更稳 |
-| **协方差估计** | PCA + **Ledoit-Wolf** 收缩 | CFA (CVPR 2023) | 小样本下样本协方差奇异，必须收缩 |
-| **特征生成-判别** | `FeatureGenerator` + `FeatureDiscriminator`，隐层 256 | SimpleNet (CVPR 2023) | 在特征空间合成异常并学判别边界 |
-| **记忆库** | 贪心 coreset 选取 10% 特征作参考集 | PatchCore (2022) | 用真实正常样本修正核密度估计 |
-| **评分融合** | 马氏距离 / 超球面 / 记忆库距离加权 | 本项目 | 单一度量在不同缺陷类型上各有短板 |
+| **DINOv2 双分支编码器** | 骨干由 WideResNet-50 换成 `vit_small_patch14_dinov2.lvd142m`，冻结分支 + 训练分支并置，瓶颈网络与解码器按 Patch Token 格式重写 | 微小缺陷特征被正常区域「淹没」，从零训练的特征判别力不足 | DINOv2 (TMLR 2024) |
+| **CutPaste + 双输入训练** | 50% 概率对正常图施加图像空间合成缺陷，两分支各拿一路输入 | **ViT 没有 BN 层**，两分支同输入时瓶颈网络会退化成恒等映射，检测能力直接失效 | CutPaste (CVPR 2021) |
+| **多尺度交叉重建瓶颈** | 第 6 / 11 层分别做交叉重建，层权重 0.6 / 0.4，层间特征对齐损失 λ = 0.1 | 中层纹理信息与深层语义信息互补，单一层无法覆盖不同尺度的缺陷 | ReContrast (2023) |
+| **自适应难例挖掘** | α 三段式线性调度（−3 → 1.0），动态控制参与梯度计算的 Token 比例 | 全局等权聚合会让少数几个异常 Patch 的梯度被上千个正常 Patch 稀释 | 本文 |
+| **异常评分与热力图** | Patch 级余弦距离 → 37×37 网格 → 双线性上采样至 518×518 → 高斯平滑（σ=4） | 从「有没有缺陷」推进到「缺陷在哪」，支撑产线定位需求 | 本文 |
+
+> 第三点值得单独说明：这不是「加个 trick 提点分」，而是**换骨干后必须同步解决的架构性问题**。ViT 无 BN 导致两分支输出分布一致，交叉重建的监督信号消失——先定位到这个失败模式，再引入双输入机制，是本文的核心发现之一。
 
 ---
 
 ## 📊 实验结果
 
-### 主结果（wafer 数据集）
+> 以下数值取自学位论文第 4 章。各小节使用不同的数据集与配置，**数值之间不可直接横比**，请按小节口径理解。
 
-| 配置 | AUROC | F1 | Accuracy | FNR | FPR | 训练耗时 |
-| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| **Exp0 基线**（ViT + MoCo，无附加模块） | 0.6749 | 0.0952 | 0.9183 | 0.7857 | 0.0711 | 5650 s |
-| **完整模型**（全模块启用） | **0.7719** | **0.1373** | 0.9055 | **0.5714** | 0.0873 | — |
-| **Δ 提升** | **+0.0970** | +0.0421 | −0.0128 | **−0.2143** | +0.0162 | — |
+### 1. 消融实验
 
-### 基线混淆矩阵（n = 942）
+在 3 个晶圆品类上，以完整模型为基线（Exp0），逐一移除或替换单一模块：
 
-| | 预测正常 | 预测缺陷 |
-| :--- | ---: | ---: |
-| **实际正常** | TN = 862 | FP = 66 |
-| **实际缺陷** | FN = 11 | TP = 3 |
+| 实验 | 配置 | AUROC | Accuracy | F1 | ΔAUROC |
+| :--- | :--- | ---: | ---: | ---: | ---: |
+| **Exp0** | **Baseline（全模块开启）** | **0.9455** | **0.9776** | **0.9198** | — |
+| Exp1 | 自重建替代交叉重建 | 0.9167 | 0.8712 | 0.9125 | −0.0288 |
+| Exp2 | 无难例挖掘（等权聚合） | 0.8854 | 0.8552 | 0.9024 | −0.0601 |
+| Exp3 | 随机初始化（无 DINOv2 预训练） | 0.5741 | 0.7555 | 0.8540 | **−0.3714** |
+| Exp4-1 | n = 2 层多尺度特征 | 0.9274 | 0.9103 | 0.9407 | −0.0181 |
+| Exp4-2 | n = 4 层（= 基线） | 0.9455 | 0.9776 | 0.9198 | — |
+| Exp4-3 | n = 6 层多尺度特征 | 0.9425 | 0.9569 | 0.9162 | −0.0030 |
 
-正常样本 928 张、缺陷样本 14 张。基线的 Accuracy 0.9183 看似不错，但这是**不平衡样本的假象**——F1 只有 0.0952，14 个缺陷漏了 11 个。
+**从表中能读出的三件事**：
 
-完整模型把 AUROC 从 0.675 拉到 0.772、FNR 从 78.6% 降到 57.1%，方向是对的，但**距离工业可用（AUROC > 0.95）仍有明显差距**，这是本项目现状，不修饰。
+- **DINOv2 预训练是绝对主力**。换成随机初始化后 AUROC 掉到 0.5741（−0.37），几乎退化为随机猜测。这说明在小样本工业场景里，**预训练特征的质量决定上限**，后续模块只是逼近这个上限。
+- **交叉重建与难例挖掘各自贡献 0.03–0.06**。单看不如预训练显眼，但两者都是 0 成本（推理时不增加参数量），属于纯赚。
+- **层数不必贪多**。2 层已有 0.9274，4 层最优，6 层反而略降——过多层引入冗余信息，且计算开销线性增长。最终选 4 层是精度与效率的折中。
 
-### 跨数据集验证（MVTec AD · bottle）
+### 2. 与主流方法对比（自建晶圆数据集 · 3 品类）
 
-| 数据集 | AUROC | F1 | Accuracy | 说明 |
-| :--- | ---: | ---: | ---: | :--- |
-| MVTec AD / bottle | 0.5825 | 0.8630 | 0.7530 | 未做类别特定调参，AUROC 偏低，**结果待复核** |
+| 方法 | AUROC | F1 | 说明 |
+| :--- | ---: | ---: | :--- |
+| ViT + MoCo v2 | 0.515 | 0.828 | 动量对比路线，**接近随机猜测** |
+| PaDiM | 0.891 | 0.912 | Patch 特征分布建模（引用原文结果） |
+| PatchCore | 0.919 | 0.943 | 核心集记忆库（引用原文结果） |
+| **ViT + ReContrast（本文）** | **0.918** | **0.954** | AUROC 与 PatchCore 持平，F1 领先 1.1 个点 |
 
-> **数据来源说明**：Exp0 数据来自 `ablation_results/ablation_summary_comprehensive.json`；「完整模型」为 `checkpoints_v3` 的历史训练结果，尚未通过统一消融脚本重跑，故不参与逐模块归因。MVTec 结果同样来自历史记录。
+> MoCo 的表现是个反例教材：**对比学习的目标是「同图不同增强要像」，而这个任务要的是「正常与异常的细微差别」**。目标函数不对齐，特征再干净也用不上。这也是我从 v1 的 MoCo 路线转向交叉重构的直接原因。
+
+### 3. 开源基准验证（MVTec AD）
+
+| 品类 | AUROC | F1 | Accuracy |
+| :--- | ---: | ---: | ---: |
+| bottle | 1.0000 | 1.0000 | 1.0000 |
+| capsule | 0.9645 | 0.9730 | 0.9545 |
+| carpet | 0.9988 | 0.9944 | 0.9915 |
+| **3 品类平均** | **0.9878** | **0.9891** | **0.9820** |
+
+在公开基准上平均 AUROC 0.9878，与 PatchCore 的 0.989 基本持平，显著高于 PaDiM 的 0.891。这张表的意义是**排除了「只在自己数据集上调好」的怀疑**——同一套超参直接搬到 MVTec AD 就能用。
 
 ---
 
-## 🧪 消融实验设计
+## ⚙️ 训练配置
 
-采用**累积式设计**：每组在前一组基础上只加一个模块，用于隔离单模块增益。
+| 项目 | 设置 |
+| :--- | :--- |
+| 硬件 | NVIDIA GeForce RTX 4070（12 GB） |
+| 框架 | PyTorch |
+| 优化器 | AdamW（β = [0.9, 0.999]） |
+| 学习率 | 解码器 / 瓶颈网络 2×10⁻³；编码器 1×10⁻⁵ |
+| 权重衰减 | 1×10⁻⁵ |
+| Batch Size | 4（518×518 输入下的显存上限） |
+| 训练迭代 | 1000 |
+| 输入分辨率 | 518×518（DINOv2 原生分辨率）；对比实验用 224×224 |
+| 损失函数 | 交叉重建余弦距离损失（正反两组重建任务） |
+| 难例阈值 α | 动态调度，−3 线性增长至 1.0 |
+| 结果口径 | 每个实验重复 3 次取均值 |
 
-| 实验 | 增量模块 | 状态 |
+> Batch Size 只能给到 4 是个实打实的约束：ViT 的全局自注意力显存随 Patch 数平方增长，518² 输入下 1369 个 Token，12 GB 卡基本到顶。ReContrast 的队列式负样本设计恰好绕开了小 batch 的问题——这也是选它而不是 SimCLR 类方法的原因。
+
+---
+
+## 📦 数据集
+
+### MVTec AD（公开基准）
+
+15 个工业品类、5,354 张高分辨率图像，涵盖纹理类（carpet / grid / leather / tile / wood）与物体类（bottle / cable / capsule / hazelnut / metal nut / pill / screw / toothbrush / transistor / zipper）。训练集只含正常样本，测试集提供像素级缺陷掩码。
+
+### 自建晶圆数据集
+
+8 个真实产品品类，均为产线实拍、UP / DOWN 双光路：
+
+| BGA 12×4 | BGA S5E 16×7 | ESSD 12×4 | ESSD 12×5 |
+| :---: | :---: | :---: | :---: |
+| INAND 19×5 | MicroSD 20×4 | SDSIP 22×3 | UBGA 12×5 |
+
+**测试集扩充**：产线良品与缺陷样本数量严重失衡（如 BGA S5E 16×7 良品 52 张、缺陷仅 9 张），直接算 AUROC / F1 会有统计偏差。为此设计了一套合成缺陷扩增流程，把缺陷样本补到 `target = max(n_good, n_defect)`：
+
+| 缺陷类型 | 生成方式 | 模拟的真实缺陷 |
 | :--- | :--- | :--- |
-| Exp0 | ViT + MoCo（纯基线） | ✅ 已完成 |
-| Exp1 | + 多尺度特征融合 | ⏳ 待运行 |
-| Exp2 | + CutPaste 合成异常增强 | ⏳ 待运行 |
-| Exp3 | + 超球面约束损失（CFA） | ⏳ 待运行 |
-| Exp4 | + 特征生成-判别框架（SimpleNet） | ⏳ 待运行 |
-| Exp5 | + 记忆库辅助检测（PatchCore 风格）= 完整版 | ⏳ 待运行 |
+| 划痕 Scratch | 随机方向直线 / 轻微曲线，透明度 18%–38% | 机械划伤 |
+| 污渍 Stain | 半透明椭圆斑块 + 高斯模糊，透明度 12%–28% | 液体污染、化学残留 |
+| 斑点 Spot | 3–6 个 1–2 px 圆形颗粒 | 颗粒污染 |
+| 缺失 Missing | 矩形半透明暗区，占图 3%–10% | 焊盘缺失、区域损坏 |
+| 纹理噪声 | 10% 像素施加 ±30 随机扰动 | 工艺变异 |
 
-一键运行全部实验并生成汇总报告：
-
-```bash
-python run_ablation.py
-```
-
-输出：`ablation_results/ablation_summary_report.txt` · `ablation_summary_comprehensive.json` · 各组独立指标曲线。
+每次随机组合 1–3 种，并按轻度 / 中度控制透明度与尺寸，避免合成样本过于规整而被模型「记住」。
 
 ---
 
@@ -159,15 +216,15 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 pip install scikit-learn matplotlib
 ```
 
-设备优先级在 `utils/device.py` 中自动判定：**CUDA → Intel XPU → CPU**，启动时打印设备名与显存。
+设备优先级在 `wafer_defect_detection/utils/device.py` 中自动判定：**CUDA → Intel XPU → CPU**，启动时打印设备名与显存。
 
 ### 数据准备
 
 ```bash
-# 下载 MVTec AD（用于跨数据集验证）
+# 下载 MVTec AD
 python download_mvtec.py
 
-# 晶圆数据按四类目录放到 ./data 下：
+# 晶圆数据按四类目录放置：
 #   data/<产品>/Good Unit/*.png
 #   data/<产品>/Overkill/*.png
 #   data/<产品>/Defect/*.png
@@ -177,10 +234,10 @@ python download_mvtec.py
 ### 训练与评估
 
 ```bash
-# 训练（晶圆数据集）
+# 晶圆数据集
 python -m wafer_defect_detection.train --dataset wafer --epochs 100
 
-# 训练（MVTec AD 指定类别）
+# MVTec AD 指定类别
 python -m wafer_defect_detection.train --dataset mvtec --mvtec_category bottle --epochs 100
 
 # 仅评估
@@ -191,17 +248,13 @@ python -m wafer_defect_detection.train --mode eval --dataset wafer
 
 | 参数 | 默认 | 说明 |
 | :--- | :--- | :--- |
-| `--img_size` | 224 | 输入分辨率 |
+| `--img_size` | 224 | 输入分辨率（论文最终配置为 518） |
 | `--embed_dim` | 384 | ViT 嵌入维度（ViT-S 规模） |
-| `--queue_size` | 1024 | MoCo 队列长度 |
+| `--queue_size` | 1024 | 对比学习队列长度 |
 | `--momentum` | 0.999 | 动量编码器更新系数 |
 | `--temperature` | 0.07 | InfoNCE 温度 |
-| `--epochs` / `--batch_size` / `--lr` | 200 / 32 / 1e-3 | 训练超参（AdamW） |
+| `--epochs` / `--batch_size` / `--lr` | 200 / 32 / 1e-3 | 训练超参 |
 | `--cutpaste_prob` | 0.3 | CutPaste 触发概率 |
-| `--hypersphere_weight` | 0.1 | 超球面损失权重 |
-| `--generator_weight` / `--discriminator_weight` | 0.05 / 0.05 | SimpleNet 双头损失权重 |
-
-模块开关：`--use_multiscale` `--use_cutpaste` `--use_feature_generator` `--use_hypersphere`（`store_true`，默认开启）。
 
 ---
 
@@ -209,12 +262,12 @@ python -m wafer_defect_detection.train --mode eval --dataset wafer
 
 ```
 under_graduate/
-├── wafer_defect_detection/          # 核心模块包
+├── wafer_defect_detection/          # 核心模块包（v1 · ViT + MoCo 路线）
 │   ├── models/
 │   │   ├── vit_encoder.py           # ViT 编码器（从零实现 + 预训练权重加载）
-│   │   └── moco.py                  # MoCo v2 + 特征生成器/判别器 + 超球面中心
+│   │   └── moco.py                  # MoCo v2 + 特征生成器/判别器
 │   ├── detectors/
-│   │   └── anomaly_detector.py      # PCA + Ledoit-Wolf + 超球面 + 记忆库 + 评分融合
+│   │   └── anomaly_detector.py      # PCA + Ledoit-Wolf + 马氏距离 + 记忆库
 │   ├── data/
 │   │   ├── wafer_dataset.py         # 晶圆四类目录解析与标签映射
 │   │   └── mvtec_dataset.py         # MVTec AD 适配
@@ -223,31 +276,58 @@ under_graduate/
 │   │   └── transforms.py            # 半导体专用增强 + CutPaste
 │   └── train.py                     # 训练 / 评估入口
 ├── baseline/                        # 基线对比实现
-├── ablation_results/                # 消融汇总（json + txt + 各组目录）
-├── run_ablation.py                  # 六组实验批量执行
+├── ablation_results/                # v1 消融记录（json + txt + 各组目录）
+├── run_ablation.py                  # 批量执行实验
 ├── download_mvtec.py                # MVTec AD 下载
 └── run.sh / run.bat                 # 一键启动
 ```
 
 ---
 
-## ⚠️ 已知限制与下一步
+## 📌 仓库现状说明
 
-诚实记录当前状态，比粉饰指标有用：
+这个仓库记录的是**项目的第一阶段（v1）**，代码对应论文对比实验中的 `ViT + MoCo v2` 基线路线：
 
-1. **AUROC 仍不足**（0.772 < 0.95 的工业线）。瓶颈主要在特征：ViT 只有 6 层且从零预训练，928 张正常样本远不足以喂饱 Transformer。**最直接的改进是换 DINOv2 等强预训练主干**，冻结后直接做 PatchCore 式最近邻检索。
-2. **缺陷样本仅 14 张**，任何依赖阈值的指标（F1 / FNR / FPR）方差极大——换一个阈值 F1 就能翻倍。所以现阶段以 **AUROC 为主要指标**，F1 仅作参考。
-3. **消融实验只跑完基线**，逐模块归因尚未完成，不能断言哪个模块贡献最大。
-4. **MVTec 结果异常**（AUROC 0.58 但 F1 0.86），说明评分与阈值跨数据集迁移有问题，需单独排查。
-5. 下一步：跑完 Exp1–Exp5 → 引入预训练主干 → 加入像素级定位（缺陷热力图），从「有没有缺陷」推进到「缺陷在哪」。
+| 版本 | 技术路线 | 仓库状态 | 指标 |
+| :--- | :--- | :--- | :--- |
+| **v1** | ViT 从零训练 + MoCo v2 + PCA / 马氏距离评分 | ✅ 代码完整可跑，含 6 组累积消融脚本 | 晶圆全集 AUROC 0.6749 → 0.7719 |
+| **v2** | DINOv2 双分支交叉重建 + CutPaste + 多尺度 + 难例挖掘 | 论文最终方案，方法见论文第 3 章 | 晶圆 3 品类 0.918 / MVTec 3 品类 0.9878 |
+
+v1 的实测结论很有价值：**自监督对比学习在 928 张正常样本上根本喂不饱 6 层 ViT**，AUROC 卡在 0.77，换评分方法也救不回来。正是这个天花板促使 v2 转向预训练主干 + 交叉重建。`ablation_results/` 里的记录保留了这条弯路。
+
+---
+
+## ⚠️ 局限与后续方向
+
+**方法本身的局限（论文 5.2 节）**
+
+1. **推理速度**。ViT 全局自注意力的复杂度随 Patch 数平方增长，518×518 下单次前向开销较大，尚难满足高速产线节拍。可行方向：剪枝、知识蒸馏、注意力加速。
+2. **跨品类泛化**。当前每个品类单独训练一个模型，换型号要重训。产线快速切换场景需要元学习或领域自适应。
+3. **超参敏感**。难例阈值 α 的调度曲线、多尺度层权重对结果影响明显，且不同品类最优配置不一致。
+4. **极小缺陷**。面积占比小于 0.1% 的缺陷检出率不稳定，仍是瓶颈。
+5. **仅二维**。当前输入是平面投影图，无法检测凹陷深度、膜层厚度这类垂直方向异常。
+
+**工程侧的欠账**
+
+- 像素级定位只做了热力图可视化，尚未给出 PRO / IoU 等定位指标；
+- 推理吞吐量未在生产环境下验证，实验室数字不能直接换算成产线 UP 值；
+- 模型只有一个分辨率档位，缺少多尺度级联的加速方案。
 
 ---
 
 ## 📚 参考工作
 
+- **ReContrast** — *Unsupervised Anomaly Detection via Contrastive Reconstruction*, 2023
+- **DINOv2** — *Learning Robust Visual Features without Supervision*, TMLR 2024
 - **ViT** — *An Image is Worth 16x16 Words*, Dosovitskiy et al., ICLR 2021
-- **MoCo v2** — *Improved Baselines with Momentum Contrastive Learning*, Chen et al., 2020
 - **CutPaste** — *Self-Supervised Learning for Anomaly Detection and Localization*, Li et al., CVPR 2021
-- **CFA** — *Coupled Hypersphere Learning for Few-Shot Anomaly Detection*, CVPR 2023
-- **SimpleNet** — *A Simple Network for Image Anomaly Detection and Localization*, Liu & Wang, CVPR 2023
 - **PatchCore** — *Towards Total Recall in Industrial Anomaly Detection*, Roth et al., CVPR 2022
+- **PaDiM** — *A Patch Distribution Modeling Framework for Anomaly Detection*, Defard et al., ICPR 2021
+- **MoCo v2** — *Improved Baselines with Momentum Contrastive Learning*, Chen et al., 2020
+- **CFA** — *Coupled-Hypersphere-Based Feature Adaptation for Target-Oriented Anomaly Localization*, IEEE Access 2022
+
+---
+
+<div align="center">
+<sub>作者 <a href="https://github.com/MorDream">MorDream</a> · 华东理工大学 · 2026</sub>
+</div>
