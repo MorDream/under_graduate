@@ -1,0 +1,25 @@
+# ── PyTorch（按显卡选择 index-url）────────────────────────────
+# CUDA 12.1:  pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# Intel XPU:  pip install torch torchvision --index-url https://download.pytorch.org/whl/xpu
+# CPU:        pip install torch torchvision
+torch>=2.0
+torchvision>=0.15
+
+# ── v2 · ReContrast + DINOv2 ────────────────────────────────
+timm>=0.9            # DINOv2 主干与预训练权重
+tensorboard>=2.14    # SummaryWriter 训练曲线
+
+# ── v1 · ViT + MoCo ─────────────────────────────────────────
+scikit-learn
+scikit-image
+scipy
+numpy
+pandas
+tabulate
+tqdm
+ptflops
+
+# ── 数据与可视化 ─────────────────────────────────────────────
+Pillow
+matplotlib
+opencv-python-headless

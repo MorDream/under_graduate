@@ -208,30 +208,56 @@ flowchart LR
 ### 环境配置
 
 ```bash
-conda create -n graduate python=3.13 -y
+conda create -n graduate python=3.10 -y
 conda activate graduate
 
-# Intel Arc (XPU) 版本；CUDA 用户把 index-url 换成 cu121 即可
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/xpu
-pip install scikit-learn matplotlib
+# PyTorch 按显卡选择：CUDA 12.1 用 cu121，Intel Arc 用 xpu
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+pip install -r requirements.txt
 ```
 
-设备优先级在 `wafer_defect_detection/utils/device.py` 中自动判定：**CUDA → Intel XPU → CPU**，启动时打印设备名与显存。
+v2 依赖里唯一容易被忽略的是 **`timm`**（DINOv2 主干靠它加载）。`utils/device.py` 中 v1 会自动判定 **CUDA → Intel XPU → CPU**；v2 脚本默认走 `cuda:0`，无 GPU 时回退 CPU（会很慢）。
 
 ### 数据准备
 
 ```bash
-# 下载 MVTec AD
+# MVTec AD（15 类，用于开源基准验证）
 python download_mvtec.py
 
-# 晶圆数据按四类目录放置：
-#   data/<产品>/Good Unit/*.png
-#   data/<产品>/Overkill/*.png
-#   data/<产品>/Defect/*.png
-#   data/<产品>/Underkill/*.png
+# 晶圆数据（v2 目录约定，按品类 / 光路 / 划分组织）
+#   data/晶圆分类数据集/<品类>/UP/{train/good, test/good, test/defect}
+#   data/晶圆分类数据集/<品类>/DOWN/{train/good, test/good, test/defect}
+#
+# 晶圆数据（v1 目录约定，按产线四类判定组织）
+#   data/<产品>/Good Unit/*.png     ← 良品
+#   data/<产品>/Overkill/*.png      ← 过杀
+#   data/<产品>/Defect/*.png        ← 真实缺陷
+#   data/<产品>/Underkill/*.png     ← 漏杀
+
+# 测试集正负样本失衡时，用合成缺陷补齐（论文 4.1.2）
+python generate_synthetic_defects.py --data_root data/晶圆分类数据集 --preview
 ```
 
-### 训练与评估
+### 训练：v2 主方案（论文结果由它产出）
+
+```bash
+# 晶圆：全品类 × UP/DOWN 遍历
+python recontrast_vit_wafer.py --dataset wafer --wafer_view ALL
+
+# 指定单品类 / 单视图
+python recontrast_vit_wafer.py --dataset wafer --wafer_category "BGA S5E 16x7" --wafer_view UP
+
+# MVTec AD
+python recontrast_vit_wafer.py --dataset mvtec --categories bottle,capsule,carpet
+
+# 一键跑完 6 组消融（Exp0–Exp5）
+python run_ablation_vit.py --all
+
+# 合成缺陷扩充测试集
+python generate_synthetic_defects.py --data_root data/晶圆分类数据集 --preview
+```
+
+### 训练：v1 基线（ViT + MoCo）
 
 ```bash
 # 晶圆数据集
@@ -244,17 +270,20 @@ python -m wafer_defect_detection.train --dataset mvtec --mvtec_category bottle -
 python -m wafer_defect_detection.train --mode eval --dataset wafer
 ```
 
-### 常用参数
+### v2 常用参数
 
 | 参数 | 默认 | 说明 |
 | :--- | :--- | :--- |
-| `--img_size` | 224 | 输入分辨率（论文最终配置为 518） |
-| `--embed_dim` | 384 | ViT 嵌入维度（ViT-S 规模） |
-| `--queue_size` | 1024 | 对比学习队列长度 |
-| `--momentum` | 0.999 | 动量编码器更新系数 |
-| `--temperature` | 0.07 | InfoNCE 温度 |
-| `--epochs` / `--batch_size` / `--lr` | 200 / 32 / 1e-3 | 训练超参 |
-| `--cutpaste_prob` | 0.3 | CutPaste 触发概率 |
+| `--dataset` | `mvtec` | `mvtec` 或 `wafer` |
+| `--categories` | — | 逗号分隔的品类列表 |
+| `--wafer_view` | `ALL` | `ALL` / `UP` / `DOWN`，按文件名后缀过滤光路 |
+| `--pretrained_model` | `vit_small_patch14_dinov2.lvd142m` | timm 模型名 |
+| `--eval_interval` | 100 | 每 N 个 iter 评估一次并保存最优模型 |
+| `--ablation_*` | 关闭 | 消融开关：`no_cutpaste` / `self_recon` / `no_hard_mining` / `no_pretrained` / `n_layers` / `image_size` |
+
+> 输入分辨率 518×518、batch 4、1000 iter、学习率 2e-3 / 1e-5 都写死在 `train()` 里，与论文配置一致。显存不足时用 `--ablation_image_size 224` 降到 224（会改变结果，仅建议用于跑通流程）。
+
+完整命令清单（含 v1、ResNet 版 ReContrast、DenseSimSiam 基线）见 [`ALL_COMMANDS.md`](./ALL_COMMANDS.md)。
 
 ---
 
@@ -262,23 +291,32 @@ python -m wafer_defect_detection.train --mode eval --dataset wafer
 
 ```
 under_graduate/
-├── wafer_defect_detection/          # 核心模块包（v1 · ViT + MoCo 路线）
+├── recontrast_vit_wafer.py          # ★ v2 主训练脚本（论文字体方案，结果由它产出）
+├── recontrast_wafer.py              # v2 对照：ReContrast 原版（ResNet 骨干）
+├── recontrast/                      # v2 模型与数据管线
 │   ├── models/
-│   │   ├── vit_encoder.py           # ViT 编码器（从零实现 + 预训练权重加载）
-│   │   └── moco.py                  # MoCo v2 + 特征生成器/判别器
-│   ├── detectors/
-│   │   └── anomaly_detector.py      # PCA + Ledoit-Wolf + 马氏距离 + 记忆库
-│   ├── data/
-│   │   ├── wafer_dataset.py         # 晶圆四类目录解析与标签映射
-│   │   └── mvtec_dataset.py         # MVTec AD 适配
-│   ├── utils/
-│   │   ├── device.py                # CUDA / XPU / CPU 自动选择
-│   │   └── transforms.py            # 半导体专用增强 + CutPaste
-│   └── train.py                     # 训练 / 评估入口
-├── baseline/                        # 基线对比实现
+│   │   ├── recontrast_vit.py        # ★ ViT 版：双分支编码 + Bottleneck + Decoder
+│   │   ├── recontrast.py            # ResNet 版原实现
+│   │   ├── de_resnet.py / resnet.py # 编解码骨干
+│   │   └── partialnormv2.py
+│   ├── dataset.py                   # 数据变换 + CutPaste 实现
+│   └── utils.py                     # 余弦距离、异常图、PRO 计算
+├── run_ablation_vit.py              # ★ v2 消融：Exp0–Exp5 一键运行
+├── generate_synthetic_defects.py    # ★ 合成缺陷扩充测试集（5 类缺陷）
+├── generate_dataset_stats.py        # 数据集统计表
+├── generate_visualizations.py       # 论文插图（统计图 / 缺陷示例）
+├── wafer_defect_detection/          # v1 核心模块包（ViT + MoCo 路线）
+│   ├── models/{vit_encoder,moco}.py # ViT 编码器 + MoCo v2
+│   ├── detectors/anomaly_detector.py# PCA + Ledoit-Wolf + 马氏距离 + 记忆库
+│   ├── data/{wafer_dataset,mvtec_dataset}.py
+│   ├── utils/{device,transforms}.py
+│   └── train.py                     # v1 训练 / 评估入口
+├── train_simsiam.py                 # 对照：DenseSimSiam 方案
+├── baseline/                        # 早期基线实现
 ├── ablation_results/                # v1 消融记录（json + txt + 各组目录）
-├── run_ablation.py                  # 批量执行实验
+├── run_ablation.py                  # v1 六组累积消融
 ├── download_mvtec.py                # MVTec AD 下载
+├── ALL_COMMANDS.md                  # 完整命令清单（含所有对照方案）
 └── run.sh / run.bat                 # 一键启动
 ```
 
@@ -286,14 +324,18 @@ under_graduate/
 
 ## 📌 仓库现状说明
 
-这个仓库记录的是**项目的第一阶段（v1）**，代码对应论文对比实验中的 `ViT + MoCo v2` 基线路线：
+两条技术路线的代码都在这个仓库里，互不依赖，可以分别复现：
 
-| 版本 | 技术路线 | 仓库状态 | 指标 |
+| 版本 | 技术路线 | 代码入口 | 指标 |
 | :--- | :--- | :--- | :--- |
-| **v1** | ViT 从零训练 + MoCo v2 + PCA / 马氏距离评分 | ✅ 代码完整可跑，含 6 组累积消融脚本 | 晶圆全集 AUROC 0.6749 → 0.7719 |
-| **v2** | DINOv2 双分支交叉重建 + CutPaste + 多尺度 + 难例挖掘 | 论文最终方案，方法见论文第 3 章 | 晶圆 3 品类 0.918 / MVTec 3 品类 0.9878 |
+| **v2**（论文最终方案） | DINOv2 双分支交叉重建 + CutPaste + 多尺度 + 难例挖掘 | `recontrast_vit_wafer.py`<br>`recontrast/models/recontrast_vit.py` | 晶圆 3 品类 **0.918** / MVTec 3 品类 **0.9878** |
+| **v1**（前期探索） | ViT 从零训练 + MoCo v2 + PCA / 马氏距离评分 | `wafer_defect_detection/` | 晶圆全集 0.6749 → 0.7719 |
 
 v1 的实测结论很有价值：**自监督对比学习在 928 张正常样本上根本喂不饱 6 层 ViT**，AUROC 卡在 0.77，换评分方法也救不回来。正是这个天花板促使 v2 转向预训练主干 + 交叉重建。`ablation_results/` 里的记录保留了这条弯路。
+
+**关于数据与权重**：晶圆图像来自产线实拍，涉及客户信息，不随仓库分发；`data/`、`mvtec_anomaly_detection/`、`checkpoints_*/` 和 `*.pth` 均已在 `.gitignore` 中排除。按上文「数据准备」的目录约定放好数据即可直接跑。
+
+**关于上游代码**：`recontrast/` 目录派生自 ReContrast 官方实现（CC BY-NC-SA 4.0，见 [`recontrast/LICENSE`](./recontrast/LICENSE)），`recontrast/models/recontrast_vit.py` 与 `recontrast_vit_wafer.py` 是针对 ViT + DINOv2 的改造，其余脚本为本人编写。
 
 ---
 

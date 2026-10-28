@@ -12,8 +12,20 @@
 *.h5
 checkpoints/
 checkpoints_v3/
+checkpoints_v3_baseline/
+checkpoints_vit_recontrast/
+checkpoints_simsiam/
 baseline/checkpoints/
 baseline/checkpoints_v2/
+dinov2_*_pretrain.pth
+
+# ============ 实验结果输出 ============
+ablation_results_vit/
+recontrast/checkpoint/
+recontrast/*/checkpoint/
+tensorboard/
+events.out.tfevents.*
+confusion_images/
 
 # ============ 训练日志 ============
 *.log
